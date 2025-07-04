@@ -1,0 +1,13 @@
+{% extends "builder/base.html" %}
+
+{% block content %}
+    <h2>Your CVs</h2>
+    <a href="{% url 'create_cv' %}">Create New CV</a>
+    <ul>
+        {% for cv in cvs %}
+            <li>{{ cv.title }} (Created: {{ cv.created_at|date:"Y-m-d" }})</li>
+        {% empty %}
+            <li>No CVs yet.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
