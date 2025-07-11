@@ -23,3 +23,8 @@ h2 {
 p {
     font-size: 1.1rem;
 }
+
+.container {
+    max-width: 960px;
+    margin: auto;
+}

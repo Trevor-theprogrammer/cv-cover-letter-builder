@@ -7,13 +7,20 @@
     <link rel="stylesheet" href="{% static 'builder/css/styles.css' %}">
 </head>
 <body>
-    <header>
-        <h1>CV & Cover Letter Builder</h1>
-    </header>
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+    <div class="container">
+        <header>
+            <h1>CV & Cover Letter Builder</h1>
+            <nav>
+                <a href="{% url 'dashboard' %}">Dashboard</a> |
+                <a href="{% url 'create_cv' %}">Create CV</a> |
+                <a href="{% url 'generate_cover_letter' %}">Generate Letter</a> |
+                <a href="{% url 'logout' %}">Logout</a>
+            </nav>
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
     <script src="{% static 'builder/js/scripts.js' %}"></script>
 </body>
 </html>

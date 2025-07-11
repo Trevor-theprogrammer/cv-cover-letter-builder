@@ -1,5 +1,5 @@
 from django import forms
-from .models import CV, CVSection
+from .models import CV, CVSection, CoverLetter
 
 class CVForm(forms.ModelForm):
     class Meta:
@@ -11,13 +11,15 @@ class CVSectionForm(forms.ModelForm):
         model = CVSection
         fields = ['heading', 'content']
 
-class CoverLetterForm(forms.Form):
-    cv = forms.ModelChoiceField(queryset=CV.objects.none(), label="Select CV")
-    job_title = forms.CharField(max_length=100, label="Job Title")
-    job_description = forms.CharField(widget=forms.Textarea, label="Job Description")
+class CoverLetterForm(forms.ModelForm):
+    class Meta:
+        model = CoverLetter
+        fields = ['cv', 'job_title', 'job_description']
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
             self.fields['cv'].queryset = CV.objects.filter(user=user)
+        else:
+            self.fields['cv'].queryset = CV.objects.none()
