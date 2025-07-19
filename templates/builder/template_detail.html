@@ -1,0 +1,76 @@
+{% extends 'builder/base.html' %}
+{% load static %}
+
+{% block title %}{{ template.name }} - Template Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ template.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if template.preview_image %}
+                            <img src="{{ template.preview_image.url }}" class="img-fluid rounded" alt="{{ template.name }}">
+                            {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 400px;">
+                                <i class="fas fa-file-alt fa-5x text-white"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h4>Template Details</h4>
+                            
+                            <dl class="row">
+                                <dt class="col-sm-4">Category:</dt>
+                                <dd class="col-sm-8">{{ template.category|title }}</dd>
+                                
+                                <dt class="col-sm-4">Downloads:</dt>
+                                <dd class="col-sm-8">{{ template.download_count }}</dd>
+                                
+                                <dt class="col-sm-4">Created:</dt>
+                                <dd class="col-sm-8">{{ template.created_at|date:"M d, Y" }}</dd>
+                            </dl>
+                            
+                            <h5>Description</h5>
+                            <p>{{ template.description }}</p>
+                            
+                            {% if template.features %}
+                            <h5>Features</h5>
+                            <ul>
+                                {% for feature in template.features %}
+                                <li>{{ feature }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            
+                            <div class="mt-4">
+                                <a href="#" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-download me-2"></i>Download Template
+                                </a>
+                                
+                                {% if user.is_staff %}
+                                <a href="{% url 'edit_template' template.pk %}" class="btn btn-warning">
+                                    <i class="fas fa-edit me-2"></i>Edit Template
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'templates' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Templates
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

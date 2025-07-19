@@ -1,0 +1,74 @@
+{% extends 'builder/base.html' %}
+{% load static %}
+
+{% block title %}CV Templates{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="fas fa-file-alt me-2"></i>CV Templates
+                </h1>
+                {% if user.is_authenticated %}
+                <a href="{% url 'create_template' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create New Template
+                </a>
+                {% endif %}
+            </div>
+            
+            <p class="text-muted mb-4">
+                Browse our collection of professionally designed CV templates to help you create the perfect resume.
+            </p>
+            
+            {% if templates %}
+            <div class="row">
+                {% for template in templates %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if template.preview_image %}
+                        <img src="{{ template.preview_image.url }}" class="card-img-top" alt="{{ template.name }}">
+                        {% else %}
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-file-alt fa-3x text-white"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ template.name }}</h5>
+                            <p class="card-text text-muted">{{ template.description|truncatewords:20 }}</p>
+                            
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-tag me-1"></i>{{ template.category }}
+                                </small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-download me-1"></i>{{ template.download_count }} downloads
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <a href="{% url 'template_detail' template.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-file-alt fa-5x text-muted mb-3"></i>
+                <h3 class="text-muted">No Templates Available</h3>
+                <p class="text-muted">Templates will be added soon. Check back later!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
