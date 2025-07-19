@@ -200,7 +200,7 @@ class EnhancedAICoverLetterService:
         ])
         
         prompt = f"""
-        You are a world-class career strategist writing a cover letter that will guarantee an interview. Use the provided insights to create a masterpiece.
+        You are an expert career coach writing an authentic, personalized cover letter. Create a genuine letter that sounds like a real person wrote it.
 
         CANDIDATE INSIGHTS:
         {json.dumps(cv_insights, indent=2)}
@@ -216,18 +216,18 @@ class EnhancedAICoverLetterService:
         TEMPLATE TYPE: {template_type}
 
         REQUIREMENTS:
-        1. Start with a compelling hook that shows deep company knowledge
-        2. Tell the candidate's unique career story using specific achievements
-        3. Address each key job requirement with concrete CV evidence
-        4. Include 3-4 quantifiable achievements with metrics
-        5. Show company fit with specific research
-        6. Address any skill gaps positively
-        7. End with a clear call to action
-        8. Use natural, engaging language (not corporate speak)
-        9. Keep to 300-400 words
-        10. Make it impossible to ignore this candidate
+        1. Write in a conversational, authentic tone - avoid corporate jargon
+        2. Use specific details from the candidate's actual CV - no generic statements
+        3. Tell a coherent story about why this role makes sense for their career
+        4. Include 2-3 specific achievements with real metrics from their CV
+        5. Explain genuine interest in this specific role and company
+        6. Address how their experience directly relates to job requirements
+        7. Keep paragraphs short and readable (3-4 sentences max)
+        8. End with a simple, professional call to action
+        9. Use "I" statements naturally throughout
+        10. Make it sound like it was written specifically for this application
 
-        Write a cover letter that will make the hiring manager immediately schedule an interview:
+        Write an authentic cover letter that shows genuine interest and relevant experience:
         """
         
         try:
@@ -380,26 +380,40 @@ class EnhancedAICoverLetterService:
         }
     
     def _get_mock_cover_letter(self, job_title: str, cv_insights: Dict[str, Any]) -> str:
-        """Mock cover letter for testing without API"""
+        """Mock cover letter for testing without API - more authentic and personalized"""
+        
+        # Extract real achievements from CV insights
+        achievements = cv_insights.get('key_achievements', [])
+        skills = cv_insights.get('core_skills', [])
+        narrative = cv_insights.get('career_narrative', '')
+        
+        # Build authentic content based on actual CV data
+        if achievements:
+            top_achievement = achievements[0]
+            achievement_text = f"{top_achievement['achievement']} resulting in {top_achievement['metric']} during my time at {top_achievement['context']}"
+        else:
+            achievement_text = "consistently delivered high-quality results in my previous roles"
+        
+        if skills:
+            top_skill = skills[0]
+            skill_text = f"My expertise in {top_skill['skill'].lower()}, developed over {top_skill['years_experience']} years, has been instrumental in {top_skill['evidence'].lower()}"
+        else:
+            skill_text = "I bring relevant experience and skills to this role"
+        
         return f"""Dear Hiring Manager,
 
-Your search for an exceptional {job_title} ends today. With seven years of proven project management expertise and a track record of delivering 35% revenue growth, I'm excited to bring my strategic leadership to your team.
+I am writing to express my interest in the {job_title} position. {narrative}
 
-Throughout my career, I've consistently transformed complex challenges into measurable business results:
+What particularly draws me to this opportunity is {skill_text}. This experience has prepared me well for the challenges outlined in your job description.
 
-• Led 50+ successful projects with 95% on-time delivery, managing teams of up to 15 professionals
-• Drove 35% revenue growth through strategic project initiatives and process optimization
-• Achieved 200% efficiency improvement through digital transformation leadership
-• Delivered $50K annual cost savings through innovative operational improvements
+{achievement_text}. This experience taught me the importance of balancing technical excellence with practical business needs.
 
-My unique combination of technical expertise and business acumen enables me to bridge the gap between complex technical requirements and strategic business objectives. Having successfully delivered projects across technology, finance, and healthcare sectors, I bring cross-industry insights that drive innovation.
+I am eager to bring this same dedication and results-oriented approach to your team. I would welcome the opportunity to discuss how my background and skills align with your needs.
 
-I'm particularly drawn to your organization's commitment to innovation and believe my proven ability to deliver measurable results aligns perfectly with your goals. My data-driven approach and collaborative leadership style have consistently produced exceptional outcomes.
+Thank you for considering my application.
 
-I would welcome the opportunity to discuss how my experience and passion for excellence can contribute to your continued success. Let's schedule a conversation to explore how I can help drive your next breakthrough initiative.
-
-Best regards,
-[Your Name]"""
+Sincerely,
+[Candidate Name]"""
 
 class CVTemplateService:
     """Service for managing cover letter templates"""
