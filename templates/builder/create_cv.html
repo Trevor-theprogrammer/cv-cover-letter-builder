@@ -1,10 +1,578 @@
-{% extends "builder/base.html" %}
+{% extends 'builder/base.html' %}
+{% load static %}
+
+{% block title %}Create CV - Professional CV Builder{% endblock %}
 
 {% block content %}
-    <h2>Create a New CV</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save CV</button>
-    </form>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Panel: CV Form -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Create Your Professional CV</h4>
+                </div>
+                <div class="card-body">
+                    <form id="cv-form" method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <div class="mb-3">
+                            <h5>Personal Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="full_name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="full_name" name="full_name" 
+                                           oninput="updatePreview()" placeholder="John Doe" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="title" class="form-label">Professional Title *</label>
+                                    <input type="text" class="form-control" id="title" name="title" 
+                                           oninput="updatePreview()" placeholder="Software Developer" required>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           oninput="updatePreview()" placeholder="john@example.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone *</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           oninput="updatePreview()" placeholder="+1-555-123-4567" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="mb-3">
+                            <h5>Professional Summary</h5>
+                            <textarea class="form-control" id="summary" name="summary" rows="4" 
+                                      oninput="updatePreview()" 
+                                      placeholder="Write a compelling summary of your professional background, key achievements, and career objectives..."></textarea>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="mb-3">
+                            <h5>Work Experience</h5>
+                            <div id="experience-container">
+                                <div class="experience-item mb-3 p-3 border rounded">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Job Title *</label>
+                                            <input type="text" class="form-control mb-2" 
+                                                   name="experience_title[]" 
+                                                   oninput="updatePreview()" 
+                                                   placeholder="e.g., Senior Software Engineer" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Company *</label>
+                                            <input type="text" class="form-control mb-2" 
+                                                   name="experience_company[]" 
+                                                   oninput="updatePreview()" 
+                                                   placeholder="e.g., Tech Corp Inc." required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Duration *</label>
+                                            <input type="text" class="form-control mb-2" 
+                                                   name="experience_duration[]" 
+                                                   oninput="updatePreview()" 
+                                                   placeholder="e.g., Jan 2020 - Present" required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-control" 
+                                                      name="experience_description[]" 
+                                                      rows="3" 
+                                                      oninput="updatePreview()" 
+                                                      placeholder="Describe your key responsibilities and achievements..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addExperience()">
+                                + Add Experience
+                            </button>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="mb-3">
+                            <h5>Skills & Expertise</h5>
+                            <input type="text" class="form-control" id="skills" name="skills" 
+                                   oninput="updatePreview()" 
+                                   placeholder="e.g., Python, Django, JavaScript, React, SQL, AWS...">
+                            <small class="form-text text-muted">Separate skills with commas</small>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="mb-3">
+                            <h5>Education</h5>
+                            <div id="education-container">
+                                <div class="education-item mb-3 p-3 border rounded">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Degree *</label>
+                                            <input type="text" class="form-control mb-2" 
+                                                   name="education_degree[]" 
+                                                   oninput="updatePreview()" 
+                                                   placeholder="e.g., Bachelor of Science in Computer Science" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Institution *</label>
+                                            <input type="text" class="form-control mb-2" 
+                                                   name="education_school[]" 
+                                                   oninput="updatePreview()" 
+                                                   placeholder="e.g., Stanford University" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Graduation Year</label>
+                                            <input type="text" class="form-control" 
+                                                   name="education_year[]" 
+                                                   oninput="updatePreview()" 
+                                                   placeholder="e.g., 2019">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addEducation()">
+                                + Add Education
+                            </button>
+                        </div>
+
+                        <!-- Template Selection -->
+                        <div class="mb-3">
+                            <h5>Choose Template</h5>
+                            <select class="form-select" id="template" name="template" onchange="updatePreview()">
+                                <option value="modern">Modern - Clean & Professional</option>
+                                <option value="classic">Classic - Traditional & Elegant</option>
+                                <option value="minimal">Minimal - Simple & Focused</option>
+                                <option value="creative">Creative - Stylish & Unique</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg">Save CV</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Live Preview -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Live Preview</h4>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="downloadPDF()">
+                        Download PDF
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="cv-preview" class="cv-preview-container">
+                        <!-- Preview will be dynamically updated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updatePreview() {
+    const fullName = document.getElementById('full_name').value || 'Your Name';
+    const title = document.getElementById('title').value || 'Your Title';
+    const email = document.getElementById('email').value || 'your.email@example.com';
+    const phone = document.getElementById('phone').value || '+1-555-000-0000';
+    const summary = document.getElementById('summary').value || 'Your professional summary will appear here...';
+    const skills = document.getElementById('skills').value || 'Skills will appear here...';
+    const template = document.getElementById('template').value;
+
+    // Get experience items
+    const experienceItems = [];
+    const experienceTitles = document.querySelectorAll('input[name="experience_title[]"]');
+    const experienceCompanies = document.querySelectorAll('input[name="experience_company[]"]');
+    const experienceDurations = document.querySelectorAll('input[name="experience_duration[]"]');
+    const experienceDescriptions = document.querySelectorAll('textarea[name="experience_description[]"]');
+
+    for (let i = 0; i < experienceTitles.length; i++) {
+        if (experienceTitles[i].value || experienceCompanies[i].value) {
+            experienceItems.push({
+                title: experienceTitles[i].value || 'Job Title',
+                company: experienceCompanies[i].value || 'Company',
+                duration: experienceDurations[i].value || 'Duration',
+                description: experienceDescriptions[i].value || 'Description...'
+            });
+        }
+    }
+
+    // Get education items
+    const educationItems = [];
+    const educationDegrees = document.querySelectorAll('input[name="education_degree[]"]');
+    const educationSchools = document.querySelectorAll('input[name="education_school[]"]');
+    const educationYears = document.querySelectorAll('input[name="education_year[]"]');
+
+    for (let i = 0; i < educationDegrees.length; i++) {
+        if (educationDegrees[i].value || educationSchools[i].value) {
+            educationItems.push({
+                degree: educationDegrees[i].value || 'Degree',
+                school: educationSchools[i].value || 'School',
+                year: educationYears[i].value || 'Year'
+            });
+        }
+    }
+
+    // Generate preview HTML
+    let previewHTML = `
+        <div class="cv-preview-container ${template}">
+            <div class="preview-header">
+                <h2>${fullName}</h2>
+                <h4>${title}</h4>
+                <p>
+                    <i class="fas fa-envelope"></i> ${email} | 
+                    <i class="fas fa-phone"></i> ${phone}
+                </p>
+            </div>
+
+            <div class="preview-section">
+                <h5>Professional Summary</h5>
+                <p>${summary}</p>
+            </div>
+
+            ${experienceItems.length > 0 ? `
+            <div class="preview-section">
+                <h5>Work Experience</h5>
+                ${experienceItems.map(item => `
+                    <div class="preview-experience-item">
+                        <strong>${item.title}</strong> at ${item.company}
+                        <br><em>${item.duration}</em>
+                        <p>${item.description}</p>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+
+            ${educationItems.length > 0 ? `
+            <div class="preview-section">
+                <h5>Education</h5>
+                ${educationItems.map(item => `
+                    <div class="preview-education-item">
+                        <strong>${item.degree}</strong> - ${item.school}
+                        <br><em>${item.year}</em>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+
+            ${skills ? `
+            <div class="preview-section">
+                <h5>Skills & Expertise</h5>
+                <div class="preview-skills-list">
+                    ${skills.split(',').map(skill => `
+                        <span class="skill-tag">${skill.trim()}</span>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    document.getElementById('cv-preview').innerHTML = previewHTML;
+}
+
+function addExperience() {
+    const container = document.getElementById('experience-container');
+    const newItem = document.createElement('div');
+    newItem.className = 'experience-item mb-3 p-3 border rounded';
+    newItem.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Job Title *</label>
+                <input type="text" class="form-control mb-2" 
+                       name="experience_title[]" 
+                       oninput="updatePreview()" 
+                       placeholder="e.g., Senior Software Engineer" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Company *</label>
+                <input type="text" class="form-control mb-2" 
+                       name="experience_company[]" 
+                       oninput="updatePreview()" 
+                       placeholder="e.g., Tech Corp Inc." required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Duration *</label>
+                <input type="text" class="form-control mb-2" 
+                       name="experience_duration[]" 
+                       oninput="updatePreview()" 
+                       placeholder="e.g., Jan 2020 - Present" required>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" 
+                          name="experience_description[]" 
+                          rows="3" 
+                          oninput="updatePreview()" 
+                          placeholder="Describe your key responsibilities and achievements..."></textarea>
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="removeItem(this)">
+            Remove
+        </button>
+    `;
+    container.appendChild(newItem);
+    updatePreview();
+}
+
+function addEducation() {
+    const container = document.getElementById('education-container');
+    const newItem = document.createElement('div');
+    newItem.className = 'education-item mb-3 p-3 border rounded';
+    newItem.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Degree *</label>
+                <input type="text" class="form-control mb-2" 
+                       name="education_degree[]" 
+                       oninput="updatePreview()" 
+                       placeholder="e.g., Bachelor of Science in Computer Science" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Institution *</label>
+                <input type="text" class="form-control mb-2" 
+                       name="education_school[]" 
+                       oninput="updatePreview()" 
+                       placeholder="e.g., Stanford University" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Graduation Year</label>
+                <input type="text" class="form-control" 
+                       name="education_year[]" 
+                       oninput="updatePreview()" 
+                       placeholder="e.g., 2019">
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="removeItem(this)">
+            Remove
+        </button>
+    `;
+    container.appendChild(newItem);
+    updatePreview();
+}
+
+function removeItem(button) {
+    button.parentElement.remove();
+    updatePreview();
+}
+
+function downloadPDF() {
+    alert('PDF download functionality will be implemented with a PDF generation service');
+}
+
+// Initialize preview on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updatePreview();
+});
+</script>
+
+<script>
+function updatePreview() {
+    const fullName = document.getElementById('full_name').value || 'Your Name';
+    const title = document.getElementById('title').value || 'Your Title';
+    const email = document.getElementById('email').value || 'your.email@example.com';
+    const phone = document.getElementById('phone').value || '+1-555-000-0000';
+    const summary = document.getElementById('summary').value || 'Your professional summary will appear here...';
+    const skills = document.getElementById('skills').value || 'Skills will appear here...';
+    const template = document.getElementById('template').value;
+
+    // Get experience items
+    const experienceItems = [];
+    const experienceTitles = document.querySelectorAll('input[name="experience_title[]"]');
+    const experienceCompanies = document.querySelectorAll('input[name="experience_company[]"]');
+    const experienceDurations = document.querySelectorAll('input[name="experience_duration[]"]');
+    const experienceDescriptions = document.querySelectorAll('textarea[name="experience_description[]"]');
+
+    for (let i = 0; i < experienceTitles.length; i++) {
+        if (experienceTitles[i].value || experienceCompanies[i].value) {
+            experienceItems.push({
+                title: experienceTitles[i].value || 'Job Title',
+                company: experienceCompanies[i].value || 'Company',
+                duration: experienceDurations[i].value || 'Duration',
+                description: experienceDescriptions[i].value || 'Description...'
+            });
+        }
+    }
+
+    // Get education items
+    const educationItems = [];
+    const educationDegrees = document.querySelectorAll('input[name="education_degree[]"]');
+    const educationSchools = document.querySelectorAll('input[name="education_school[]"]');
+    const educationYears = document.querySelectorAll('input[name="education_year[]"]');
+
+    for (let i = 0; i < educationDegrees.length; i++) {
+        if (educationDegrees[i].value || educationSchools[i].value) {
+            educationItems.push({
+                degree: educationDegrees[i].value || 'Degree',
+                school: educationSchools[i].value || 'School',
+                year: educationYears[i].value || 'Year'
+            });
+        }
+    }
+
+    // Generate preview HTML
+    let previewHTML = `
+        <div class="cv-preview-container ${template}">
+            <div class="preview-header">
+                <h2>${fullName}</h2>
+                <h4>${title}</h4>
+                <p>
+                    <i class="fas fa-envelope"></i> ${email} | 
+                    <i class="fas fa-phone"></i> ${phone}
+                </p>
+            </div>
+
+            <div class="preview-section">
+                <h5>Professional Summary</h5>
+                <p>${summary}</p>
+            </div>
+
+            ${experienceItems.length > 0 ? `
+            <div class="preview-section">
+                <h5>Experience</h5>
+                ${experienceItems.map(item => `
+                    <div class="preview-experience-item">
+                        <strong>${item.title}</strong> at ${item.company}
+                        <br><em>${item.duration}</em>
+                        <p>${item.description}</p>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+
+            ${educationItems.length > 0 ? `
+            <div class="preview-section">
+                <h5>Education</h5>
+                ${educationItems.map(item => `
+                    <div class="preview-education-item">
+                        <strong>${item.degree}</strong> - ${item.school}
+                        <br><em>${item.year}</em>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+
+            ${skills ? `
+            <div class="preview-section">
+                <h5>Skills</h5>
+                <div class="preview-skills-list">
+                    ${skills.split(',').map(skill => `
+                        <span class="skill-tag">${skill.trim()}</span>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    document.getElementById('cv-preview').innerHTML = previewHTML;
+}
+
+function addExperience() {
+    const container = document.getElementById('experience-container');
+    const newItem = document.createElement('div');
+    newItem.className = 'experience-item mb-3';
+    newItem.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control mb-2" 
+                       name="experience_title[]" 
+                       oninput="updatePreview()" 
+                       placeholder="Job Title">
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control mb-2" 
+                       name="experience_company[]" 
+                       oninput="updatePreview()" 
+                       placeholder="Company">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control mb-2" 
+                       name="experience_duration[]" 
+                       oninput="updatePreview()" 
+                       placeholder="Duration">
+            </div>
+            <div class="col-md-6">
+                <textarea class="form-control" 
+                          name="experience_description[]" 
+                          rows="2" 
+                          oninput="updatePreview()" 
+                          placeholder="Job description..."></textarea>
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeItem(this)">
+            <i class="fas fa-trash"></i> Remove
+        </button>
+    `;
+    container.appendChild(newItem);
+    updatePreview();
+}
+
+function addEducation() {
+    const container = document.getElementById('education-container');
+    const newItem = document.createElement('div');
+    newItem.className = 'education-item mb-3';
+    newItem.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control mb-2" 
+                       name="education_degree[]" 
+                       oninput="updatePreview()" 
+                       placeholder="Degree">
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control mb-2" 
+                       name="education_school[]" 
+                       oninput="updatePreview()" 
+                       placeholder="School/University">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" 
+                       name="education_year[]" 
+                       oninput="updatePreview()" 
+                       placeholder="Year">
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeItem(this)">
+            <i class="fas fa-trash"></i> Remove
+        </button>
+    `;
+    container.appendChild(newItem);
+    updatePreview();
+}
+
+function removeItem(button) {
+    button.parentElement.remove();
+    updatePreview();
+}
+
+function downloadPDF() {
+    // This would integrate with a PDF generation library
+    alert('PDF download functionality will be implemented with a PDF generation service');
+}
+
+// Initialize preview on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updatePreview();
+});
+</script>
 {% endblock %}

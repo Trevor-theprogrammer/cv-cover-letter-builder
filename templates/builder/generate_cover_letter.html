@@ -1,0 +1,126 @@
+{% extends 'builder/base.html' %}
+{% block content %}
+<div class="hero-section" style="padding: 120px 0 80px; text-align: center; background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%); color: white;">
+    <div class="container">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem; font-weight: 800;">Generate Your Perfect Cover Letter</h1>
+        <p style="font-size: 1.3rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+            Create compelling, personalized cover letters that get you noticed by employers
+        </p>
+    </div>
+</div>
+
+<div class="container" style="padding: 60px 0;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        {% if not generated_letter %}
+            <div style="background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                <h2 style="color: #2c3e50; margin-bottom: 2rem; text-align: center;">Create Your Cover Letter</h2>
+                
+                <form method="POST" style="display: grid; gap: 1.5rem;">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">CV Type</label>
+                        <div style="display: flex; gap: 1rem;">
+                            {% for choice in form.cv_type %}
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    {{ choice.tag }} {{ choice.choice_label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div id="created-cv-section" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">Select Created CV</label>
+                        {{ form.cv }}
+                    </div>
+                    
+                    <div id="uploaded-cv-section" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">Select Uploaded CV</label>
+                        {{ form.uploaded_cv }}
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">Job Title</label>
+                        {{ form.job_title }}
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">Job Description</label>
+                        {{ form.job_description }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">
+                        Generate Professional Cover Letter
+                    </button>
+                </form>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const cvTypeRadios = document.querySelectorAll('input[name="cv_type"]');
+                        const createdCvSection = document.getElementById('created-cv-section');
+                        const uploadedCvSection = document.getElementById('uploaded-cv-section');
+                        
+                        function toggleCvSections() {
+                            const selectedType = document.querySelector('input[name="cv_type"]:checked').value;
+                            if (selectedType === 'created') {
+                                createdCvSection.style.display = 'block';
+                                uploadedCvSection.style.display = 'none';
+                            } else {
+                                createdCvSection.style.display = 'none';
+                                uploadedCvSection.style.display = 'block';
+                            }
+                        }
+                        
+                        cvTypeRadios.forEach(radio => {
+                            radio.addEventListener('change', toggleCvSections);
+                        });
+                        
+                        // Initial toggle
+                        toggleCvSections();
+                    });
+                </script>
+            </div>
+        {% else %}
+            <div style="display: grid; gap: 2rem;">
+                <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1);">
+                    <h2 style="color: #2c3e50; margin-bottom: 1rem;">Your Generated Cover Letter</h2>
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; border-left: 4px solid #667eea; font-family: 'Georgia', serif; line-height: 1.8; white-space: pre-wrap;">
+                        {{ generated_letter }}
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="window.print()" class="btn btn-primary">Print Letter</button>
+                        <a href="{% url 'generate_cover_letter' %}" class="btn btn-secondary">Generate Another</a>
+                    </div>
+                </div>
+                
+                <div style="background: #e8f4fd; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #3498db;">
+                    <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">💡 Pro Tip</h3>
+                    <p style="margin: 0; color: #555;">You can customize this letter further by editing the generated text or create multiple versions for different job applications.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    input, select, textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+</style>
+{% endblock %}

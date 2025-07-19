@@ -1,14 +1,107 @@
 {% extends "builder/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+.hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("{% static 'builder/images/cover.image.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    position: relative;
+    margin-top: 0;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-    <h2>Welcome to the CV & Cover Letter Builder!</h2>
-    <p>
-        Create, edit, and manage your CVs and generate tailored cover letters using AI.<br>
-        Use the navigation above to get started.
-    </p>
-    <ul>
-        <li><strong>Create CV:</strong> Add your personal and professional details.</li>
-        <li><strong>Generate Cover Letter:</strong> Let AI help you write a cover letter for your next job application.</li>
-        <li><strong>Download:</strong> Export your documents as PDF.</li>
-    </ul>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Build Your Professional Future</h1>
+        <p class="hero-subtitle">Create stunning CVs and compelling cover letters that land interviews</p>
+        <div class="hero-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_cv' %}" class="btn btn-primary">Start Building</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">View Dashboard</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary">Get Started Free</a>
+                <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose Our Builder?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>AI-Powered</h3>
+                <p>Generate tailored cover letters using advanced AI technology that matches your skills to job requirements</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Professional Templates</h3>
+                <p>Choose from industry-tested CV and cover letter templates that make you stand out</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Quick & Easy</h3>
+                <p>Create a complete application package in minutes, not hours. Simple, intuitive interface</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <h3>ATS Optimized</h3>
+                <p>Our templates are optimized to pass Applicant Tracking Systems and get you noticed</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>10,000+</h3>
+                <p>Successful Applications</p>
+            </div>
+            <div class="stat-item">
+                <h3>95%</h3>
+                <p>Interview Success Rate</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Industry Templates</p>
+            </div>
+            <div class="stat-item">
+                <h3>24/7</h3>
+                <p>Support Available</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to Transform Your Career?</h2>
+        <p>Join thousands of professionals who've landed their dream jobs with our builder</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'create_cv' %}" class="btn btn-primary btn-large">Create Your CV Now</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary btn-large">Start Free Today</a>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

@@ -16,13 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from builder import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.dashboard, name='dashboard'),
-    path('create/', views.create_cv, name='create_cv'),
-    path('generate-letter/', views.generate_cover_letter, name='generate_cover_letter'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('home/', views.home, name='home'),
+    path('accounts/register/', views.register, name='register'),
+    path('', include('builder.urls')),
+    path('', include('builder.enhanced_urls')),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
