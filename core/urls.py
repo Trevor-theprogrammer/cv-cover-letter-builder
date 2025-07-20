@@ -25,7 +25,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/register/', views.register, name='register'),
     path('', include('builder.urls')),
-    path('', include('builder.enhanced_urls')),
 ]
 
 # Serve media files in development

@@ -23,43 +23,52 @@ A comprehensive Django web application for creating professional CVs and generat
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd cv-cover-letter-builder
    ```
 
 2. **Create virtual environment**
+
    ```bash
    python -m venv env
    source env/bin/activate  # On Windows: env\Scripts\activate
    ```
 
 3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    ```
+
    Edit `.env` file with your actual API keys:
+
    ```
    OPENAI_API_KEY=your-openai-api-key
    SECRET_KEY=your-django-secret-key
    ```
 
 5. **Run migrations**
+
    ```bash
    python manage.py migrate
    ```
 
 6. **Create superuser (optional)**
+
    ```bash
    python manage.py createsuperuser
    ```
 
 7. **Start the development server**
+
    ```bash
    python manage.py runserver
    ```
@@ -89,6 +98,7 @@ SECRET_KEY=your-secret-key-here
 ## Usage
 
 ### For Users
+
 1. **Register/Login**: Create an account or log in
 2. **Create CV**: Build a new CV from scratch
 3. **Upload CV**: Upload existing PDF/DOCX files for analysis
@@ -97,6 +107,7 @@ SECRET_KEY=your-secret-key-here
 6. **Browse Templates**: Use professional templates
 
 ### For Developers
+
 - **Admin Panel**: Access Django admin at `/admin/`
 - **Database**: SQLite by default (configurable for production)
 - **Static Files**: Served from `/static/` directory
@@ -113,7 +124,6 @@ cv-cover-letter-builder/
 │   ├── urls.py             # URL patterns
 │   ├── ai_services.py      # OpenAI integration
 │   ├── file_handlers.py    # File processing utilities
-│   └── cv_analyzer.py      # CV analysis logic
 ├── templates/              # HTML templates
 ├── static/                 # CSS, JS, images
 ├── media/                  # Uploaded files
@@ -137,6 +147,7 @@ cv-cover-letter-builder/
 ## Testing
 
 Run the test suite:
+
 ```bash
 python manage.py test
 ```

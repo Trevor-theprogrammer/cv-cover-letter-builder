@@ -1,107 +1,153 @@
-{% extends "builder/base.html" %}
-{% load static %}
-
-{% block extra_css %}
-<style>
-.hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("{% static 'builder/images/cover.image.jpg' %}");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    position: relative;
-    margin-top: 0;
-}
-</style>
-{% endblock %}
-
-{% block content %}
+{% extends 'builder/base.html' %} {% load static %} {% block title %}CV Builder
+Pro - Create Professional CVs & Cover Letters{% endblock %} {% block content %}
 <!-- Hero Section -->
 <section class="hero">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="hero-title">Build Your Professional Future</h1>
-        <p class="hero-subtitle">Create stunning CVs and compelling cover letters that land interviews</p>
-        <div class="hero-buttons">
-            {% if user.is_authenticated %}
-                <a href="{% url 'create_cv' %}" class="btn btn-primary">Start Building</a>
-                <a href="{% url 'dashboard' %}" class="btn btn-secondary">View Dashboard</a>
-            {% else %}
-                <a href="{% url 'register' %}" class="btn btn-primary">Get Started Free</a>
-                <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
-            {% endif %}
-        </div>
+  <div class="container">
+    <h1>Create Your Professional CV in Minutes</h1>
+    <p>
+      Build a job-winning CV with our AI-powered builder. Get hired faster with
+      professionally designed templates.
+    </p>
+    <div class="cta-buttons">
+      <a href="{% url 'create_cv' %}" class="btn-large btn-white">
+        <i class="fas fa-rocket me-2"></i>Create Your CV
+      </a>
+      <a href="{% url 'register' %}" class="btn-large btn-outline">
+        <i class="fas fa-user-plus me-2"></i>Get Started Free
+      </a>
     </div>
+  </div>
 </section>
 
 <!-- Features Section -->
-<section class="features">
-    <div class="container">
-        <h2 class="section-title">Why Choose Our Builder?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>AI-Powered</h3>
-                <p>Generate tailored cover letters using advanced AI technology that matches your skills to job requirements</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📄</div>
-                <h3>Professional Templates</h3>
-                <p>Choose from industry-tested CV and cover letter templates that make you stand out</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Quick & Easy</h3>
-                <p>Create a complete application package in minutes, not hours. Simple, intuitive interface</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💼</div>
-                <h3>ATS Optimized</h3>
-                <p>Our templates are optimized to pass Applicant Tracking Systems and get you noticed</p>
-            </div>
+<section style="padding: 4rem 0; background: var(--bg-white)">
+  <div class="container">
+    <h2
+      style="
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--text-dark);
+      "
+    >
+      Why Choose CV Builder Pro?
+    </h2>
+    <div class="grid grid-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-robot"></i>
         </div>
+        <h3>AI-Powered</h3>
+        <p>
+          Get personalized content suggestions and job-specific optimizations
+          with our advanced AI technology.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-palette"></i>
+        </div>
+        <h3>Professional Templates</h3>
+        <p>
+          Choose from 20+ ATS-friendly templates designed by HR experts to make
+          your CV stand out.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-download"></i>
+        </div>
+        <h3>Instant Download</h3>
+        <p>
+          Download your CV in PDF format instantly. No watermarks, no
+          limitations, ready to send.
+        </p>
+      </div>
     </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section style="padding: 4rem 0; background: var(--bg-light)">
+  <div class="container">
+    <h2
+      style="
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--text-dark);
+      "
+    >
+      How It Works
+    </h2>
+    <div class="progress-steps">
+      <div class="progress-step">
+        <div class="step-number">1</div>
+        <h4>Choose Template</h4>
+        <p>Select from our professional templates</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">2</div>
+        <h4>Add Your Info</h4>
+        <p>Fill in your details with AI assistance</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">3</div>
+        <h4>Customize</h4>
+        <p>Personalize colors, fonts, and layout</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">4</div>
+        <h4>Download</h4>
+        <p>Get your perfect CV instantly</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- Stats Section -->
-<section class="stats">
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3>10,000+</h3>
-                <p>Successful Applications</p>
-            </div>
-            <div class="stat-item">
-                <h3>95%</h3>
-                <p>Interview Success Rate</p>
-            </div>
-            <div class="stat-item">
-                <h3>50+</h3>
-                <p>Industry Templates</p>
-            </div>
-            <div class="stat-item">
-                <h3>24/7</h3>
-                <p>Support Available</p>
-            </div>
-        </div>
+<section
+  style="padding: 3rem 0; background: var(--primary-color); color: white"
+>
+  <div class="container">
+    <div class="grid grid-4" style="text-align: center">
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">50K+</h3>
+        <p>CVs Created</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">85%</h3>
+        <p>Success Rate</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">20+</h3>
+        <p>Templates</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">24/7</h3>
+        <p>Support</p>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <h2>Ready to Transform Your Career?</h2>
-        <p>Join thousands of professionals who've landed their dream jobs with our builder</p>
-        {% if user.is_authenticated %}
-            <a href="{% url 'create_cv' %}" class="btn btn-primary btn-large">Create Your CV Now</a>
-        {% else %}
-            <a href="{% url 'register' %}" class="btn btn-primary btn-large">Start Free Today</a>
-        {% endif %}
-    </div>
+<section
+  style="padding: 4rem 0; background: var(--bg-white); text-align: center"
+>
+  <div class="container">
+    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-dark)">
+      Ready to Land Your Dream Job?
+    </h2>
+    <p
+      style="font-size: 1.25rem; color: var(--text-light); margin-bottom: 2rem"
+    >
+      Join thousands of professionals who've secured their dream jobs with our
+      CV builder.
+    </p>
+    <a href="{% url 'create_cv' %}" class="btn-large btn-primary">
+      <i class="fas fa-rocket me-2"></i>Start Building Your CV
+    </a>
+  </div>
 </section>
 {% endblock %}

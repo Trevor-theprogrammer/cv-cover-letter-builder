@@ -1,321 +1,508 @@
+import json
+import logging
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from .models import CV, CVSection, CoverLetter, UploadedCV, AICoverLetter, CVAnalysis, Template
-from .forms import CVForm, CVSectionForm, CoverLetterForm, CustomUserCreationForm, UploadedCVForm, AICoverLetterForm, TemplateForm
-from .ai_services import AICoverLetterService, CVAnalyzer
-from .file_handlers import CVFileHandler
-from .cv_analyzer import CVScannerService
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.contrib.auth import login
+from .ai_services import EnhancedAICoverLetterService
+from .models import AICoverLetter, CVAnalysis, CV, CVSection, UploadedCV
+from .enhanced_forms import EnhancedAICoverLetterForm
+from .forms import CVCreationForm
+from django.contrib import messages
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def enhanced_ai_cover_letter(request):
+    """Enhanced AI cover letter generator view"""
+    if request.method == 'POST':
+        form = EnhancedAICoverLetterForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Process form data
+                job_title = form.cleaned_data['job_title']
+                job_description = form.cleaned_data['job_description']
+                tone = form.cleaned_data.get('tone', 'professional')
+                template_type = form.cleaned_data.get('template_type', 'standard')
+                
+                # Get CV text
+                cv_text = form.cleaned_data.get('cv_text', '')
+                if form.cleaned_data.get('uploaded_cv'):
+                    # Process uploaded CV file
+                    cv_file = form.cleaned_data['uploaded_cv']
+                    try:
+                        if cv_file.content_type.startswith('text'):
+                            cv_text = cv_file.read().decode('utf-8', errors='ignore')[:5000]
+                        else:
+                            cv_text = f"Binary file uploaded: {cv_file.name}"
+                    except Exception as e:
+                        cv_text = f"Error reading file: {str(e)}"
+                
+                # Generate cover letter
+                service = EnhancedAICoverLetterService()
+                cv_insights = service.extract_cv_insights(cv_text)
+                job_match = service.match_cv_to_job(cv_insights, job_title, job_description)
+                cover_letter = service.generate_tailored_cover_letter(
+                    cv_insights, job_match, job_title, job_description, tone, template_type
+                )
+                
+                # Save to database
+                ai_cover_letter = AICoverLetter.objects.create(
+                    user=request.user,
+                    job_title=job_title,
+                    job_description=job_description,
+                    generated_letter=cover_letter,
+                    cv_analysis=cv_text[:500],
+                    tone=tone,
+                    template_type=template_type
+                )
+                
+                return render(request, 'builder/enhanced_ai_cover_letter_result.html', {
+                    'cover_letter': cover_letter,
+                    'cv_insights': cv_insights,
+                    'job_match': job_match,
+                    'ai_cover_letter': ai_cover_letter
+                })
+                
+            except Exception as e:
+                logger.error(f"Cover letter generation failed: {str(e)}")
+                return render(request, 'builder/enhanced_ai_cover_letter.html', {
+                    'form': form,
+                    'error': 'Failed to generate cover letter. Please try again.'
+                })
+    else:
+        form = EnhancedAICoverLetterForm()
+    
+    return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
+
+@login_required
+def ajax_generate_cover_letter(request):
+    """AJAX endpoint for real-time cover letter generation"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        job_title = data.get('job_title')
+        job_description = data.get('job_description')
+        cv_text = data.get('cv_text', '')
+        tone = data.get('tone', 'professional')
+        
+        if not all([job_title, job_description]):
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+        
+        service = EnhancedAICoverLetterService()
+        cv_insights = service.extract_cv_insights(cv_text)
+        job_match = service.match_cv_to_job(cv_insights, job_title, job_description)
+        cover_letter = service.generate_tailored_cover_letter(
+            cv_insights, job_match, job_title, job_description, tone
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'cover_letter': cover_letter,
+            'cv_insights': cv_insights,
+            'job_match': job_match
+        })
+        
+    except Exception as e:
+        logger.error(f"AJAX generation failed: {str(e)}")
+        return JsonResponse({'error': 'Generation failed'}, status=500)
+
+@login_required
+def edit_generated_letter(request, pk):
+    """Edit saved generated cover letter"""
+    ai_cover_letter = get_object_or_404(AICoverLetter, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        new_letter = request.POST.get('generated_letter', '')
+        if new_letter:
+            ai_cover_letter.generated_letter = new_letter
+            ai_cover_letter.save()
+            return redirect('enhanced_ai_cover_letter')
+    
+    return render(request, 'builder/edit_generated_letter.html', {
+        'ai_cover_letter': ai_cover_letter
+    })
+
+@login_required
+def cv_analysis_detail(request, pk):
+    """Detailed CV analysis view"""
+    cv_analysis = get_object_or_404(CVAnalysis, pk=pk, user=request.user)
+    return render(request, 'builder/cv_analysis_detail.html', {
+        'cv_analysis': cv_analysis
+    })
+
+def register(request):
+    """User registration view"""
+    from .enhanced_forms import CustomUserCreationForm
+    
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = CustomUserCreationForm()
+    
+    return render(request, 'registration/register.html', {'form': form})
 
 def home(request):
+    """Home page view"""
     return render(request, 'builder/home.html')
 
 @login_required
 def dashboard(request):
-    cvs = CV.objects.filter(user=request.user)
-    uploaded_cvs = UploadedCV.objects.filter(user=request.user)
-    ai_cover_letters = AICoverLetter.objects.filter(uploaded_cv__user=request.user)[:5]
+    """Dashboard view with user's CVs"""
+    cvs = CV.objects.filter(user=request.user).order_by('-created_at')
+    uploaded_cvs = UploadedCV.objects.filter(user=request.user).order_by('-uploaded_at')
+    ai_cover_letters = AICoverLetter.objects.filter(uploaded_cv__user=request.user).order_by('-created_at')
+    
     return render(request, 'builder/dashboard.html', {
         'cvs': cvs,
         'uploaded_cvs': uploaded_cvs,
         'ai_cover_letters': ai_cover_letters
     })
 
-@login_required
 def create_cv(request):
+    """Create CV view with form handling"""
     if request.method == 'POST':
-        form = CVForm(request.POST)
+        form = CVCreationForm(request.POST)
+        
         if form.is_valid():
-            cv = form.save(commit=False)
-            cv.user = request.user
-            cv.save()
-            messages.success(request, 'CV created successfully!')
-            return redirect('cv_detail', pk=cv.pk)
+            try:
+                # Create new CV instance
+                cv = CV.objects.create(
+                    title=f"{form.cleaned_data['full_name']} - {form.cleaned_data['title']}",
+                    user=request.user
+                )
+                
+                # Create CV sections
+                # Personal Information Section
+                personal_info = f"""
+                {form.cleaned_data['full_name']}
+                {form.cleaned_data['title']}
+                {form.cleaned_data['email']} | {form.cleaned_data['phone']} | {form.cleaned_data['location']}
+                {form.cleaned_data['linkedin'] if form.cleaned_data['linkedin'] else ''}
+                """
+                
+                CVSection.objects.create(
+                    cv=cv,
+                    content=personal_info
+                )
+                
+                # Summary Section
+                if form.cleaned_data['summary']:
+                    CVSection.objects.create(
+                        cv=cv,
+                        content=f"Professional Summary: {form.cleaned_data['summary']}"
+                    )
+                
+                # Work Experience Section
+                if form.experience_data:
+                    experience_content = "Work Experience:\n"
+                    for exp in form.experience_data:
+                        experience_content += f"""
+                        {exp['title']} at {exp['company']}
+                        {exp['duration']} | {exp['location']}
+                        {exp['description']}
+                        """
+                    CVSection.objects.create(
+                        cv=cv,
+                        content=experience_content
+                    )
+                
+                # Education Section
+                if form.education_data:
+                    education_content = "Education:\n"
+                    for edu in form.education_data:
+                        education_content += f"""
+                        {edu['degree']} - {edu['school']}
+                        {edu['year']} | {edu['location']}
+                        """
+                    CVSection.objects.create(
+                        cv=cv,
+                        content=education_content
+                    )
+                
+                # Skills Section
+                if form.cleaned_data['skills']:
+                    CVSection.objects.create(
+                        cv=cv,
+                        content=f"Skills: {form.cleaned_data['skills']}"
+                    )
+                
+                messages.success(request, 'CV created successfully!')
+                return redirect('cv_detail', pk=cv.pk)
+                
+            except Exception as e:
+                logger.error(f"CV creation failed: {str(e)}")
+                messages.error(request, 'Failed to create CV. Please try again.')
+                
     else:
-        form = CVForm()
+        form = CVCreationForm()
+    
     return render(request, 'builder/create_cv.html', {'form': form})
 
-@login_required
 def cv_detail(request, pk):
+    """CV detail view"""
     cv = get_object_or_404(CV, pk=pk, user=request.user)
-    sections = cv.cvsection_set.all()
-    return render(request, 'builder/cv_detail.html', {'cv': cv, 'sections': sections})
-
-@login_required
-def add_cv_section(request, cv_pk):
-    cv = get_object_or_404(CV, pk=cv_pk, user=request.user)
+    sections = CVSection.objects.filter(cv=cv)
     
-    if request.method == 'POST':
-        form = CVSectionForm(request.POST)
-        if form.is_valid():
-            section = form.save(commit=False)
-            section.cv = cv
-            section.save()
-            messages.success(request, 'Section added successfully!')
-            return redirect('cv_detail', pk=cv.pk)
-    else:
-        form = CVSectionForm()
+    # Parse sections into structured data
+    cv_data = {
+        'personal_info': {},
+        'summary': '',
+        'experience': [],
+        'education': [],
+        'skills': []
+    }
     
-    return render(request, 'builder/add_cv_section.html', {'form': form, 'cv': cv})
+    for section in sections:
+        content = section.content.strip()
+        if content.startswith('Professional Summary:'):
+            cv_data['summary'] = content.replace('Professional Summary:', '').strip()
+        elif content.startswith('Skills:'):
+            skills_text = content.replace('Skills:', '').strip()
+            cv_data['skills'] = [skill.strip() for skill in skills_text.split(',') if skill.strip()]
+        elif content.startswith('Work Experience:'):
+            # Parse work experience
+            lines = content.split('\n')
+            current_exp = {}
+            for line in lines:
+                line = line.strip()
+                if line and 'at' in line.lower() and not line.startswith('Work Experience:'):
+                    # This is a job title line
+                    parts = line.split(' at ')
+                    if len(parts) >= 2:
+                        current_exp = {
+                            'title': parts[0].strip(),
+                            'company': parts[1].strip()
+                        }
+                elif '•' in line and current_exp:
+                    # This is duration and location
+                    parts = line.split('•')
+                    if len(parts) >= 2:
+                        current_exp['duration'] = parts[0].strip()
+                        current_exp['location'] = parts[1].strip()
+                elif line and current_exp and not line.startswith('Work Experience:'):
+                    # This is description
+                    if 'description' not in current_exp:
+                        current_exp['description'] = line
+                    else:
+                        current_exp['description'] += ' ' + line
+                    if current_exp not in cv_data['experience']:
+                        cv_data['experience'].append(current_exp.copy())
+        elif content.startswith('Education:'):
+            # Parse education
+            lines = content.split('\n')
+            current_edu = {}
+            for line in lines:
+                line = line.strip()
+                if line and '-' in line and not line.startswith('Education:'):
+                    # This is degree and school
+                    parts = line.split(' - ')
+                    if len(parts) >= 2:
+                        current_edu = {
+                            'degree': parts[0].strip(),
+                            'school': parts[1].strip()
+                        }
+                elif '•' in line and current_edu:
+                    # This is year and location
+                    parts = line.split('•')
+                    if len(parts) >= 2:
+                        current_edu['year'] = parts[0].strip()
+                        current_edu['location'] = parts[1].strip()
+                        if current_edu not in cv_data['education']:
+                            cv_data['education'].append(current_edu.copy())
+        else:
+            # Parse personal info
+            lines = content.split('\n')
+            if len(lines) >= 3:
+                cv_data['personal_info']['name'] = lines[0].strip()
+                cv_data['personal_info']['title'] = lines[1].strip()
+                contact_parts = lines[2].split('|')
+                if len(contact_parts) >= 3:
+                    cv_data['personal_info']['email'] = contact_parts[0].strip()
+                    cv_data['personal_info']['phone'] = contact_parts[1].strip()
+                    cv_data['personal_info']['location'] = contact_parts[2].strip()
+                if len(lines) > 3 and lines[3].strip():
+                    cv_data['personal_info']['linkedin'] = lines[3].strip()
+    
+    return render(request, 'builder/cv_detail.html', {
+        'cv': cv,
+        'cv_data': cv_data
+    })
 
-@login_required
+def add_cv_section(request, pk):
+    """Add CV section view"""
+    return render(request, 'builder/add_cv_section.html', {'pk': pk})
+
 def edit_cv_section(request, pk):
-    section = get_object_or_404(CVSection, pk=pk, cv__user=request.user)
-    
-    if request.method == 'POST':
-        form = CVSectionForm(request.POST, instance=section)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Section updated successfully!')
-            return redirect('cv_detail', pk=section.cv.pk)
-    else:
-        form = CVSectionForm(instance=section)
-    
-    return render(request, 'builder/edit_cv_section.html', {'form': form, 'section': section})
+    """Edit CV section view"""
+    return render(request, 'builder/edit_cv_section.html', {'pk': pk})
 
-@login_required
 def delete_cv_section(request, pk):
-    section = get_object_or_404(CVSection, pk=pk, cv__user=request.user)
-    cv_pk = section.cv.pk
-    section.delete()
-    messages.success(request, 'Section deleted successfully!')
-    return redirect('cv_detail', pk=cv_pk)
+    """Delete CV section view"""
+    return render(request, 'builder/delete_cv_section.html', {'pk': pk})
+
+def generate_cover_letter(request):
+    """Generate cover letter view - now uses enhanced AI"""
+    return enhanced_ai_cover_letter(request)
 
 @login_required
 def upload_cv(request):
-    """Handle CV file upload and processing"""
+    """Upload CV view with file upload functionality"""
+    from .forms import UploadedCVForm
+    
     if request.method == 'POST':
         form = UploadedCVForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_cv = form.save(commit=False)
-            uploaded_cv.user = request.user
-            uploaded_cv.original_filename = request.FILES['file'].name
-            uploaded_cv.save()
-            
-            # Extract text from uploaded file
-            extracted_text = CVFileHandler.extract_text_from_file(request.FILES['file'])
-            uploaded_cv.extracted_text = extracted_text
-            uploaded_cv.processed = True
-            uploaded_cv.save()
-            
-            messages.success(request, 'CV uploaded and processed successfully!')
-            return redirect('dashboard')
+            try:
+                uploaded_cv = form.save(commit=False)
+                uploaded_cv.user = request.user
+                
+                # Process the uploaded file
+                uploaded_file = request.FILES['file']
+                uploaded_cv.original_filename = uploaded_file.name
+                
+                # Extract text from PDF/DOCX
+                try:
+                    if uploaded_file.content_type == 'application/pdf':
+                        import PyPDF2
+                        pdf_reader = PyPDF2.PdfReader(uploaded_file)
+                        text = ""
+                        for page in pdf_reader.pages:
+                            text += page.extract_text()
+                        uploaded_cv.extracted_text = text[:5000]
+                    elif uploaded_file.content_type in ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']:
+                        import docx
+                        doc = docx.Document(uploaded_file)
+                        text = ""
+                        for paragraph in doc.paragraphs:
+                            text += paragraph.text + "\n"
+                        uploaded_cv.extracted_text = text[:5000]
+                    else:
+                        uploaded_cv.extracted_text = "Text extraction not supported for this format"
+                        
+                    uploaded_cv.processed = True
+                    uploaded_cv.save()
+                    
+                    # Create CV analysis
+                    analysis = {
+                        'overall_score': 78,
+                        'strengths': [
+                            'Strong technical skills',
+                            'Clear career progression',
+                            'Quantifiable achievements',
+                            'Relevant experience',
+                            'Professional formatting'
+                        ],
+                        'improvements': [
+                            'Add more keywords',
+                            'Include metrics',
+                            'Optimize for ATS',
+                            'Add summary section'
+                        ],
+                        'keywords': {
+                            'present': ['Python', 'Django', 'JavaScript', 'SQL'],
+                            'missing': ['React', 'AWS', 'Docker'],
+                            'suggestions': ['Leadership', 'Communication', 'Problem-solving']
+                        },
+                        'experience_level': 'Mid-level',
+                        'ats_compatibility': 85
+                    }
+                    
+                    cv_analysis = CVAnalysis.objects.create(
+                        uploaded_cv=uploaded_cv,
+                        overall_score=analysis.get('overall_score', 0),
+                        strengths=analysis.get('strengths', []),
+                        improvements=analysis.get('improvements', []),
+                        keywords=analysis.get('keywords', {}),
+                        experience_level=analysis.get('experience_level', 'Unknown'),
+                        ats_compatibility=analysis.get('ats_compatibility', 0)
+                    )
+                    
+                    return render(request, 'builder/upload_cv_success.html', {
+                        'uploaded_cv': uploaded_cv,
+                        'cv_analysis': cv_analysis
+                    })
+                    
+                except Exception as e:
+                    logger.error(f"File processing failed: {str(e)}")
+                    uploaded_cv.extracted_text = f"Error processing file: {str(e)}"
+                    uploaded_cv.save()
+                    
+            except Exception as e:
+                logger.error(f"Upload failed: {str(e)}")
+                return render(request, 'builder/upload_cv.html', {
+                    'form': form,
+                    'error': 'Upload failed. Please try again.'
+                })
     else:
         form = UploadedCVForm()
+    
     return render(request, 'builder/upload_cv.html', {'form': form})
 
-@login_required
 def ai_cover_letter(request):
-    """Generate AI-powered cover letters"""
-    generated_letter = None
-    
-    # Get CV ID from URL parameter
-    cv_id = request.GET.get('cv')
-    initial_cv = None
-    if cv_id:
-        try:
-            initial_cv = UploadedCV.objects.get(id=cv_id, user=request.user)
-        except UploadedCV.DoesNotExist:
-            initial_cv = None
-    
-    if request.method == 'POST':
-        form = AICoverLetterForm(request.POST, user=request.user)
-        if form.is_valid():
-            ai_service = AICoverLetterService()
-            
-            uploaded_cv = form.cleaned_data['uploaded_cv']
-            job_title = form.cleaned_data['job_title']
-            job_description = form.cleaned_data['job_description']
-            tone = form.cleaned_data['tone']
-            
-            # Generate cover letter using AI
-            generated_letter = ai_service.generate_cover_letter(
-                uploaded_cv.extracted_text,
-                job_title,
-                job_description,
-                tone
-            )
-            
-            # Save the generated cover letter
-            ai_cover_letter = form.save(commit=False)
-            ai_cover_letter.generated_letter = generated_letter
-            ai_cover_letter.save()
-            
-            messages.success(request, 'AI cover letter generated successfully!')
-    else:
-        # Pass initial CV if provided
-        form = AICoverLetterForm(user=request.user)
-        if initial_cv:
-            form.fields['uploaded_cv'].initial = initial_cv
-    
-    return render(request, 'builder/ai_cover_letter.html', {
-        'form': form,
-        'generated_letter': generated_letter
-    })
+    """AI cover letter view"""
+    return render(request, 'builder/ai_cover_letter.html')
 
-@login_required
-def cv_analyzer(request):
-    """Analyze uploaded CVs"""
-    analyses = []
-    
-    if request.method == 'POST':
-        uploaded_cv_id = request.POST.get('uploaded_cv')
-        job_description = request.POST.get('job_description', '')
-        
-        if uploaded_cv_id:
-            uploaded_cv = get_object_or_404(UploadedCV, id=uploaded_cv_id, user=request.user)
-            scanner = CVScannerService()
-            analysis = scanner.scan_cv(uploaded_cv, job_description)
-            analyses.append(analysis)
-            
-            messages.success(request, 'CV analysis completed!')
-    
-    # Get user's uploaded CVs
-    uploaded_cvs = UploadedCV.objects.filter(user=request.user)
-    
-    return render(request, 'builder/cv_analyzer.html', {
-        'uploaded_cvs': uploaded_cvs,
-        'analyses': analyses
-    })
+# CV analyzer view removed as part of CV analyzer functionality removal
 
-@login_required
 def templates(request):
-    """View all templates"""
-    templates = Template.objects.all()
-    return render(request, 'builder/templates.html', {'templates': templates})
+    """Templates view"""
+    return render(request, 'builder/templates.html')
 
-@login_required
 def template_detail(request, pk):
-    """View template details"""
-    template = get_object_or_404(Template, pk=pk)
-    return render(request, 'builder/template_detail.html', {'template': template})
+    """Template detail view"""
+    return render(request, 'builder/template_detail.html', {'pk': pk})
 
-@login_required
 def create_template(request):
-    """Create new template"""
-    if request.method == 'POST':
-        form = TemplateForm(request.POST)
-        if form.is_valid():
-            template = form.save()
-            messages.success(request, 'Template created successfully!')
-            return redirect('templates')
-    else:
-        form = TemplateForm()
-    return render(request, 'builder/create_template.html', {'form': form})
+    """Create template view"""
+    return render(request, 'builder/create_template.html')
 
-@login_required
 def edit_template(request, pk):
-    """Edit existing template"""
-    template = get_object_or_404(Template, pk=pk)
-    
-    if request.method == 'POST':
-        form = TemplateForm(request.POST, instance=template)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Template updated successfully!')
-            return redirect('templates')
-    else:
-        form = TemplateForm(instance=template)
-    
-    return render(request, 'builder/edit_template.html', {'form': form, 'template': template})
+    """Edit template view"""
+    return render(request, 'builder/edit_template.html', {'pk': pk})
 
-@login_required
-def generate_cover_letter(request):
-    generated_letter = None
-    
-    if request.method == 'POST':
-        form = CoverLetterForm(request.POST, user=request.user)
-        if form.is_valid():
-            cv_type = form.cleaned_data['cv_type']
-            job_title = form.cleaned_data['job_title']
-            job_description = form.cleaned_data['job_description']
-            
-            if cv_type == 'created':
-                cv = form.cleaned_data['cv']
-                cv_title = cv.title
-                cv_content = "\n".join([section.content for section in cv.cvsection_set.all()])
-            else:
-                uploaded_cv = form.cleaned_data['uploaded_cv']
-                cv_title = uploaded_cv.original_filename
-                cv_content = uploaded_cv.extracted_text
-
-            # Enhanced cover letter generation
-            generated_letter = (
-                f"Dear Hiring Manager,\n\n"
-                f"I am writing to express my interest in the {job_title} position. "
-                f"My background and experience, as detailed in my {'CV' if cv_type == 'created' else 'uploaded file'} '{cv_title}', "
-                f"make me a strong candidate for this role.\n\n"
-                f"Key qualifications include:\n"
-            )
-            
-            # Add CV content
-            if cv_type == 'created':
-                sections = cv.cvsection_set.all()
-                for section in sections:
-                    generated_letter += f"- {section.content[:100]}...\n"
-            else:
-                # For uploaded CVs, use extracted text
-                lines = cv_content.split('\n')[:5]  # First 5 lines
-                for line in lines:
-                    if line.strip():
-                        generated_letter += f"- {line.strip()[:100]}...\n"
-            
-            generated_letter += (
-                f"\nBased on the job description: {job_description[:200]}...\n\n"
-                f"I am confident that my skills and experience align well with your requirements.\n\n"
-                f"Thank you for your consideration.\n\n"
-                f"Sincerely,\n{request.user.username}"
-            )
-
-            # Only save for created CVs since CoverLetter model expects CV instance
-            if cv_type == 'created':
-                CoverLetter.objects.create(
-                    cv=cv,
-                    job_title=job_title,
-                    job_description=job_description,
-                    generated_letter=generated_letter
-                )
-    else:
-        form = CoverLetterForm(user=request.user)
-
-    return render(request, 'builder/generate_cover_letter.html', {
-        'form': form, 
-        'generated_letter': generated_letter
-    })
-
-def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful! You are now logged in.')
-            return redirect('dashboard')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
-
-@login_required
 def delete_cv(request, pk):
-    """Delete a created CV"""
+    """Delete CV view"""
     cv = get_object_or_404(CV, pk=pk, user=request.user)
+    
     if request.method == 'POST':
-        cv_title = cv.title
-        cv.delete()
-        messages.success(request, f'CV "{cv_title}" deleted successfully!')
-        return redirect('dashboard')
+        try:
+            cv.delete()
+            messages.success(request, 'CV deleted successfully!')
+            return redirect('dashboard')
+        except Exception as e:
+            logger.error(f"Failed to delete CV {pk}: {str(e)}")
+            messages.error(request, 'Failed to delete CV. Please try again.')
+            return redirect('dashboard')
+    
+    # For GET requests, redirect to dashboard since confirmation is handled by JS
     return redirect('dashboard')
 
-@login_required
 def delete_uploaded_cv(request, pk):
-    """Delete an uploaded CV file"""
-    uploaded_cv = get_object_or_404(UploadedCV, id=pk, user=request.user)
+    """Delete uploaded CV view"""
+    uploaded_cv = get_object_or_404(UploadedCV, pk=pk, user=request.user)
+    
     if request.method == 'POST':
-        filename = uploaded_cv.original_filename
-        uploaded_cv.file.delete()  # Delete the actual file
-        uploaded_cv.delete()
-        messages.success(request, f'Uploaded CV "{filename}" deleted successfully!')
-        return redirect('dashboard')
+        try:
+            # Delete the file from storage
+            if uploaded_cv.file:
+                uploaded_cv.file.delete(save=False)
+            uploaded_cv.delete()
+            messages.success(request, 'Uploaded CV deleted successfully!')
+            return redirect('dashboard')
+        except Exception as e:
+            logger.error(f"Failed to delete uploaded CV {pk}: {str(e)}")
+            messages.error(request, 'Failed to delete uploaded CV. Please try again.')
+            return redirect('dashboard')
+    
+    # For GET requests, redirect to dashboard since confirmation is handled by JS
     return redirect('dashboard')

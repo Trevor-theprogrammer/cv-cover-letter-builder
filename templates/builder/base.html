@@ -1,92 +1,107 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CV & Cover Letter Builder - Build Your Professional Future</title>
-    <link rel="stylesheet" href="{% static 'builder/css/professional-styles.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="{% static 'builder/css/cvmaker-style.css' %}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     {% block extra_css %}{% endblock %}
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="container">
-            <h1>Professional Builder</h1>
-            <nav>
-                <a href="{% url 'home' %}">Home</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="{% url 'create_cv' %}">Create CV</a>
-                    <a href="{% url 'generate_cover_letter' %}">Cover Letter</a>
-                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" style="background: none; border: none; color: rgba(255,255,255,0.8); cursor: pointer; font: inherit; padding: 0.5rem 1rem;">Logout</button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}">Sign In</a>
-                    <a href="{% url 'register' %}" class="btn-primary" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;">Get Started</a>
-                {% endif %}
-            </nav>
-        </div>
+      <div class="container">
+        <h1>CV Builder Pro</h1>
+        <nav>
+          <a href="{% url 'home' %}">Home</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}">Dashboard</a>
+          <a href="{% url 'create_cv' %}">Create CV</a>
+          <a href="{% url 'generate_cover_letter' %}">Cover Letter</a>
+          <a href="{% url 'upload_cv' %}">Upload CV</a>
+          <a href="{% url 'templates' %}">Templates</a>
+          <form
+            action="{% url 'logout' %}"
+            method="post"
+            style="display: inline"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline">Logout</button>
+          </form>
+          {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+          <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+          {% endif %}
+        </nav>
+      </div>
     </header>
-    
+
     <main>
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% block content %}{% endblock %}
+      {% if messages %}
+      <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% block content %}{% endblock %}
     </main>
-    
-    <footer style="background: #0a0a0a; color: #ffffff; padding: 3rem 0 2rem; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1);">
-        <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-                <div>
-                    <h3 style="color: #667eea; margin-bottom: 1rem; font-size: 1.2rem;">Professional Builder</h3>
-                    <p style="color: rgba(255,255,255,0.7); line-height: 1.6;">
-                        Create stunning CVs and compelling cover letters that land you interviews. Your professional future starts here.
-                    </p>
-                </div>
-                
-                <div>
-                    <h4 style="color: #ffffff; margin-bottom: 1rem;">Quick Links</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="{% url 'home' %}" style="color: rgba(255,255,255,0.7); text-decoration: none;">Home</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="{% url 'create_cv' %}" style="color: rgba(255,255,255,0.7); text-decoration: none;">Create CV</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="{% url 'generate_cover_letter' %}" style="color: rgba(255,255,255,0.7); text-decoration: none;">Cover Letters</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 style="color: #ffffff; margin-bottom: 1rem;">Features</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><span style="color: rgba(255,255,255,0.7);">AI-Powered Generation</span></li>
-                        <li style="margin-bottom: 0.5rem;"><span style="color: rgba(255,255,255,0.7);">Professional Templates</span></li>
-                        <li style="margin-bottom: 0.5rem;"><span style="color: rgba(255,255,255,0.7);">Instant Download</span></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 style="color: #ffffff; margin-bottom: 1rem;">Support</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><span style="color: rgba(255,255,255,0.7);">help@probuilder.com</span></li>
-                        <li style="margin-bottom: 0.5rem;"><span style="color: rgba(255,255,255,0.7);">24/7 Support</span></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; text-align: center;">
-                <p style="color: rgba(255,255,255,0.5); margin: 0;">
-                    © 2024 Professional Builder. All rights reserved. Built with ❤️ for job seekers.
-                </p>
-            </div>
+
+    <footer>
+      <div class="container">
+        <div class="grid grid-4">
+          <div>
+            <h3>CV Builder Pro</h3>
+            <p>
+              Create stunning CVs and compelling cover letters that land you
+              interviews. Your professional future starts here.
+            </p>
+          </div>
+          <div>
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="{% url 'create_cv' %}">Create CV</a></li>
+              <li>
+                <a href="{% url 'generate_cover_letter' %}">Cover Letter</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4>Features</h4>
+            <ul>
+              <li>AI-Powered Generation</li>
+              <li>Professional Templates</li>
+              <li>Instant Download</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Support</h4>
+            <ul>
+              <li>help@cvbuilderpro.com</li>
+              <li>24/7 Support</li>
+            </ul>
+          </div>
         </div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+          "
+        >
+          <p>&copy; 2024 CV Builder Pro. All rights reserved.</p>
+        </div>
+      </div>
     </footer>
-    
+
     <script src="{% static 'builder/js/scripts.js' %}"></script>
-</body>
+  </body>
 </html>

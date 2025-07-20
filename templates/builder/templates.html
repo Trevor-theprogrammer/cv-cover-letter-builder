@@ -1,74 +1,91 @@
-{% extends 'builder/base.html' %}
-{% load static %}
+{% extends 'builder/base.html' %} {% load static %} {% block title %}CV
+Templates - CV Builder Pro{% endblock %} {% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">CV Templates</h1>
+      <p class="text-muted mb-4">
+        Choose from our professionally designed templates to create your perfect
+        CV
+      </p>
 
-{% block title %}CV Templates{% endblock %}
-
-{% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>
-                    <i class="fas fa-file-alt me-2"></i>CV Templates
-                </h1>
-                {% if user.is_authenticated %}
-                <a href="{% url 'create_template' %}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Create New Template
-                </a>
-                {% endif %}
+      <div class="row">
+        <!-- Modern Template -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Modern</h5>
+              <p class="card-text">
+                Clean and professional design perfect for tech and creative
+                roles
+              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'create_cv' %}" class="btn btn-primary"
+                  >Use Template</a
+                >
+                <small class="text-muted">Popular</small>
+              </div>
             </div>
-            
-            <p class="text-muted mb-4">
-                Browse our collection of professionally designed CV templates to help you create the perfect resume.
-            </p>
-            
-            {% if templates %}
-            <div class="row">
-                {% for template in templates %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        {% if template.preview_image %}
-                        <img src="{{ template.preview_image.url }}" class="card-img-top" alt="{{ template.name }}">
-                        {% else %}
-                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <i class="fas fa-file-alt fa-3x text-white"></i>
-                        </div>
-                        {% endif %}
-                        
-                        <div class="card-body">
-                            <h5 class="card-title">{{ template.name }}</h5>
-                            <p class="card-text text-muted">{{ template.description|truncatewords:20 }}</p>
-                            
-                            <div class="mb-2">
-                                <small class="text-muted">
-                                    <i class="fas fa-tag me-1"></i>{{ template.category }}
-                                </small>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-download me-1"></i>{{ template.download_count }} downloads
-                                </small>
-                            </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <a href="{% url 'template_detail' template.pk %}" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-eye me-1"></i>View Details
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-file-alt fa-5x text-muted mb-3"></i>
-                <h3 class="text-muted">No Templates Available</h3>
-                <p class="text-muted">Templates will be added soon. Check back later!</p>
-            </div>
-            {% endif %}
+          </div>
         </div>
+
+        <!-- Classic Template -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Classic</h5>
+              <p class="card-text">
+                Traditional and elegant design suitable for corporate and
+                academic positions
+              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'create_cv' %}" class="btn btn-primary"
+                  >Use Template</a
+                >
+                <small class="text-muted">Professional</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Minimal Template -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Minimal</h5>
+              <p class="card-text">
+                Simple and focused design that highlights your content
+              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'create_cv' %}" class="btn btn-primary"
+                  >Use Template</a
+                >
+                <small class="text-muted">Clean</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Creative Template -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Creative</h5>
+              <p class="card-text">
+                Stylish and unique design for creative professionals and
+                designers
+              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'create_cv' %}" class="btn btn-primary"
+                  >Use Template</a
+                >
+                <small class="text-muted">Artistic</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

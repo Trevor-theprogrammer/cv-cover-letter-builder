@@ -1,6 +1,6 @@
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
-from builder.ai_services import AICoverLetterGenerator, CVAnalyzer
+from builder.ai_services import AICoverLetterGenerator
 
 
 class AICoverLetterGeneratorTest(TestCase):
@@ -46,33 +46,4 @@ class AICoverLetterGeneratorTest(TestCase):
             self.generator.generate_cover_letter(self.cv_text, "")
 
 
-class CVAnalyzerTest(TestCase):
-    def setUp(self):
-        self.analyzer = CVAnalyzer()
-        self.cv_text = """
-        John Doe
-        Software Developer
-        Experience: 5 years Python, Django, React
-        Skills: Python, Django, JavaScript, SQL
-        Education: BS Computer Science
-        """
-
-    def test_extract_skills(self):
-        skills = self.analyzer.extract_skills(self.cv_text)
-        expected_skills = ['Python', 'Django', 'React', 'JavaScript', 'SQL']
-        for skill in expected_skills:
-            self.assertIn(skill, skills)
-
-    def test_calculate_experience_years(self):
-        experience = self.analyzer.calculate_experience_years(self.cv_text)
-        self.assertEqual(experience, 5)
-
-    def test_extract_contact_info(self):
-        contact_info = self.analyzer.extract_contact_info(self.cv_text)
-        self.assertEqual(contact_info['name'], 'John Doe')
-        self.assertEqual(contact_info['title'], 'Software Developer')
-
-    def test_analyze_empty_cv(self):
-        analysis = self.analyzer.analyze_cv("")
-        self.assertEqual(analysis['skills'], [])
-        self.assertEqual(analysis['experience_years'], 0)
+# CVAnalyzer tests removed as part of CV analyzer functionality removal

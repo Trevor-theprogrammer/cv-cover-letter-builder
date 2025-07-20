@@ -1,30 +1,92 @@
-{% extends 'builder/base.html' %}
-{% load crispy_forms_tags %}
-
-{% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">Upload Your CV</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Supported formats:</strong> PDF, DOCX, DOC
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-upload"></i> Upload CV
-                        </button>
-                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
-                    </form>
-                </div>
+{% extends 'builder/base.html' %} {% load static %} {% block content %}
+<section style="padding: 3rem 0; background: var(--bg-light)">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div
+            class="card-header"
+            style="
+              background: var(--primary-color);
+              color: white;
+              padding: 1.5rem;
+            "
+          >
+            <h3 class="mb-0">
+              <i class="fas fa-cloud-upload-alt me-2"></i>Upload Your CV
+            </h3>
+          </div>
+          <div class="card-body" style="padding: 2rem">
+            {% if error %}
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
             </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <div class="form-group mb-3">
+                <label class="form-label">CV File</label>
+                {{ form.file }}
+                <small class="form-text text-muted">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Supported formats: PDF, DOCX, DOC, TXT (Max 5MB)
+                </small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label">Title</label>
+                {{ form.title }}
+              </div>
+
+              <div class="form-group mb-4">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+              </div>
+
+              <div class="d-grid gap-2 d-md-flex">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i class="fas fa-upload me-2"></i>Upload & Analyze CV
+                </button>
+                <a
+                  href="{% url 'dashboard' %}"
+                  class="btn btn-outline-secondary btn-lg"
+                >
+                  <i class="fas fa-times me-2"></i>Cancel
+                </a>
+              </div>
+            </form>
+          </div>
         </div>
+
+        <div class="mt-4">
+          <div class="card">
+            <div class="card-body">
+              <h5><i class="fas fa-lightbulb me-2"></i>Upload Tips</h5>
+              <ul class="list-unstyled">
+                <li>
+                  <i class="fas fa-check text-success me-2"></i>Use PDF for best
+                  compatibility
+                </li>
+                <li>
+                  <i class="fas fa-check text-success me-2"></i>Include keywords
+                  from job descriptions
+                </li>
+                <li>
+                  <i class="fas fa-check text-success me-2"></i>Add quantifiable
+                  achievements
+                </li>
+                <li>
+                  <i class="fas fa-check text-success me-2"></i>Keep formatting
+                  clean and professional
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 {% endblock %}

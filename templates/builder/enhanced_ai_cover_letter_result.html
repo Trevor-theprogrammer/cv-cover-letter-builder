@@ -1,0 +1,353 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Generated
+Cover Letter{% endblock %} {% block extra_css %}
+<style>
+  .result-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .cover-letter-display {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 60px;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+
+  .insights-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+  .match-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #28a745;
+  }
+
+  .skill-badge {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    margin: 3px;
+    font-size: 0.9rem;
+  }
+
+  .achievement-item {
+    background: #e7f3ff;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+
+  .action-buttons {
+    position: sticky;
+    top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .download-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .analysis-section {
+    margin-top: 40px;
+  }
+
+  .metric-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .metric-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container mt-5 result-container">
+  <div class="text-center mb-5">
+    <h1 class="display-4">Your AI-Generated Cover Letter</h1>
+    <p class="lead">Personalized and optimized for your target position</p>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <!-- Cover Letter Display -->
+      <div class="cover-letter-display">{{ cover_letter }}</div>
+
+      <!-- CV Analysis Section -->
+      <div class="analysis-section">
+        <h3>CV Analysis Insights</h3>
+
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <div class="metric-card">
+              <div class="metric-value">
+                {{ job_match.overall_match_score }}%
+              </div>
+              <div class="metric-label">Job Match Score</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="metric-card">
+              <div class="metric-value">
+                {{ cv_insights.core_skills|length }}
+              </div>
+              <div class="metric-label">Key Skills Identified</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="metric-card">
+              <div class="metric-value">
+                {{ cv_insights.key_achievements|length }}
+              </div>
+              <div class="metric-label">Achievements Highlighted</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills Analysis -->
+        {% if cv_insights.core_skills %}
+        <div class="insights-card">
+          <h5><i class="fas fa-cogs me-2"></i>Core Skills</h5>
+          <div>
+            {% for skill in cv_insights.core_skills %}
+            <span class="skill-badge"
+              >{{ skill.skill }} ({{ skill.proficiency_level }})</span
+            >
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Achievements -->
+        {% if cv_insights.key_achievements %}
+        <div class="insights-card">
+          <h5><i class="fas fa-trophy me-2"></i>Key Achievements</h5>
+          {% for achievement in cv_insights.key_achievements %}
+          <div class="achievement-item">
+            <strong>{{ achievement.achievement }}</strong>
+            <br />
+            <small>{{ achievement.metric }} - {{ achievement.impact }}</small>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Job Matching Details -->
+        {% if job_match.experience_alignment %}
+        <div class="insights-card">
+          <h5><i class="fas fa-chart-line me-2"></i>Experience Alignment</h5>
+          <p>
+            <strong>Alignment Score:</strong> {{
+            job_match.experience_alignment.alignment_score }}/10
+          </p>
+          <p>{{ job_match.experience_alignment.explanation }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Action Buttons Sidebar -->
+      <div class="action-buttons">
+        <h5>Actions</h5>
+
+        <!-- Save Options -->
+        <div class="mb-3">
+          <form method="post" action="{% url 'save_cover_letter' %}">
+            {% csrf_token %}
+            <input
+              type="hidden"
+              name="cover_letter"
+              value="{{ cover_letter }}"
+            />
+            <input
+              type="hidden"
+              name="job_title"
+              value="{{ ai_cover_letter.job_title }}"
+            />
+            <input
+              type="hidden"
+              name="job_description"
+              value="{{ ai_cover_letter.job_description }}"
+            />
+
+            <button type="submit" class="btn btn-success btn-block mb-2">
+              <i class="fas fa-save me-2"></i>Save to My Account
+            </button>
+          </form>
+        </div>
+
+        <!-- Download Options -->
+        <div class="download-options mb-3">
+          <button class="btn btn-outline-primary" onclick="downloadAs('txt')">
+            <i class="fas fa-file-alt me-2"></i>.txt
+          </button>
+          <button class="btn btn-outline-primary" onclick="downloadAs('docx')">
+            <i class="fas fa-file-word me-2"></i>.docx
+          </button>
+          <button class="btn btn-outline-primary" onclick="downloadAs('pdf')">
+            <i class="fas fa-file-pdf me-2"></i>.pdf
+          </button>
+        </div>
+
+        <!-- Edit Options -->
+        <div class="mb-3">
+          <a
+            href="{% url 'edit_generated_letter' ai_cover_letter.pk %}"
+            class="btn btn-outline-warning btn-block"
+          >
+            <i class="fas fa-edit me-2"></i>Edit Letter
+          </a>
+        </div>
+
+        <!-- Regenerate -->
+        <div class="mb-3">
+          <a
+            href="{% url 'enhanced_ai_cover_letter' %}"
+            class="btn btn-outline-secondary btn-block"
+          >
+            <i class="fas fa-redo me-2"></i>Generate Another
+          </a>
+        </div>
+
+        <!-- Share Options -->
+        <div class="mb-3">
+          <button
+            class="btn btn-outline-info btn-block"
+            onclick="copyToClipboard()"
+          >
+            <i class="fas fa-copy me-2"></i>Copy to Clipboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="insights-card">
+        <h5>Quick Stats</h5>
+        <ul class="list-unstyled">
+          <li><strong>Job:</strong> {{ ai_cover_letter.job_title }}</li>
+          <li><strong>Tone:</strong> {{ ai_cover_letter.tone|title }}</li>
+          <li>
+            <strong>Template:</strong> {{ ai_cover_letter.template_type|title }}
+          </li>
+          <li>
+            <strong>Generated:</strong> {{ ai_cover_letter.created_at|date:"M d,
+            Y" }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="insights-card">
+        <h5>Next Steps</h5>
+        <ol class="small">
+          <li>Review and customize the letter</li>
+          <li>Download in your preferred format</li>
+          <li>Save to your account for future use</li>
+          <li>Apply to your target job</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="text-center mt-5">
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">
+      <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+    <a
+      href="{% url 'enhanced_ai_cover_letter' %}"
+      class="btn btn-outline-primary"
+    >
+      <i class="fas fa-plus me-2"></i>Generate Another
+    </a>
+  </div>
+</div>
+
+<!-- JavaScript for functionality -->
+<script>
+  function downloadAs(format) {
+    const coverLetter = `{{ cover_letter|escapejs }}`;
+    const filename = `cover_letter_${new Date().getTime()}.${format}`;
+
+    if (format === 'txt') {
+      const blob = new Blob([coverLetter], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      // For DOCX and PDF, we'll use a server endpoint
+      fetch(
+        `/download-cover-letter/?format=${format}&content=${encodeURIComponent(
+          coverLetter
+        )}`
+      )
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+    }
+  }
+
+  function copyToClipboard() {
+    const coverLetter = `{{ cover_letter }}`;
+    navigator.clipboard.writeText(coverLetter).then(() => {
+      alert('Cover letter copied to clipboard!');
+    });
+  }
+
+  // Print functionality
+  function printCoverLetter() {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Cover Letter - ${new Date().toLocaleDateString()}</title>
+                <style>
+                    body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+                </style>
+            </head>
+            <body>
+                ${`{{ cover_letter|escapejs }}`.replace(/\n/g, '<br>')}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+</script>
+{% endblock %}

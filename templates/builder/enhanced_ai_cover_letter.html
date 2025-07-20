@@ -1,318 +1,153 @@
-{% extends 'builder/base.html' %}
-{% load static %}
+{% extends "builder/base.html" %} {% block content %}
+<div class="container mt-5">
+  <h2>Enhanced AI Cover Letter Generator</h2>
+  <p class="text-muted">
+    Generate a personalized cover letter using advanced AI technology
+  </p>
 
-{% block title %}Enhanced AI Cover Letter Generator{% endblock %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
 
-{% block extra_css %}
-<style>
-    .insights-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .match-score {
-        font-size: 2.5rem;
-        font-weight: bold;
-        text-align: center;
-    }
-    
-    .progress-ring {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .achievement-badge {
-        background: #28a745;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 0.8rem;
-        margin: 2px;
-        display: inline-block;
-    }
-    
-    .skill-tag {
-        background: #007bff;
-        color: white;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        margin: 2px;
-        display: inline-block;
-    }
-    
-    .loading-spinner {
-        display: none;
-    }
-    
-    .letter-preview {
-        background: #f8f9fa;
-        border-left: 4px solid #007bff;
-        padding: 20px;
-        margin: 20px 0;
-        font-family: 'Georgia', serif;
-        line-height: 1.6;
-    }
-    
-    .analysis-section {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        margin: 15px 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">
-                        <i class="fas fa-robot me-2"></i>Enhanced AI Cover Letter Generator
-                    </h2>
-                    <p class="mb-0 mt-2">Create deeply personalized cover letters using advanced CV analysis</p>
-                </div>
-                <div class="card-body">
-                    <form method="post" id="coverLetterForm">
-                        {% csrf_token %}
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.uploaded_cv.id_for_label }}" class="form-label">
-                                        <i class="fas fa-file-alt me-2"></i>Select Your CV
-                                    </label>
-                                    {{ form.uploaded_cv }}
-                                    <small class="form-text text-muted">
-                                        Choose from your uploaded CVs for deep analysis
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.job_title.id_for_label }}" class="form-label">
-                                        <i class="fas fa-briefcase me-2"></i>Job Title
-                                    </label>
-                                    {{ form.job_title }}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.job_description.id_for_label }}" class="form-label">
-                                <i class="fas fa-clipboard-list me-2"></i>Job Description
-                            </label>
-                            {{ form.job_description }}
-                            <small class="form-text text-muted">
-                                Paste the complete job description for optimal matching. Include requirements, responsibilities, and company culture.
-                            </small>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="{{ form.tone.id_for_label }}" class="form-label">
-                                        <i class="fas fa-palette me-2"></i>Writing Tone
-                                    </label>
-                                    {{ form.tone }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="{{ form.template_type.id_for_label }}" class="form-label">
-                                        <i class="fas fa-template me-2"></i>Style Template
-                                    </label>
-                                    {{ form.template_type }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <div class="form-check mt-4">
-                                        {{ form.include_specific_metrics }}
-                                        <label class="form-check-label" for="{{ form.include_specific_metrics.id_for_label }}">
-                                            Include specific metrics
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.company_research.id_for_label }}" class="form-label">
-                                <i class="fas fa-search me-2"></i>Company Research (Optional)
-                            </label>
-                            {{ form.company_research }}
-                            <small class="form-text text-muted">
-                                Add any specific company insights, values, or recent news to personalize further
-                            </small>
-                        </div>
-                        
-                        <div class="d-grid gap-2 d-md-flex">
-                            <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">
-                                <i class="fas fa-magic me-2"></i>Generate Tailored Cover Letter
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" id="previewBtn" style="display: none;">
-                                <i class="fas fa-eye me-2"></i>Preview
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <!-- Loading Spinner -->
-                    <div class="text-center mt-4 loading-spinner" id="loadingSpinner">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Analyzing your CV...</span>
-                        </div>
-                        <p class="mt-2">Analyzing your CV and matching to job requirements...</p>
-                    </div>
-                </div>
+      <div class="col-md-8">
+        <!-- Job Details -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5>Job Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="{{ form.job_title.id_for_label }}" class="form-label"
+                >Job Title *</label
+              >
+              {{ form.job_title }}
             </div>
+            <div class="mb-3">
+              <label
+                for="{{ form.job_description.id_for_label }}"
+                class="form-label"
+                >Job Description *</label
+              >
+              {{ form.job_description }}
+            </div>
+          </div>
         </div>
-        
-        <div class="col-lg-4">
-            <!-- CV Analysis Preview -->
-            {% if cv_insights_json %}
-            <div class="analysis-section">
-                <h5><i class="fas fa-chart-line me-2"></i>CV Analysis</h5>
-                <div class="insights-card">
-                    <div class="match-score">92%</div>
-                    <p class="text-center">Job Match Score</p>
-                </div>
-                
-                <h6>Key Achievements</h6>
-                <div>
-                    {% for achievement in cv_insights.key_achievements|slice:":3" %}
-                    <span class="achievement-badge">{{ achievement.achievement }} ({{ achievement.metric }})</span>
-                    {% endfor %}
-                </div>
-                
-                <h6 class="mt-3">Top Skills</h6>
-                <div>
-                    {% for skill in cv_insights.core_skills|slice:":5" %}
-                    <span class="skill-tag">{{ skill.skill }}</span>
-                    {% endfor %}
-                </div>
+
+        <!-- CV Content -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5>Your CV Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label
+                for="{{ form.uploaded_cv.id_for_label }}"
+                class="form-label"
+                >Select Uploaded CV (Optional)</label
+              >
+              {{ form.uploaded_cv }}
+              <small class="form-text text-muted">
+                Choose from your previously uploaded CVs, or paste your CV
+                content below
+              </small>
             </div>
-            {% endif %}
-            
-            <!-- Tips Section -->
-            <div class="analysis-section">
-                <h5><i class="fas fa-lightbulb me-2"></i>Pro Tips</h5>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-check text-success me-2"></i>Use the complete job description</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Include company research for better personalization</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Try different tone settings</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Review and customize the generated letter</li>
-                </ul>
+
+            <div class="mb-3">
+              <label for="{{ form.cv_text.id_for_label }}" class="form-label"
+                >Or Paste CV Content</label
+              >
+              {{ form.cv_text }}
+              <small class="form-text text-muted">
+                You can either select an uploaded CV above OR paste your CV
+                content here. You don't need to do both.
+              </small>
             </div>
+          </div>
         </div>
+
+        <!-- Styling Options -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5>Styling Options</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="{{ form.tone.id_for_label }}" class="form-label"
+                    >Tone</label
+                  >
+                  {{ form.tone }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label
+                    for="{{ form.template_type.id_for_label }}"
+                    class="form-label"
+                    >Template Style</label
+                  >
+                  {{ form.template_type }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-lg">
+          Generate Cover Letter
+        </button>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5>Tips for Best Results</h5>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled">
+              <li>✅ Provide detailed job description</li>
+              <li>✅ Include your key achievements</li>
+              <li>✅ Mention relevant skills</li>
+              <li>✅ Keep CV content concise</li>
+            </ul>
+
+            <hr />
+
+            <h6>Quick Actions</h6>
+            <a
+              href="{% url 'upload_cv' %}"
+              class="btn btn-outline-primary btn-sm mb-2 w-100"
+              >Upload New CV</a
+            >
+            <a
+              href="{% url 'dashboard' %}"
+              class="btn btn-outline-secondary btn-sm w-100"
+              >View My CVs</a
+            >
+          </div>
+        </div>
+      </div>
     </div>
-    
-    <!-- Generated Letter Section -->
-    {% if generated_letter %}
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-envelope me-2"></i>Your Tailored Cover Letter
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="letter-preview">
-                        <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">{{ generated_letter }}</pre>
-                    </div>
-                    
-                    <div class="mt-3">
-                        <button class="btn btn-primary" onclick="copyToClipboard()">
-                            <i class="fas fa-copy me-2"></i>Copy to Clipboard
-                        </button>
-                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
-                            <i class="fas fa-home me-2"></i>Save to Dashboard
-                        </a>
-                        <button type="button" class="btn btn-outline-primary" onclick="editLetter()">
-                            <i class="fas fa-edit me-2"></i>Edit Letter
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+  </form>
 </div>
 
-<!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Cover Letter</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <textarea id="editLetterText" class="form-control" rows="15">{{ generated_letter|default:'' }}</textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveEditedLetter()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function copyToClipboard() {
-    const text = document.querySelector('.letter-preview pre').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Cover letter copied to clipboard!');
-    });
-}
-
-function editLetter() {
-    const modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-}
-
-function saveEditedLetter() {
-    const editedText = document.getElementById('editLetterText').value;
-    // Here you would typically save via AJAX
-    showToast('Changes saved successfully!');
-    const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-    modal.hide();
-}
-
-function showToast(message) {
-    // Simple toast notification
-    const toast = document.createElement('div');
-    toast.className = 'alert alert-success position-fixed';
-    toast.style.top = '20px';
-    toast.style.right = '20px';
-    toast.style.zIndex = '9999';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
-
-// Real-time generation (optional enhancement)
-document.getElementById('coverLetterForm').addEventListener('submit', function(e) {
-    const generateBtn = document.getElementById('generateBtn');
-    const spinner = document.getElementById('loadingSpinner');
-    
-    generateBtn.disabled = true;
-    spinner.style.display = 'block';
-    
-    // The form will submit normally, but we show loading state
-});
-</script>
+<style>
+  .card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+  }
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  }
+  .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+</style>
 {% endblock %}
