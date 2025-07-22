@@ -24,7 +24,9 @@
           {% if user.is_authenticated %}
           <a href="{% url 'builder:dashboard' %}">Dashboard</a>
           <a href="{% url 'builder:create_cv' %}">Create CV</a>
-          <a href="{% url 'builder:generate_cover_letter' %}">AI Cover Letter</a>
+          <a href="{% url 'builder:generate_cover_letter' %}"
+            >AI Cover Letter</a
+          >
           <a href="{% url 'builder:cover_letter_templates' %}">Templates</a>
           <a href="{% url 'builder:cv_analyzer' %}">CV Analyzer</a>
           <a href="{% url 'builder:upload_cv' %}">Upload CV</a>
@@ -70,7 +72,9 @@
               <li><a href="{% url 'builder:home' %}">Home</a></li>
               <li><a href="{% url 'builder:create_cv' %}">Create CV</a></li>
               <li>
-                <a href="{% url 'builder:generate_cover_letter' %}">Cover Letter</a>
+                <a href="{% url 'builder:generate_cover_letter' %}"
+                  >Cover Letter</a
+                >
               </li>
             </ul>
           </div>

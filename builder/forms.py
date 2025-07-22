@@ -22,11 +22,31 @@ class CustomUserCreationForm(UserCreationForm):
         return user
 
 class UploadedCVForm(forms.ModelForm):
+    title = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., Software Engineer CV'
+        })
+    )
+    
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Brief description of this CV...'
+        })
+    )
+
     class Meta:
         model = UploadedCV
-        fields = ['file']
+        fields = ['file', 'title', 'description']
         widgets = {
-            'file': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.doc,.docx,.txt'})
+            'file': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf,.doc,.docx,.txt'
+            })
         }
 
 class AICoverLetterForm(forms.ModelForm):

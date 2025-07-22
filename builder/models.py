@@ -45,10 +45,13 @@ class UploadedCV(models.Model):
 class AICoverLetter(models.Model):
     """Model for AI-generated cover letters"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    uploaded_cv = models.ForeignKey(UploadedCV, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    uploaded_cv = models.ForeignKey(UploadedCV, on_delete=models.CASCADE, null=True, blank=True)
     job_title = models.CharField(max_length=200)
     job_description = models.TextField()
     generated_letter = models.TextField()
+    cv_analysis = models.TextField(blank=True)
+    template_type = models.CharField(max_length=50, default='standard')
     tone = models.CharField(max_length=20, choices=[
         ('professional', 'Professional'),
         ('creative', 'Creative'),

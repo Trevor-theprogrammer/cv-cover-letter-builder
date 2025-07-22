@@ -179,28 +179,12 @@ Cover Letter{% endblock %} {% block extra_css %}
 
         <!-- Save Options -->
         <div class="mb-3">
-          <form method="post" action="{% url 'save_cover_letter' %}">
-            {% csrf_token %}
-            <input
-              type="hidden"
-              name="cover_letter"
-              value="{{ cover_letter }}"
-            />
-            <input
-              type="hidden"
-              name="job_title"
-              value="{{ ai_cover_letter.job_title }}"
-            />
-            <input
-              type="hidden"
-              name="job_description"
-              value="{{ ai_cover_letter.job_description }}"
-            />
-
-            <button type="submit" class="btn btn-success btn-block mb-2">
-              <i class="fas fa-save me-2"></i>Save to My Account
-            </button>
-          </form>
+          <a
+            href="{% url 'dashboard' %}"
+            class="btn btn-success btn-block mb-2"
+          >
+            <i class="fas fa-save me-2"></i>View Saved Cover Letters
+          </a>
         </div>
 
         <!-- Download Options -->

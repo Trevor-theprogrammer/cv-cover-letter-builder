@@ -3,11 +3,13 @@ import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth import login
 from .ai_services import EnhancedAICoverLetterService
+from .views_upload_cv_optimized import upload_cv_optimized
+from .views_upload_cv_analyzer import upload_cv_analyzer
 from .models import AICoverLetter, CVAnalysis, CV, CVSection, UploadedCV
 from .enhanced_forms import EnhancedAICoverLetterForm
 from .forms import CVCreationForm
@@ -74,11 +76,26 @@ def enhanced_ai_cover_letter(request):
                     'error': 'Failed to generate cover letter. Please try again.'
                 })
     else:
-        form = EnhancedAICoverLetterForm()
+        # Check if CV ID is provided in URL
+        cv_id = request.GET.get('cv_id')
+        initial_data = {}
+        
+        if cv_id:
+            try:
+                uploaded_cv = UploadedCV.objects.get(id=cv_id, user=request.user)
+                initial_data = {
+                    'uploaded_cv': uploaded_cv,
+                    'cv_text': uploaded_cv.extracted_text
+                }
+            except UploadedCV.DoesNotExist:
+                pass
+        
+        form = EnhancedAICoverLetterForm(initial=initial_data)
     
     return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
 
 @login_required
+@csrf_protect
 def ajax_generate_cover_letter(request):
     """AJAX endpoint for real-time cover letter generation"""
     if request.method != 'POST':
@@ -94,12 +111,20 @@ def ajax_generate_cover_letter(request):
         if not all([job_title, job_description]):
             return JsonResponse({'error': 'Missing required fields'}, status=400)
         
+        logger.info(f"Starting AJAX cover letter generation for job: {job_title}")
         service = EnhancedAICoverLetterService()
+        logger.info("AI service initialized for AJAX request")
+        
         cv_insights = service.extract_cv_insights(cv_text)
+        logger.info(f"CV insights extracted: {len(cv_insights.get('skills', []))} skills found")
+        
         job_match = service.match_cv_to_job(cv_insights, job_title, job_description)
+        logger.info("Job matching completed")
+        
         cover_letter = service.generate_tailored_cover_letter(
             cv_insights, job_match, job_title, job_description, tone
         )
+        logger.info(f"Cover letter generated: {len(cover_letter)} characters")
         
         return JsonResponse({
             'success': True,
@@ -152,18 +177,16 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 def home(request):
-    """Home page view"""
-    return render(request, 'builder/home.html')
+    """Home page view - upload only"""
+    return render(request, 'builder/home_upload_only.html')
 
 @login_required
 def dashboard(request):
-    """Dashboard view with user's CVs"""
-    cvs = CV.objects.filter(user=request.user).order_by('-created_at')
-    uploaded_cvs = UploadedCV.objects.filter(user=request.user).order_by('-uploaded_at')
-    ai_cover_letters = AICoverLetter.objects.filter(uploaded_cv__user=request.user).order_by('-created_at')
+    """Dashboard view - upload only"""
+    uploaded_cvs = UploadedCV.objects.select_related('user').filter(user=request.user).order_by('-uploaded_at')
+    ai_cover_letters = AICoverLetter.objects.select_related('uploaded_cv__user').filter(uploaded_cv__user=request.user).order_by('-created_at')
     
-    return render(request, 'builder/dashboard.html', {
-        'cvs': cvs,
+    return render(request, 'builder/dashboard_upload_only.html', {
         'uploaded_cvs': uploaded_cvs,
         'ai_cover_letters': ai_cover_letters
     })
@@ -370,22 +393,40 @@ def upload_cv(request):
                 uploaded_file = request.FILES['file']
                 uploaded_cv.original_filename = uploaded_file.name
                 
-                # Extract text from PDF/DOCX
+                # Validate file security
+                from .file_validators import FileValidator
                 try:
-                    if uploaded_file.content_type == 'application/pdf':
-                        import PyPDF2
-                        pdf_reader = PyPDF2.PdfReader(uploaded_file)
-                        text = ""
-                        for page in pdf_reader.pages:
-                            text += page.extract_text()
-                        uploaded_cv.extracted_text = text[:5000]
-                    elif uploaded_file.content_type in ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']:
-                        import docx
-                        doc = docx.Document(uploaded_file)
-                        text = ""
-                        for paragraph in doc.paragraphs:
-                            text += paragraph.text + "\n"
-                        uploaded_cv.extracted_text = text[:5000]
+                    FileValidator.validate_file(uploaded_file)
+                    actual_mime_type = FileValidator.get_file_type(uploaded_file)
+                except ValidationError as e:
+                    messages.error(request, f"File validation failed: {str(e)}")
+                    return redirect('builder:upload_cv')
+                
+                # Extract text from PDF/DOCX with proper error handling
+                try:
+                    if actual_mime_type == 'application/pdf':
+                        try:
+                            import PyPDF2
+                            pdf_reader = PyPDF2.PdfReader(uploaded_file)
+                            text = ""
+                            for page in pdf_reader.pages:
+                                text += page.extract_text()
+                            uploaded_cv.extracted_text = text[:5000] if text.strip() else "No text found in PDF"
+                        except Exception as pdf_error:
+                            logger.error(f"PDF extraction failed: {str(pdf_error)}")
+                            uploaded_cv.extracted_text = "PDF text extraction failed"
+                            
+                    elif actual_mime_type in ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']:
+                        try:
+                            import docx
+                            doc = docx.Document(uploaded_file)
+                            text = ""
+                            for paragraph in doc.paragraphs:
+                                text += paragraph.text + "\n"
+                            uploaded_cv.extracted_text = text[:5000] if text.strip() else "No text found in document"
+                        except Exception as docx_error:
+                            logger.error(f"DOCX extraction failed: {str(docx_error)}")
+                            uploaded_cv.extracted_text = "Document text extraction failed"
                     else:
                         uploaded_cv.extracted_text = "Text extraction not supported for this format"
                         
@@ -457,6 +498,75 @@ def ai_cover_letter(request):
 def templates(request):
     """Templates view"""
     return render(request, 'builder/templates.html')
+
+def cover_letter_templates(request):
+    """Cover letter templates editor view"""
+    return render(request, 'builder/cover_letter_templates.html')
+
+@login_required
+def cv_analyzer(request):
+    """CV Analyzer view with AI-powered analysis"""
+    if request.method == 'POST':
+        try:
+            cv_file = request.FILES.get('cv_file')
+            if not cv_file:
+                messages.error(request, 'Please upload a CV file.')
+                return render(request, 'builder/cv_analyzer.html')
+            
+            # Validate file
+            from .file_validators import FileValidator
+            try:
+                FileValidator.validate_file(cv_file)
+                actual_mime_type = FileValidator.get_file_type(cv_file)
+            except ValidationError as e:
+                messages.error(request, f"File validation failed: {str(e)}")
+                return render(request, 'builder/cv_analyzer.html')
+            
+            # Extract text from CV
+            cv_text = ""
+            try:
+                if actual_mime_type == 'application/pdf':
+                    import PyPDF2
+                    pdf_reader = PyPDF2.PdfReader(cv_file)
+                    for page in pdf_reader.pages:
+                        cv_text += page.extract_text()
+                elif actual_mime_type in ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']:
+                    import docx
+                    doc = docx.Document(cv_file)
+                    for paragraph in doc.paragraphs:
+                        cv_text += paragraph.text + "\n"
+                else:
+                    messages.error(request, 'Unsupported file format.')
+                    return render(request, 'builder/cv_analyzer.html')
+                    
+                if not cv_text.strip():
+                    messages.error(request, 'No text found in the uploaded file.')
+                    return render(request, 'builder/cv_analyzer.html')
+                    
+            except Exception as e:
+                logger.error(f"Text extraction failed: {str(e)}")
+                messages.error(request, 'Failed to extract text from the CV. Please try a different file.')
+                return render(request, 'builder/cv_analyzer.html')
+            
+            # Analyze CV using AI service
+            logger.info("Starting CV analysis...")
+            service = EnhancedAICoverLetterService()
+            
+            # Get comprehensive analysis
+            analysis_data = service.analyze_cv_comprehensive(cv_text)
+            logger.info("CV analysis completed successfully")
+            
+            return render(request, 'builder/cv_analyzer.html', {
+                'analysis': analysis_data,
+                'cv_text': cv_text[:500] + '...' if len(cv_text) > 500 else cv_text
+            })
+            
+        except Exception as e:
+            logger.error(f"CV analysis failed: {str(e)}")
+            messages.error(request, 'Analysis failed. Please try again.')
+            return render(request, 'builder/cv_analyzer.html')
+    
+    return render(request, 'builder/cv_analyzer.html')
 
 def template_detail(request, pk):
     """Template detail view"""
