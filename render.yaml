@@ -3,7 +3,7 @@ services:
     name: cv-cover-letter-builder
     env: python
     buildCommand: 'cd cv-cover-letter-builder && export PYTHONPATH=$PWD:$PYTHONPATH && pip install -r requirements.txt && python scripts/manage.py migrate && python scripts/manage.py collectstatic --noinput'
-    startCommand: 'cd cv-cover-letter-builder && export PYTHONPATH=$PWD:$PYTHONPATH && gunicorn core.wsgi:application'
+    startCommand: 'cd cv-cover-letter-builder && export PYTHONPATH=$PWD:$PYTHONPATH && python scripts/manage.py runserver 0.0.0.0:$PORT'
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
