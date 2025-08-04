@@ -1,11 +1,9 @@
-{% extends 'builder/base.html' %}
-{% block content %}
-  <h2>Create Account</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-  </form>
-  <p><a href="{% url 'login' %}">Already have an account? Login here</a></p>
-  <p><a href="{% url 'home' %}">Back to Home</a></p>
+{% extends 'builder/base.html' %} {% block content %}
+<h2>Create Account</h2>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Sign Up</button>
+</form>
+<p><a href="{% url 'login' %}">Already have an account? Login here</a></p>
+<p><a href="{% url 'builder:home' %}">Back to Home</a></p>
 {% endblock %}
