@@ -1,92 +1,6 @@
-{% extends 'builder/base.html' %}
-{% block title %}Create an Account - CV & Cover Letter Builder{% endblock %}
-
-{% block extra_css %}
+{% extends 'builder/base.html' %} {% block title %}Create an Account - CV &
+Cover Letter Builder{% endblock %} {% block extra_css %}
 <style>
-  .register-form p {
-    margin-bottom: 1rem;
-  }
-  .register-form label {
-    display: block;
-    margin-bottom: .5rem;
-    font-weight: 600;
-  }
-  .register-form input,
-  .register-form select {
-    display: block;
-    width: 100%;
-    padding: .75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-  }
-  .register-form .helptext {
-      font-size: 0.8rem;
-      color: #6c757d;
-      margin-top: .25rem;
-      display: block;
-  }
-  .register-form ul.errorlist {
-      list-style-type: none;
-      padding: 0;
-      margin: .25rem 0 0;
-      color: #dc3545;
-      font-size: .875em;
-  }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="container mt-5 mb-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white text-center py-3">
-          <h3 class="mb-0">Create Your Account</h3>
-        </div>
-        <div class="card-body p-4">
-          <p class="text-center text-muted mb-4">Join us to build your professional future.</p>
-          <form method="post" class="register-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary btn-lg w-100">Sign Up</button>
-            </div>
-          </form>
-          <hr class="my-4">
-          <div class="text-center">
-            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
-{% extends 'builder/base.html' %}
-
-{% block title %}Create an Account - CV & Cover Letter Builder{% endblock %}
-
-{% block extra_css %}
-<style>
-  .register-container {
-    max-width: 500px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  .register-container h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
   .register-form p {
     margin-bottom: 1rem;
   }
@@ -122,94 +36,8 @@
     color: #dc3545;
     font-size: 0.875em;
   }
-  .register-form button {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #fff;
-    background-color: #007bff;
-    border: 1px solid #007bff;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-  }
-  .register-form button:hover {
-    background-color: #0056b3;
-  }
-  .extra-links {
-    text-align: center;
-    margin-top: 1rem;
-  }
-  .extra-links a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  .extra-links a:hover {
-    text-decoration: underline;
-  }
 </style>
-{% endblock %}
-
-{% block content %}
-<div class="register-container">
-  <h2>Create an Account</h2>
-  <form method="post" class="register-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-  </form>
-  <div class="extra-links">
-    <p><a href="{% url 'login' %}">Already have an account? Login here</a></p>
-    <p><a href="{% url 'builder:home' %}">Back to Home</a></p>
-  </div>
-</div>
-{% endblock %}{% extends 'builder/base.html' %}
-
-{% block title %}Create an Account - CV & Cover Letter Builder{% endblock %}
-
-{% block extra_css %}
-<style>
-  /* Custom styles for the registration form fields rendered by {{ form.as_p }} */
-  .register-form p {
-    margin-bottom: 1rem;
-  }
-  .register-form label {
-    display: block;
-    margin-bottom: .5rem;
-    font-weight: 600;
-  }
-  .register-form input,
-  .register-form select {
-    display: block;
-    width: 100%;
-    padding: .75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-  }
-  .register-form .helptext {
-      font-size: 0.8rem;
-      color: #6c757d;
-      margin-top: .25rem;
-      display: block;
-  }
-  .register-form ul.errorlist {
-      list-style-type: none;
-      padding: 0;
-      margin: .25rem 0 0;
-      color: #dc3545;
-      font-size: .875em;
-  }
-</style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="container mt-5 mb-5">
   <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8">
@@ -218,34 +46,32 @@
           <h3 class="mb-0">Create Your Account</h3>
         </div>
         <div class="card-body p-4">
-          <p class="text-center text-muted mb-4">Join us to build your professional future.</p>
-          
+          <p class="text-center text-muted mb-4">
+            Join us to build your professional future.
+          </p>
+
           <form method="post" class="register-form">
-            {% csrf_token %}
-            
-            {{ form.as_p }}
-            
+            {% csrf_token %} {{ form.as_p }}
+
             <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary btn-lg w-100">Sign Up</button>
+              <button type="submit" class="btn btn-primary btn-lg w-100">
+                Sign Up
+              </button>
             </div>
           </form>
-          
-          <hr class="my-4">
-          
+
+          <hr class="my-4" />
+
           <div class="text-center">
-            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+            <p>
+              Already have an account?
+              <a href="{% url 'login' %}">Login here</a>
+            </p>
+            <p><a href="{% url 'builder:home' %}">Back to Home</a></p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}{% extends 'builder/base.html' %} {% block content %}
-<h2>Create Account</h2>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Sign Up</button>
-</form>
-<p><a href="{% url 'login' %}">Already have an account? Login here</a></p>
-<p><a href="{% url 'builder:home' %}">Back to Home</a></p>
 {% endblock %}
