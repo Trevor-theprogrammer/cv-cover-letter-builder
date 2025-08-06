@@ -10,6 +10,10 @@
       href="{% static 'builder/css/cvmaker-style.css' %}"
     />
     <link
+      rel="stylesheet"
+      href="{% static 'builder/css/responsive.css' %}"
+    />
+    <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
@@ -18,31 +22,36 @@
   <body>
     <header>
       <div class="container">
-        <h1>CV Builder Pro</h1>
-        <nav>
-          <a href="{% url 'builder:home' %}">Home</a>
-          {% if user.is_authenticated %}
-          <a href="{% url 'builder:dashboard' %}">Dashboard</a>
-          <a href="{% url 'builder:create_cv' %}">Create CV</a>
-          <a href="{% url 'builder:generate_cover_letter' %}"
-            >AI Cover Letter</a
-          >
-          <a href="{% url 'builder:cover_letter_templates' %}">Templates</a>
-          <a href="{% url 'builder:cv_analyzer' %}">CV Analyzer</a>
-          <a href="{% url 'builder:upload_cv' %}">Upload CV</a>
-          <form
-            action="{% url 'logout' %}"
-            method="post"
-            style="display: inline"
-          >
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline">Logout</button>
-          </form>
-          {% else %}
-          <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
-          <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
-          {% endif %}
-        </nav>
+        <div class="header-content">
+          <h1>CV Builder Pro</h1>
+          <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+          </button>
+          <nav class="main-nav">
+            <a href="{% url 'builder:home' %}">Home</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'builder:dashboard' %}">Dashboard</a>
+            <a href="{% url 'builder:create_cv' %}">Create CV</a>
+            <a href="{% url 'builder:generate_cover_letter' %}"
+              >AI Cover Letter</a
+            >
+            <a href="{% url 'builder:cover_letter_templates' %}">Templates</a>
+            <a href="{% url 'builder:cv_analyzer' %}">CV Analyzer</a>
+            <a href="{% url 'builder:upload_cv' %}">Upload CV</a>
+            <form
+              action="{% url 'logout' %}"
+              method="post"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+            <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+            {% endif %}
+          </nav>
+        </div>
       </div>
     </header>
 
@@ -108,5 +117,6 @@
     </footer>
 
     <script src="{% static 'builder/js/scripts.js' %}"></script>
+    <script src="{% static 'builder/js/mobile-nav.js' %}"></script>
   </body>
 </html>
