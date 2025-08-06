@@ -68,7 +68,103 @@
   </div>
 </div>
 {% endblock %}
-{% extends 'builder/base.html' %} {% block content %}
+{% extends 'builder/base.html' %}
+
+{% block title %}Create an Account - CV & Cover Letter Builder{% endblock %}
+
+{% block extra_css %}
+<style>
+  .register-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .register-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .register-form p {
+    margin-bottom: 1rem;
+  }
+  .register-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .register-form input,
+  .register-form select {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .register-form .helptext {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    display: block;
+  }
+  .register-form ul.errorlist {
+    list-style-type: none;
+    padding: 0;
+    margin: 0.25rem 0 0;
+    color: #dc3545;
+    font-size: 0.875em;
+  }
+  .register-form button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+  }
+  .register-form button:hover {
+    background-color: #0056b3;
+  }
+  .extra-links {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .extra-links a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  .extra-links a:hover {
+    text-decoration: underline;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+  <h2>Create an Account</h2>
+  <form method="post" class="register-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign Up</button>
+  </form>
+  <div class="extra-links">
+    <p><a href="{% url 'login' %}">Already have an account? Login here</a></p>
+    <p><a href="{% url 'builder:home' %}">Back to Home</a></p>
+  </div>
+</div>
+{% endblock %}{% extends 'builder/base.html' %} {% block content %}
 <h2>Create Account</h2>
 <form method="post">
   {% csrf_token %} {{ form.as_p }}
