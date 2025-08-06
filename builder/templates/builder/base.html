@@ -50,15 +50,26 @@
             <button type="submit" class="btn btn-outline">Logout</button>
           </form>
           {% else %}
+          <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+          <a href="{% url 'register' %}" class="btn btn-outline">Register</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
 
     <main>
       {% if messages %}
-      <div class="container">
+      <div class="container mt-4">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         {% endfor %}
       </div>
-      {% endif %} {% block content %}{% endblock %}
+      {% endif %}
+      
+      {% block content %}{% endblock %}
     </main>
 
     <footer>

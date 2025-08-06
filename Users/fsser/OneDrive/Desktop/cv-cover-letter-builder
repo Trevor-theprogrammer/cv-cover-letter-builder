@@ -1,3 +1,0 @@
-cd C:\Users\fsser\OneDrive\Desktop\cv-cover-letter-builder
-env\Scripts\activate
-python manage.py runserver
