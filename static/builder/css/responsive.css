@@ -1,0 +1,138 @@
+/* Mobile Responsive Styles */
+
+/* Mobile Navigation */
+.mobile-nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.main-nav.active {
+  display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .mobile-nav-toggle {
+    display: block;
+  }
+
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .main-nav.active {
+    display: flex;
+  }
+
+  .main-nav a,
+  .main-nav button {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Responsive Grid */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Responsive Forms */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-control {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Responsive Cards */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  /* Responsive Tables */
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  /* Responsive Buttons */
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Responsive Footer */
+  footer .grid-4 {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  footer ul {
+    padding: 0;
+  }
+
+  footer li {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Large Screen Styles */
+@media (min-width: 1025px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+/* Touch-friendly enhancements */
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
