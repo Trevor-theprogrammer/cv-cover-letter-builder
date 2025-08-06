@@ -1,0 +1,69 @@
+{% extends 'builder/base.html' %} {% block title %}Edit Cover Letter{% endblock
+%} {% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">Edit Generated Cover Letter</h3>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="generated_letter" class="form-label"
+                >Cover Letter Content</label
+              >
+              <textarea
+                class="form-control"
+                id="generated_letter"
+                name="generated_letter"
+                rows="20"
+                style="font-family: 'Times New Roman', serif; line-height: 1.6"
+              >
+{{ ai_cover_letter.generated_letter }}</textarea
+              >
+            </div>
+
+            <div class="mb-3">
+              <small class="text-muted">
+                <strong>Job:</strong> {{ ai_cover_letter.job_title }}<br />
+                <strong>Created:</strong> {{ ai_cover_letter.created_at|date:"M
+                d, Y" }}
+              </small>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a
+                href="{% url 'enhanced_ai_cover_letter' %}"
+                class="btn btn-secondary"
+              >
+                <i class="fas fa-arrow-left me-2"></i>Back
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const textarea = document.getElementById('generated_letter');
+
+    // Auto-resize textarea based on content
+    textarea.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    });
+
+    // Initial resize
+    textarea.style.height = textarea.scrollHeight + 'px';
+  });
+</script>
+{% endblock %}

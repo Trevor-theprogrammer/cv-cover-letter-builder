@@ -1,0 +1,134 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}{{ cv.title
+}} - CV Builder Pro{% endblock %} {% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ cv.title }}</h1>
+        <div>
+          <a href="{% url 'create_cv' %}" class="btn btn-primary"
+            >Create New CV</a
+          >
+          <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"
+            >Back to Dashboard</a
+          >
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <!-- Personal Information -->
+          {% if cv_data.personal_info.name %}
+          <div class="text-center mb-4">
+            <h2 class="mb-1">{{ cv_data.personal_info.name }}</h2>
+            <h4 class="text-primary mb-2">{{ cv_data.personal_info.title }}</h4>
+            <p class="text-muted mb-1">
+              {% if cv_data.personal_info.email %}{{ cv_data.personal_info.email
+              }}{% endif %} {% if cv_data.personal_info.phone %} • {{
+              cv_data.personal_info.phone }}{% endif %} {% if
+              cv_data.personal_info.location %} • {{
+              cv_data.personal_info.location }}{% endif %}
+            </p>
+            {% if cv_data.personal_info.linkedin %}
+            <p class="text-muted">
+              <a
+                href="{{ cv_data.personal_info.linkedin }}"
+                target="_blank"
+                class="text-decoration-none"
+              >
+                {{ cv_data.personal_info.linkedin }}
+              </a>
+            </p>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <!-- Professional Summary -->
+          {% if cv_data.summary %}
+          <div class="mb-4">
+            <h5 class="border-bottom pb-2 mb-3">Professional Summary</h5>
+            <p class="text-muted">{{ cv_data.summary }}</p>
+          </div>
+          {% endif %}
+
+          <!-- Work Experience -->
+          {% if cv_data.experience %}
+          <div class="mb-4">
+            <h5 class="border-bottom pb-2 mb-3">Work Experience</h5>
+            {% for exp in cv_data.experience %}
+            <div class="mb-3">
+              <h6 class="mb-1">{{ exp.title }}</h6>
+              <p class="text-primary mb-1">{{ exp.company }}</p>
+              <p class="text-muted small mb-1">
+                {{ exp.duration }} {% if exp.location %}• {{ exp.location }}{%
+                endif %}
+              </p>
+              {% if exp.description %}
+              <p class="text-muted">{{ exp.description }}</p>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Education -->
+          {% if cv_data.education %}
+          <div class="mb-4">
+            <h5 class="border-bottom pb-2 mb-3">Education</h5>
+            {% for edu in cv_data.education %}
+            <div class="mb-2">
+              <h6 class="mb-1">{{ edu.degree }}</h6>
+              <p class="text-primary mb-1">{{ edu.school }}</p>
+              <p class="text-muted small">
+                {{ edu.year }} {% if edu.location %}• {{ edu.location }}{% endif
+                %}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Skills -->
+          {% if cv_data.skills %}
+          <div class="mb-4">
+            <h5 class="border-bottom pb-2 mb-3">Skills & Expertise</h5>
+            <div class="d-flex flex-wrap gap-2">
+              {% for skill in cv_data.skills %}
+              <span class="badge bg-secondary">{{ skill }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="text-center mt-4">
+            <p class="text-muted small">
+              Created on {{ cv.created_at|date:"F j, Y" }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  h5 {
+    color: #495057;
+    font-weight: 600;
+  }
+
+  .badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+</style>
+{% endblock %}

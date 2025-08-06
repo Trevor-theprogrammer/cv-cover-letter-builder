@@ -1,0 +1,431 @@
+{% extends "builder/base.html" %}
+{% block content %}
+<style>
+.template-editor {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.template-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+.template-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+.template-preview {
+    height: 300px;
+    overflow-y: auto;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    background: white;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.6;
+}
+.editable-template {
+    background: white;
+    border: none;
+    border-radius: 0;
+    padding: 60px 80px;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.8;
+    min-height: 800px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    margin: 20px auto;
+    max-width: 8.5in;
+    position: relative;
+}
+.editable-template::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 80px;
+    right: 80px;
+    height: 1px;
+    background: #e9ecef;
+}
+.editable-field {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 4px 0;
+    min-width: 100px;
+    display: inline-block;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    transition: border-color 0.2s ease;
+}
+.editable-field:hover {
+    border-bottom: 1px solid #dee2e6;
+    background: rgba(102,126,234,0.05);
+}
+.editable-field:focus {
+    outline: none;
+    border-bottom: 2px solid #667eea;
+    background: rgba(102,126,234,0.05);
+}
+.template-actions {
+    position: sticky;
+    top: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.btn-template {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-template:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+    color: white;
+}
+</style>
+
+<div class="template-editor text-white py-5 mb-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-3">📝 Cover Letter Templates</h1>
+            <p class="lead mb-4">Choose from professional templates and customize them to fit your needs</p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row" id="template-selection">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Choose Your Template</h2>
+            <div class="row g-4">
+                <!-- Professional Template -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="template-card card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Professional</h5>
+                            <div class="template-preview" id="preview-professional">
+                                <div>[Your Name]</div>
+                                <div>[Your Address]</div>
+                                <div>[City, State ZIP]</div>
+                                <div>[Email] | [Phone]</div>
+                                <br>
+                                <div>[Date]</div>
+                                <br>
+                                <div>[Hiring Manager Name]</div>
+                                <div>[Company Name]</div>
+                                <div>[Company Address]</div>
+                                <br>
+                                <div>Dear Hiring Manager,</div>
+                                <br>
+                                <div>I am writing to express my strong interest in the [Job Title] position at [Company Name]. With my background in [Your Field], I am confident that I would be a valuable addition to your team.</div>
+                                <br>
+                                <div>In my previous role as [Previous Position], I successfully [Achievement]. This experience has prepared me well for the challenges of this position.</div>
+                                <br>
+                                <div>I am excited about the opportunity to contribute to [Company Name] and look forward to discussing how my skills align with your needs.</div>
+                                <br>
+                                <div>Sincerely,</div>
+                                <div>[Your Name]</div>
+                            </div>
+                            <button class="btn btn-template w-100 mt-3" onclick="selectTemplate('professional')">
+                                Use This Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modern Template -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="template-card card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Modern</h5>
+                            <div class="template-preview" id="preview-modern">
+                                <div><strong>[Your Name]</strong></div>
+                                <div>[Email] • [Phone] • [LinkedIn]</div>
+                                <div>[City, State]</div>
+                                <br>
+                                <div><strong>[Company Name]</strong></div>
+                                <div>Attention: [Hiring Manager]</div>
+                                <div>[Date]</div>
+                                <br>
+                                <div><strong>Subject: Application for [Job Title]</strong></div>
+                                <br>
+                                <div>Hello [Hiring Manager Name],</div>
+                                <br>
+                                <div>I'm excited to apply for the [Job Title] role at [Company Name]. Your company's commitment to [Company Value] aligns perfectly with my passion for [Your Interest].</div>
+                                <br>
+                                <div>Here's what I bring to the table:</div>
+                                <div>• [Key Skill/Achievement 1]</div>
+                                <div>• [Key Skill/Achievement 2]</div>
+                                <div>• [Key Skill/Achievement 3]</div>
+                                <br>
+                                <div>I'd love to discuss how I can contribute to [Company Name]'s continued success.</div>
+                                <br>
+                                <div>Best regards,</div>
+                                <div>[Your Name]</div>
+                            </div>
+                            <button class="btn btn-template w-100 mt-3" onclick="selectTemplate('modern')">
+                                Use This Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Executive Template -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="template-card card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Executive</h5>
+                            <div class="template-preview" id="preview-executive">
+                                <div style="text-align: center;"><strong>[Your Name]</strong></div>
+                                <div style="text-align: center;">[Your Title] | [Industry] Executive</div>
+                                <div style="text-align: center;">[Email] | [Phone] | [City, State]</div>
+                                <br>
+                                <div>[Date]</div>
+                                <br>
+                                <div>[Hiring Manager Name], [Title]</div>
+                                <div>[Company Name]</div>
+                                <br>
+                                <div>Dear [Hiring Manager Name],</div>
+                                <br>
+                                <div>As an accomplished [Your Field] executive with [X] years of leadership experience, I am writing to express my interest in the [Job Title] position at [Company Name].</div>
+                                <br>
+                                <div>Throughout my career, I have consistently delivered results by [Key Achievement]. My expertise in [Core Competency] positions me well to drive [Company Goal] at [Company Name].</div>
+                                <br>
+                                <div>Key accomplishments include:</div>
+                                <div>- [Quantified Achievement 1]</div>
+                                <div>- [Quantified Achievement 2]</div>
+                                <div>- [Quantified Achievement 3]</div>
+                                <br>
+                                <div>I welcome the opportunity to discuss how my strategic vision and proven track record can benefit [Company Name].</div>
+                                <br>
+                                <div>Respectfully,</div>
+                                <div>[Your Name]</div>
+                            </div>
+                            <button class="btn btn-template w-100 mt-3" onclick="selectTemplate('executive')">
+                                Use This Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Editor -->
+    <div class="row mt-5 d-none" id="template-editor">
+        <div class="col-lg-8">
+            <div class="editable-template" id="editable-content" contenteditable="true">
+                <!-- Template content will be loaded here -->
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="template-actions">
+                <h5>Actions</h5>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-template" onclick="downloadCoverLetter()">
+                        <i class="fas fa-download me-2"></i>Download PDF
+                    </button>
+                    <button class="btn btn-template" onclick="copyCoverLetter()">
+                        <i class="fas fa-copy me-2"></i>Copy Text
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="backToTemplates()">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Templates
+                    </button>
+                </div>
+                
+                <hr class="my-4">
+                
+                <h6>Quick Fill</h6>
+                <div class="mb-3">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" class="form-control" id="quick-name" placeholder="John Doe">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-control" id="quick-company" placeholder="ABC Corporation">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Job Title</label>
+                    <input type="text" class="form-control" id="quick-job" placeholder="Software Developer">
+                </div>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="quickFill()">
+                    Auto-Fill Template
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const templates = {
+    professional: `
+<div>
+    <div contenteditable="true" class="editable-field" placeholder="Your Name">[Your Name]</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="Your Address">[Your Address]</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="City, State ZIP">[City, State ZIP]</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="Email">[Email]</div> | <span contenteditable="true" class="editable-field" placeholder="Phone">[Phone]</span><br><br>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Date">[Date]</div><br><br>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Hiring Manager Name">[Hiring Manager Name]</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="Company Name">[Company Name]</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="Company Address">[Company Address]</div><br><br>
+    
+    <div>Dear <span contenteditable="true" class="editable-field" placeholder="Hiring Manager">[Hiring Manager]</span>,</div><br>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Opening paragraph" style="display: block; margin-bottom: 20px;">I am writing to express my strong interest in the [Job Title] position at [Company Name]. With my background in [Your Field], I am confident that I would be a valuable addition to your team.</div>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Body paragraph" style="display: block; margin-bottom: 20px;">In my previous role as [Previous Position], I successfully [Achievement]. This experience has prepared me well for the challenges of this position.</div>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Closing paragraph" style="display: block; margin-bottom: 20px;">I am excited about the opportunity to contribute to [Company Name] and look forward to discussing how my skills align with your needs.</div>
+    
+    <div>Sincerely,</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="Your Name">[Your Name]</div>
+</div>`,
+    
+    modern: `
+<div>
+    <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;" contenteditable="true" class="editable-field" placeholder="Your Name">[Your Name]</div>
+        <div><span contenteditable="true" class="editable-field" placeholder="Email">[Email]</span> • <span contenteditable="true" class="editable-field" placeholder="Phone">[Phone]</span> • <span contenteditable="true" class="editable-field" placeholder="LinkedIn">[LinkedIn]</span></div>
+        <div contenteditable="true" class="editable-field" placeholder="City, State">[City, State]</div>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <div style="font-weight: bold;" contenteditable="true" class="editable-field" placeholder="Company Name">[Company Name]</div>
+        <div>Attention: <span contenteditable="true" class="editable-field" placeholder="Hiring Manager">[Hiring Manager]</span></div>
+        <div contenteditable="true" class="editable-field" placeholder="Date">[Date]</div>
+    </div>
+    
+    <div style="font-weight: bold; margin-bottom: 20px;">Subject: Application for <span contenteditable="true" class="editable-field" placeholder="Job Title">[Job Title]</span></div>
+    
+    <div style="margin-bottom: 20px;">Hello <span contenteditable="true" class="editable-field" placeholder="Hiring Manager Name">[Hiring Manager Name]</span>,</div>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Opening paragraph" style="display: block; margin-bottom: 20px;">I'm excited to apply for the [Job Title] role at [Company Name]. Your company's commitment to [Company Value] aligns perfectly with my passion for [Your Interest].</div>
+    
+    <div style="margin-bottom: 10px;">Here's what I bring to the table:</div>
+    <div style="margin-left: 20px; margin-bottom: 20px;">
+        <div>• <span contenteditable="true" class="editable-field" placeholder="Key achievement 1">[Key Skill/Achievement 1]</span></div>
+        <div>• <span contenteditable="true" class="editable-field" placeholder="Key achievement 2">[Key Skill/Achievement 2]</span></div>
+        <div>• <span contenteditable="true" class="editable-field" placeholder="Key achievement 3">[Key Skill/Achievement 3]</span></div>
+    </div>
+    
+    <div contenteditable="true" class="editable-field" placeholder="Closing paragraph" style="display: block; margin-bottom: 20px;">I'd love to discuss how I can contribute to [Company Name]'s continued success.</div>
+    
+    <div>Best regards,</div><br>
+    <div contenteditable="true" class="editable-field" placeholder="Your Name">[Your Name]</div>
+</div>`,
+    
+    executive: `
+<div style="font-family: 'Times New Roman', serif; line-height: 1.8; color: #333;">
+    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px;">
+        <div style="font-size: 22px; font-weight: bold;" contenteditable="true" class="editable-field">[Your Name]</div>
+        <div style="font-style: italic;" contenteditable="true" class="editable-field">[Your Title] | [Industry] Executive</div>
+        <div contenteditable="true" class="editable-field">[Email]</div> | <span contenteditable="true" class="editable-field">[Phone]</span> | <span contenteditable="true" class="editable-field">[City, State]</span>
+    </div>
+    
+    <div contenteditable="true" class="editable-field">[Date]</div><br><br>
+    
+    <div contenteditable="true" class="editable-field">[Hiring Manager Name]</span>, <span contenteditable="true" class="editable-field">[Title]</span></div>
+    <div contenteditable="true" class="editable-field">[Company Name]</div><br><br>
+    
+    <div>Dear <span contenteditable="true" class="editable-field">[Hiring Manager Name]</span>,</div><br>
+    
+    <div contenteditable="true" class="editable-field">As an accomplished [Your Field] executive with [X] years of leadership experience, I am writing to express my interest in the [Job Title] position at [Company Name].</div><br>
+    
+    <div contenteditable="true" class="editable-field">Throughout my career, I have consistently delivered results by [Key Achievement]. My expertise in [Core Competency] positions me well to drive [Company Goal] at [Company Name].</div><br>
+    
+    <div>Key accomplishments include:</div>
+    <div>- <span contenteditable="true" class="editable-field">[Quantified Achievement 1]</span></div>
+    <div>- <span contenteditable="true" class="editable-field">[Quantified Achievement 2]</span></div>
+    <div>- <span contenteditable="true" class="editable-field">[Quantified Achievement 3]</span></div><br>
+    
+    <div contenteditable="true" class="editable-field">I welcome the opportunity to discuss how my strategic vision and proven track record can benefit [Company Name].</div><br>
+    
+    <div>Respectfully,</div><br>
+    <div contenteditable="true" class="editable-field">[Your Name]</div>
+</div>`
+};
+
+function selectTemplate(templateType) {
+    document.getElementById('template-selection').classList.add('d-none');
+    document.getElementById('template-editor').classList.remove('d-none');
+    document.getElementById('editable-content').innerHTML = templates[templateType];
+    
+    // Scroll to editor
+    document.getElementById('template-editor').scrollIntoView({ behavior: 'smooth' });
+}
+
+function backToTemplates() {
+    document.getElementById('template-selection').classList.remove('d-none');
+    document.getElementById('template-editor').classList.add('d-none');
+    document.getElementById('template-selection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function quickFill() {
+    const name = document.getElementById('quick-name').value;
+    const company = document.getElementById('quick-company').value;
+    const job = document.getElementById('quick-job').value;
+    
+    if (!name && !company && !job) {
+        alert('Please fill in at least one field to auto-fill the template.');
+        return;
+    }
+    
+    let content = document.getElementById('editable-content').innerHTML;
+    
+    if (name) {
+        content = content.replace(/\[Your Name\]/g, name);
+    }
+    if (company) {
+        content = content.replace(/\[Company Name\]/g, company);
+    }
+    if (job) {
+        content = content.replace(/\[Job Title\]/g, job);
+    }
+    
+    document.getElementById('editable-content').innerHTML = content;
+}
+
+function copyCoverLetter() {
+    const content = document.getElementById('editable-content').innerText;
+    navigator.clipboard.writeText(content).then(() => {
+        alert('Cover letter copied to clipboard!');
+    });
+}
+
+function downloadCoverLetter() {
+    const content = document.getElementById('editable-content').innerText;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cover-letter.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+// Add today's date automatically
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toLocaleDateString();
+    setTimeout(() => {
+        const dateFields = document.querySelectorAll('.editable-field');
+        dateFields.forEach(field => {
+            if (field.textContent.includes('[Date]')) {
+                field.textContent = field.textContent.replace('[Date]', today);
+            }
+        });
+    }, 1000);
+});
+</script>
+
+{% endblock %}

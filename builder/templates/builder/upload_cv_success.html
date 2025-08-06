@@ -1,0 +1,95 @@
+{% extends 'builder/base.html' %} {% load static %} {% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-check-circle me-2"></i>CV Uploaded Successfully!
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-success">
+            <h4>
+              <i class="fas fa-file-alt me-2"></i>{{
+              uploaded_cv.original_filename }}
+            </h4>
+            <p>Your CV has been uploaded and processed successfully.</p>
+          </div>
+
+          {% if cv_analysis %}
+          <div class="mt-4">
+            <h4>CV Analysis Results</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h5>Overall Score</h5>
+                    <div class="progress mb-2">
+                      <div
+                        class="progress-bar bg-primary"
+                        style="width: {{ cv_analysis.overall_score }}%"
+                      ></div>
+                    </div>
+                    <span class="text-muted"
+                      >{{ cv_analysis.overall_score }}/100</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h5>ATS Compatibility</h5>
+                    <div class="progress mb-2">
+                      <div
+                        class="progress-bar bg-success"
+                        style="width: {{ cv_analysis.ats_compatibility }}%"
+                      ></div>
+                    </div>
+                    <span class="text-muted"
+                      >{{ cv_analysis.ats_compatibility }}/100</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% if cv_analysis.strengths %}
+            <div class="mt-3">
+              <h5>Strengths</h5>
+              <ul class="list-group">
+                {% for strength in cv_analysis.strengths %}
+                <li class="list-group-item">
+                  <i class="fas fa-check text-success me-2"></i>{{ strength }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %} {% if cv_analysis.improvements %}
+            <div class="mt-3">
+              <h5>Areas for Improvement</h5>
+              <ul class="list-group">
+                {% for improvement in cv_analysis.improvements %}
+                <li class="list-group-item">
+                  <i class="fas fa-exclamation-triangle text-warning me-2"></i
+                  >{{ improvement }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="mt-4">
+            <a href="{% url 'upload_cv' %}" class="btn btn-outline-primary">
+              <i class="fas fa-plus me-2"></i>Upload Another CV
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

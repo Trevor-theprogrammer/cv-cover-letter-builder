@@ -1,0 +1,153 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}CV Builder
+Pro - Upload Your CV for AI Analysis{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <h1>Upload Your CV for AI-Powered Analysis</h1>
+    <p>
+      Get instant insights on your CV's strengths, ATS compatibility, and
+      generate personalized cover letters using AI.
+    </p>
+    <div class="cta-buttons">
+      <a href="{% url 'builder:upload_cv' %}" class="btn-large btn-white">
+        <i class="fas fa-upload me-2"></i>Upload Your CV
+      </a>
+      <a href="{% url 'register' %}" class="btn-large btn-outline">
+        <i class="fas fa-user-plus me-2"></i>Get Started Free
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section style="padding: 4rem 0; background: var(--bg-white)">
+  <div class="container">
+    <h2
+      style="
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--text-dark);
+      "
+    >
+      Why Upload Your CV?
+    </h2>
+    <div class="grid grid-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h3>AI Analysis</h3>
+        <p>
+          Get detailed insights on your CV's strengths, weaknesses, and ATS
+          compatibility with our advanced AI technology.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3>Cover Letters</h3>
+        <p>
+          Generate personalized, job-specific cover letters using AI based on
+          your uploaded CV and job description.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>Improvement Tips</h3>
+        <p>
+          Receive actionable recommendations to improve your CV and increase
+          your chances of landing interviews.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section style="padding: 4rem 0; background: var(--bg-light)">
+  <div class="container">
+    <h2
+      style="
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--text-dark);
+      "
+    >
+      How It Works
+    </h2>
+    <div class="progress-steps">
+      <div class="progress-step">
+        <div class="step-number">1</div>
+        <h4>Upload CV</h4>
+        <p>Simply upload your existing PDF or DOCX CV</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">2</div>
+        <h4>AI Analysis</h4>
+        <p>Get instant insights and ATS compatibility score</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">3</div>
+        <h4>Generate Letters</h4>
+        <p>Create personalized cover letters for any job</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">4</div>
+        <h4>Get Hired</h4>
+        <p>Apply with confidence and land your dream job</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section
+  style="padding: 3rem 0; background: var(--primary-color); color: white"
+>
+  <div class="container">
+    <div class="grid grid-4" style="text-align: center">
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">50K+</h3>
+        <p>CVs Analyzed</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">85%</h3>
+        <p>Success Rate</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">100K+</h3>
+        <p>Cover Letters Generated</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">24/7</h3>
+        <p>Support</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section
+  style="padding: 4rem 0; background: var(--bg-white); text-align: center"
+>
+  <div class="container">
+    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-dark)">
+      Ready to Optimize Your CV?
+    </h2>
+    <p
+      style="font-size: 1.25rem; color: var(--text-light); margin-bottom: 2rem"
+    >
+      Join thousands of professionals who've improved their CVs and secured
+      their dream jobs.
+    </p>
+    <a href="{% url 'builder:upload_cv' %}" class="btn-large btn-primary">
+      <i class="fas fa-upload me-2"></i>Upload Your CV Now
+    </a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,386 @@
+/* CV Builder Pro - Mobile-First Responsive Design System */
+
+:root {
+  --bp-xs: 320px;
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 992px;
+  --bp-xl: 1200px;
+  --bp-xxl: 1400px;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --touch-min: 44px;
+  --touch-target: 48px;
+}
+
+/* Base Mobile Styles */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+input,
+select,
+textarea,
+button {
+  font-size: 16px;
+}
+.btn,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Mobile Navigation */
+.mobile-nav-toggle {
+  display: block;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100vh;
+  background: rgba(15, 15, 15, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+nav.active {
+  left: 0;
+}
+
+/* Container System */
+.container {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+.grid-2,
+.grid-3,
+.grid-4,
+.grid-6 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 576px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Typography */
+h1 {
+  font-size: clamp(2rem, 7vw, 3.5rem);
+}
+h2 {
+  font-size: clamp(1.5rem, 6vw, 2.5rem);
+}
+h3 {
+  font-size: clamp(1.25rem, 5vw, 2rem);
+}
+h4 {
+  font-size: clamp(1.125rem, 4vw, 1.5rem);
+}
+h5 {
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+}
+h6 {
+  font-size: clamp(1rem, 3vw, 1.125rem);
+}
+p {
+  font-size: clamp(1rem, 3vw, 1.125rem);
+}
+
+/* Buttons & Forms */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: clamp(1rem, 3vw, 1.125rem);
+  font-weight: 600;
+  min-height: 44px;
+  min-width: 44px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  text-align: center;
+}
+
+.form-control {
+  font-size: 16px;
+  padding: 0.75rem;
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+/* Cards */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Tables */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+  .table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .table tbody td {
+    display: block;
+    text-align: right;
+    padding: 0.5rem;
+    border: none;
+  }
+  .table tbody td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+/* Hero Section */
+.hero {
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 7vw, 3.5rem);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 576px) {
+  .hero-buttons {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 0;
+  }
+  .hero-title {
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+  }
+}
+
+/* Footer */
+footer {
+  padding: 3rem 0;
+  background: rgba(15, 15, 15, 0.8);
+}
+
+footer .grid {
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  footer .grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Utility Classes */
+.d-none {
+  display: none !important;
+}
+.d-block {
+  display: block !important;
+}
+.d-flex {
+  display: flex !important;
+}
+.d-grid {
+  display: grid !important;
+}
+
+@media (max-width: 576px) {
+  .d-sm-none {
+    display: none !important;
+  }
+  .d-sm-block {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .d-md-none {
+    display: none !important;
+  }
+  .d-md-block {
+    display: block !important;
+  }
+}
+
+.text-center {
+  text-align: center !important;
+}
+.text-center-mobile {
+  text-align: center !important;
+}
+
+@media (min-width: 768px) {
+  .text-center-mobile {
+    text-align: inherit !important;
+  }
+}
+
+/* Modern Features */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .mobile-nav-toggle,
+  .btn:not(.btn-print) {
+    display: none !important;
+  }
+  * {
+    color: #000 !important;
+    background: transparent !important;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 768px) {
+  .hero {
+    padding: 2rem 0;
+  }
+}

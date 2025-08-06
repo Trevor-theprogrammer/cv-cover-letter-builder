@@ -1,0 +1,318 @@
+{% extends "builder/base.html" %} {% block content %}
+<div class="container-fluid px-0">
+  <!-- Hero Section -->
+  <div class="bg-gradient-primary text-white py-5 mb-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1 class="display-4 fw-bold mb-3">AI Cover Letter Generator</h1>
+          <p class="lead mb-4">
+            Create compelling, personalized cover letters using your uploaded CV
+            and job details
+          </p>
+          <div class="d-flex gap-3">
+            <span class="badge bg-light text-dark px-3 py-2"
+              >✨ AI-Powered</span
+            >
+            <span class="badge bg-light text-dark px-3 py-2"
+              >🎯 Tailored Content</span
+            >
+            <span class="badge bg-light text-dark px-3 py-2"
+              >⚡ Fast Results</span
+            >
+          </div>
+        </div>
+        <div class="col-lg-4 text-center">
+          <i class="fas fa-robot fa-5x opacity-75"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <!-- Main Form -->
+      <div class="col-lg-8">
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          class="needs-validation"
+          novalidate
+        >
+          {% csrf_token %}
+
+          <!-- CV Selection Card -->
+          <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-success text-white py-3">
+              <h4 class="mb-0">
+                <i class="fas fa-file-alt me-2"></i>Selected CV
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              {% if form.uploaded_cv.value %}
+              <div class="alert alert-info">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Using CV:</strong> {{
+                form.uploaded_cv.field.queryset.get.id=form.uploaded_cv.value.original_filename
+                }}
+              </div>
+              {% else %}
+              <div class="alert alert-warning">
+                <i class="fas fa-info-circle me-2"></i>
+                Select a CV from your uploaded files or paste content below
+              </div>
+              {% endif %}
+
+              <div class="row">
+                <div class="col-md-12 mb-4">
+                  <label
+                    for="{{ form.uploaded_cv.id_for_label }}"
+                    class="form-label fw-bold"
+                  >
+                    <i class="fas fa-upload text-primary me-1"></i>Select
+                    Uploaded CV
+                  </label>
+                  {{ form.uploaded_cv }}
+                  <div class="form-text">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Choose from your uploaded CVs or paste content below
+                  </div>
+                </div>
+                <div class="col-md-12 mb-4">
+                  <label
+                    for="{{ form.cv_text.id_for_label }}"
+                    class="form-label fw-bold"
+                  >
+                    <i class="fas fa-edit text-warning me-1"></i>CV Content
+                    (Auto-filled from selected CV)
+                  </label>
+                  {{ form.cv_text }}
+                  <div class="form-text">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    This content will be used to generate your personalized
+                    cover letter
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job Details Card -->
+          <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-primary text-white py-3">
+              <h4 class="mb-0">
+                <i class="fas fa-briefcase me-2"></i>Job Details
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="row">
+                <div class="col-md-12 mb-4">
+                  <label
+                    for="{{ form.job_title.id_for_label }}"
+                    class="form-label fw-bold"
+                  >
+                    <i class="fas fa-star text-warning me-1"></i>Job Title *
+                  </label>
+                  {{ form.job_title }}
+                  <div class="form-text">
+                    Enter the exact job title you're applying for
+                  </div>
+                </div>
+                <div class="col-md-12 mb-4">
+                  <label
+                    for="{{ form.job_description.id_for_label }}"
+                    class="form-label fw-bold"
+                  >
+                    <i class="fas fa-file-alt text-info me-1"></i>Job
+                    Description *
+                  </label>
+                  {{ form.job_description }}
+                  <div class="form-text">
+                    Paste the full job description for better AI matching
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Styling Options Card -->
+          <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-info text-white py-3">
+              <h4 class="mb-0">
+                <i class="fas fa-palette me-2"></i>Styling Options
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label
+                    for="{{ form.tone.id_for_label }}"
+                    class="form-label fw-bold"
+                  >
+                    <i class="fas fa-volume-up text-primary me-1"></i>Tone
+                  </label>
+                  {{ form.tone }}
+                  <div class="form-text">
+                    Choose the writing style for your letter
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label
+                    for="{{ form.template_type.id_for_label }}"
+                    class="form-label fw-bold"
+                  >
+                    <i class="fas fa-file-alt text-success me-1"></i>Template
+                    Style
+                  </label>
+                  {{ form.template_type }}
+                  <div class="form-text">
+                    Select a professional template format
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% if error %}
+          <div
+            class="alert alert-danger alert-dismissible fade show"
+            role="alert"
+          >
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ error }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close alert"
+            ></button>
+          </div>
+          {% endif %}
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg px-5 py-3">
+              <i class="fas fa-magic me-2"></i>Generate My Cover Letter
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <!-- Quick Tips -->
+        <div class="card border-0 shadow mb-4">
+          <div class="card-header bg-warning text-dark py-3">
+            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Pro Tips</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+              <div>
+                <strong>Be Specific</strong>
+                <p class="mb-0 small">Include company name and role details</p>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+              <div>
+                <strong>Highlight Achievements</strong>
+                <p class="mb-0 small">Use quantifiable results and metrics</p>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+              <div>
+                <strong>Match Keywords</strong>
+                <p class="mb-0 small">
+                  Align with job description requirements
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card border-0 shadow">
+          <div class="card-header bg-secondary text-white py-3">
+            <h5 class="mb-0">
+              <i class="fas fa-rocket me-2"></i>Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <a
+              href="{% url 'upload_cv' %}"
+              class="btn btn-outline-primary btn-sm mb-2 w-100"
+            >
+              <i class="fas fa-upload me-1"></i>Upload New CV
+            </a>
+            <a
+              href="{% url 'dashboard' %}"
+              class="btn btn-outline-secondary btn-sm w-100"
+            >
+              <i class="fas fa-folder me-1"></i>View My CVs
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+
+<style>
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .card {
+    border-radius: 15px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 12px 15px;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+
+  .btn {
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .card-header {
+    border-radius: 15px 15px 0 0 !important;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}CV Builder
+Pro - Create Professional CVs & Cover Letters{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <h1>Create Your Professional CV in Minutes</h1>
+    <p>
+      Build a job-winning CV with our AI-powered builder. Get hired faster with
+      professionally designed templates.
+    </p>
+    <div class="cta-buttons">
+      <a href="{% url 'create_cv' %}" class="btn-large btn-white">
+        <i class="fas fa-rocket me-2"></i>Create Your CV
+      </a>
+      <a href="{% url 'register' %}" class="btn-large btn-outline">
+        <i class="fas fa-user-plus me-2"></i>Get Started Free
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section style="padding: 4rem 0; background: var(--bg-white)">
+  <div class="container">
+    <h2
+      style="
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--text-dark);
+      "
+    >
+      Why Choose CV Builder Pro?
+    </h2>
+    <div class="grid grid-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h3>AI-Powered</h3>
+        <p>
+          Get personalized content suggestions and job-specific optimizations
+          with our advanced AI technology.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-palette"></i>
+        </div>
+        <h3>Professional Templates</h3>
+        <p>
+          Choose from 20+ ATS-friendly templates designed by HR experts to make
+          your CV stand out.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-download"></i>
+        </div>
+        <h3>Instant Download</h3>
+        <p>
+          Download your CV in PDF format instantly. No watermarks, no
+          limitations, ready to send.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section style="padding: 4rem 0; background: var(--bg-light)">
+  <div class="container">
+    <h2
+      style="
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--text-dark);
+      "
+    >
+      How It Works
+    </h2>
+    <div class="progress-steps">
+      <div class="progress-step">
+        <div class="step-number">1</div>
+        <h4>Choose Template</h4>
+        <p>Select from our professional templates</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">2</div>
+        <h4>Add Your Info</h4>
+        <p>Fill in your details with AI assistance</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">3</div>
+        <h4>Customize</h4>
+        <p>Personalize colors, fonts, and layout</p>
+      </div>
+      <div class="progress-step">
+        <div class="step-number">4</div>
+        <h4>Download</h4>
+        <p>Get your perfect CV instantly</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section
+  style="padding: 3rem 0; background: var(--primary-color); color: white"
+>
+  <div class="container">
+    <div class="grid grid-4" style="text-align: center">
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">50K+</h3>
+        <p>CVs Created</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">85%</h3>
+        <p>Success Rate</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">20+</h3>
+        <p>Templates</p>
+      </div>
+      <div>
+        <h3 style="font-size: 2.5rem; margin-bottom: 0.5rem">24/7</h3>
+        <p>Support</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section
+  style="padding: 4rem 0; background: var(--bg-white); text-align: center"
+>
+  <div class="container">
+    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-dark)">
+      Ready to Land Your Dream Job?
+    </h2>
+    <p
+      style="font-size: 1.25rem; color: var(--text-light); margin-bottom: 2rem"
+    >
+      Join thousands of professionals who've secured their dream jobs with our
+      CV builder.
+    </p>
+    <a href="{% url 'create_cv' %}" class="btn-large btn-primary">
+      <i class="fas fa-rocket me-2"></i>Start Building Your CV
+    </a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CV & Cover Letter Builder - Build Your Professional Future</title>
+    <link
+      rel="stylesheet"
+      href="{% static 'builder/css/cvmaker-style.css' %}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>CV Builder Pro</h1>
+        <nav>
+          <a href="{% url 'builder:home' %}">Home</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'builder:dashboard' %}">Dashboard</a>
+          <a href="{% url 'builder:create_cv' %}">Create CV</a>
+          <a href="{% url 'builder:generate_cover_letter' %}">AI Cover Letter</a>
+          <a href="{% url 'builder:cover_letter_templates' %}">Templates</a>
+          <a href="{% url 'builder:cv_analyzer' %}">CV Analyzer</a>
+          <a href="{% url 'builder:upload_cv' %}">Upload CV</a>
+          <form
+            action="{% url 'logout' %}"
+            method="post"
+            style="display: inline"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline">Logout</button>
+          </form>
+          {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+          <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      {% if messages %}
+      <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="grid grid-4">
+          <div>
+            <h3>CV Builder Pro</h3>
+            <p>
+              Create stunning CVs and compelling cover letters that land you
+              interviews. Your professional future starts here.
+            </p>
+          </div>
+          <div>
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="{% url 'builder:home' %}">Home</a></li>
+              <li><a href="{% url 'builder:create_cv' %}">Create CV</a></li>
+              <li>
+                <a href="{% url 'builder:generate_cover_letter' %}">Cover Letter</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4>Features</h4>
+            <ul>
+              <li>AI-Powered Generation</li>
+              <li>Professional Templates</li>
+              <li>Instant Download</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Support</h4>
+            <ul>
+              <li>help@cvbuilderpro.com</li>
+              <li>24/7 Support</li>
+            </ul>
+          </div>
+        </div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+          "
+        >
+          <p>&copy; 2024 CV Builder Pro. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="{% static 'builder/js/scripts.js' %}"></script>
+  </body>
+</html>

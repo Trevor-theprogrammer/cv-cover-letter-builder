@@ -1,0 +1,348 @@
+{% extends "builder/base.html" %}
+{% load cv_filters %}
+{% block content %}
+<style>
+.analyzer-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.analyzer-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+.analyzer-card:hover {
+    transform: translateY(-5px);
+}
+.upload-zone {
+    border: 2px dashed #e9ecef;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+.upload-zone:hover {
+    border-color: #667eea;
+    background: rgba(102,126,234,0.05);
+}
+.upload-zone.dragover {
+    border-color: #667eea;
+    background: rgba(102,126,234,0.1);
+}
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    margin: 0 auto;
+}
+.score-excellent { background: linear-gradient(45deg, #28a745, #20c997); }
+.score-good { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+.score-needs-improvement { background: linear-gradient(45deg, #dc3545, #e83e8c); }
+.insight-item {
+    background: white;
+    border-left: 4px solid #667eea;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.strength-item { border-left-color: #28a745; }
+.weakness-item { border-left-color: #dc3545; }
+.recommendation-item { border-left-color: #ffc107; }
+.btn-analyzer {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-analyzer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+    color: white;
+}
+</style>
+
+<div class="analyzer-hero text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">🤖 AI CV Analyzer</h1>
+                <p class="lead mb-4">
+                    Get detailed insights on your CV's strengths, weaknesses, and ATS compatibility with our advanced AI technology
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <span class="badge bg-white text-primary px-3 py-2 rounded-pill">📊 Detailed Analysis</span>
+                    <span class="badge bg-white text-primary px-3 py-2 rounded-pill">🎯 ATS Optimization</span>
+                    <span class="badge bg-white text-primary px-3 py-2 rounded-pill">💡 Smart Recommendations</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-chart-line fa-5x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if not analysis %}
+    <!-- Upload Section -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="analyzer-card card">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4">Upload Your CV for Analysis</h3>
+                    
+                    <form method="post" enctype="multipart/form-data" id="upload-form">
+                        {% csrf_token %}
+                        <div class="upload-zone" id="upload-zone">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <h5>Drag & Drop Your CV Here</h5>
+                            <p class="text-muted mb-3">or click to browse files</p>
+                            <input type="file" name="cv_file" id="cv-file" accept=".pdf,.doc,.docx" style="display: none;">
+                            <button type="button" class="btn btn-analyzer" onclick="document.getElementById('cv-file').click()">
+                                <i class="fas fa-file-upload me-2"></i>Choose File
+                            </button>
+                            <div class="mt-3 text-muted small">
+                                Supported formats: PDF, DOC, DOCX (Max 5MB)
+                            </div>
+                        </div>
+                        
+                        <div id="file-info" class="mt-3 d-none">
+                            <div class="alert alert-info">
+                                <i class="fas fa-file me-2"></i>
+                                <span id="file-name"></span>
+                                <button type="button" class="btn-close float-end" onclick="clearFile()" aria-label="Remove file"></button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-analyzer btn-lg px-5" id="analyze-btn" disabled>
+                                <i class="fas fa-search me-2"></i>Analyze My CV
+                            </button>
+                        </div>
+                    </form>
+                    
+                    {% if error %}
+                    <div class="alert alert-danger mt-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Analysis Results -->
+    <div class="row">
+        <div class="col-12">
+            <div class="analyzer-card card mb-4">
+                <div class="card-body text-center">
+                    <h2 class="mb-4">CV Analysis Results</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="score-circle {{ analysis.overall_score|scoreclass }}">
+                                {{ analysis.overall_score }}%
+                            </div>
+                            <h5 class="mt-3">Overall Score</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="score-circle score-good">
+                                {{ analysis.ats_score }}%
+                            </div>
+                            <h5 class="mt-3">ATS Compatibility</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="score-circle score-excellent">
+                                {{ analysis.keyword_score }}%
+                            </div>
+                            <h5 class="mt-3">Keyword Match</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Strengths -->
+        <div class="col-lg-4">
+            <div class="analyzer-card card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Strengths</h5>
+                </div>
+                <div class="card-body">
+                    {% for strength in analysis.strengths %}
+                    <div class="insight-item strength-item">
+                        <i class="fas fa-plus-circle text-success me-2"></i>
+                        {{ strength }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weaknesses -->
+        <div class="col-lg-4">
+            <div class="analyzer-card card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Areas to Improve</h5>
+                </div>
+                <div class="card-body">
+                    {% for weakness in analysis.weaknesses %}
+                    <div class="insight-item weakness-item">
+                        <i class="fas fa-minus-circle text-danger me-2"></i>
+                        {{ weakness }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recommendations -->
+        <div class="col-lg-4">
+            <div class="analyzer-card card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    {% for recommendation in analysis.recommendations %}
+                    <div class="insight-item recommendation-item">
+                        <i class="fas fa-arrow-right text-warning me-2"></i>
+                        {{ recommendation }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Analysis -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="analyzer-card card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Detailed Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Skills Identified:</h6>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% for skill in analysis.skills %}
+                                <span class="badge bg-primary">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                            
+                            <h6>Experience Level:</h6>
+                            <p class="text-muted">{{ analysis.experience_level }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Industry Focus:</h6>
+                            <p class="text-muted">{{ analysis.industry }}</p>
+                            
+                            <h6>Education Level:</h6>
+                            <p class="text-muted">{{ analysis.education_level }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'builder:cv_analyzer' %}" class="btn btn-outline-primary me-3">
+                <i class="fas fa-upload me-2"></i>Analyze Another CV
+            </a>
+            <a href="{% url 'builder:generate_cover_letter' %}" class="btn btn-analyzer">
+                <i class="fas fa-magic me-2"></i>Generate Cover Letter
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// File upload handling
+const uploadZone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('cv-file');
+const fileInfo = document.getElementById('file-info');
+const fileName = document.getElementById('file-name');
+const analyzeBtn = document.getElementById('analyze-btn');
+
+// Drag and drop
+uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFile(files[0]);
+    }
+});
+
+uploadZone.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+function handleFile(file) {
+    if (!['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type)) {
+        alert('Please upload a PDF or Word document.');
+        return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
+        return;
+    }
+    
+    fileName.textContent = file.name;
+    fileInfo.classList.remove('d-none');
+    analyzeBtn.disabled = false;
+    
+    // Set the file to the input
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
+}
+
+function clearFile() {
+    fileInput.value = '';
+    fileInfo.classList.add('d-none');
+    analyzeBtn.disabled = true;
+}
+
+// Form submission with loading state
+document.getElementById('upload-form').addEventListener('submit', function() {
+    analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+    analyzeBtn.disabled = true;
+});
+</script>
+
+{% endblock %}
