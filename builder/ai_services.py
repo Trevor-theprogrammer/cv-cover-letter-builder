@@ -14,13 +14,26 @@ class EnhancedAICoverLetterService:
     def __init__(self):
         api_key = os.environ.get('OPENAI_API_KEY')
         logger.info(f"Initializing OpenAI client. API key present: {bool(api_key)}")
+        logger.debug(f"API key length: {len(api_key) if api_key else 0}")
         if not api_key:
-            logger.warning("OPENAI_API_KEY not found, falling back to mock responses")
+            logger.error("OPENAI_API_KEY not found in environment variables")
+            logger.error(f"Available environment variables: {[k for k in os.environ.keys() if not k.startswith('_')]}")
             self.client = None
         else:
             try:
                 self.client = OpenAI(api_key=api_key)
                 logger.info("OpenAI client initialized successfully")
+                # Test the API key with a simple request
+                try:
+                    response = self.client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[{"role": "user", "content": "test"}],
+                        max_tokens=5
+                    )
+                    logger.info("OpenAI API test successful")
+                except Exception as e:
+                    logger.error(f"OpenAI API test failed: {str(e)}")
+                    self.client = None
             except Exception as e:
                 logger.error(f"Error initializing OpenAI client: {str(e)}")
                 self.client = None
