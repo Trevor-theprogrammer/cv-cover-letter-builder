@@ -92,10 +92,11 @@ DATABASES = {
 }
 
 # For production (PostgreSQL)
-if not DEBUG:
+if 'DATABASE_URL' in os.environ:
     import dj_database_url
     DATABASES['default'] = dj_database_url.config(
-        default=config('DATABASE_URL', default='')
+        conn_max_age=600,
+        conn_health_checks=True,
     )
 
 # Password validation
