@@ -45,9 +45,25 @@ def enhanced_ai_cover_letter(request):
                 
                 # Generate cover letter
                 service = EnhancedAICoverLetterService()
-                cv_insights = service.extract_cv_insights(cv_text)
-                job_match = service.match_cv_to_job(cv_insights, job_title, job_description)
-                cover_letter = service.generate_tailored_cover_letter(
+                try:
+                    if not service.client:
+                        logger.error("OpenAI API key not configured")
+                        messages.error(request, "OpenAI API is not properly configured. Please try again later or contact support.")
+                        return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
+
+                    cv_insights = service.extract_cv_insights(cv_text)
+                    if not cv_insights:
+                        logger.error("Failed to extract CV insights")
+                        messages.error(request, "Failed to analyze CV. Please try again.")
+                        return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
+
+                    job_match = service.match_cv_to_job(cv_insights, job_title, job_description)
+                    if not job_match:
+                        logger.error("Failed to match CV to job")
+                        messages.error(request, "Failed to match CV with job requirements. Please try again.")
+                        return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
+
+                    cover_letter = service.generate_tailored_cover_letter(
                     cv_insights, job_match, job_title, job_description, tone, template_type
                 )
                 
