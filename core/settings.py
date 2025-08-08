@@ -17,14 +17,24 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # ALLOWED_HOSTS configuration
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
-
-# Ensure Render domain is always included in production
-if not DEBUG:
-    render_hosts = ['cv-cover-letter-builder.onrender.com', '*.onrender.com']
-    for host in render_hosts:
-        if host not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(host)
+if DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+else:
+    # Production settings - explicitly include Render domains
+    ALLOWED_HOSTS = [
+        'cv-cover-letter-builder.onrender.com',
+        '*.onrender.com',
+        'localhost',
+        '127.0.0.1'
+    ]
+    
+    # Also try to get from environment variable if set
+    env_hosts = config('ALLOWED_HOSTS', default='', cast=str)
+    if env_hosts:
+        additional_hosts = [s.strip() for s in env_hosts.split(',') if s.strip()]
+        for host in additional_hosts:
+            if host not in ALLOWED_HOSTS:
+                ALLOWED_HOSTS.append(host)
 
 # Security settings for production
 SECURE_SSL_REDIRECT = not DEBUG
