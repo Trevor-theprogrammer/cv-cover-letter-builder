@@ -12,9 +12,11 @@ services:
       - key: DEBUG
         value: False
       - key: ALLOWED_HOSTS
-        value: 'cv-cover-letter-builder.onrender.com,localhost,127.0.0.1'
+        value: 'cv-cover-letter-builder.onrender.com,localhost,127.0.0.1,*.onrender.com'
       - key: DJANGO_SETTINGS_MODULE
         value: 'core.settings'
+      - key: OPENAI_API_KEY
+        sync: false
       - key: DATABASE_URL
         fromDatabase:
           name: cv-cover-letter-builder-db
