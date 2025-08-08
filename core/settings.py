@@ -147,6 +147,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 # OpenAI API Key
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
+os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY  # Make sure it's available in environment
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
