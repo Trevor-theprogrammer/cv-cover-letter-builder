@@ -3,7 +3,7 @@ services:
     name: cv-cover-letter-builder
     env: python
     buildCommand: 'pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput'
-    startCommand: 'gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 60'
+    startCommand: 'gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 60 --log-level debug --error-logfile -'
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -27,4 +27,5 @@ databases:
     databaseName: cv_cover_letter_builder
     user: cv_user
     plan: free
+    region: frankfurt  # or choose your nearest region
     ipAllowList: [] # only allow internal connections

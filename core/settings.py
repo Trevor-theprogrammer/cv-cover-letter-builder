@@ -21,33 +21,14 @@ if 'RENDER' in os.environ or 'render.com' in os.environ.get('RENDER_EXTERNAL_URL
     DEBUG = False
 
 # ALLOWED_HOSTS configuration
-if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-else:
-    # Production settings - explicitly include Render domains
-    ALLOWED_HOSTS = [
-        'cv-cover-letter-builder.onrender.com',
-        '*.onrender.com',
-        'localhost',
-        '127.0.0.1'
-    ]
-    
-    # Also try to get from environment variable if set
-    env_hosts = config('ALLOWED_HOSTS', default='', cast=str)
-    if env_hosts:
-        additional_hosts = [s.strip() for s in env_hosts.split(',') if s.strip()]
-        for host in additional_hosts:
-            if host not in ALLOWED_HOSTS:
-                ALLOWED_HOSTS.append(host)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
-# Additional fallback for Render deployment
-if any('render' in host.lower() for host in [os.environ.get('RENDER_EXTERNAL_URL', ''), os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')]):
-    DEBUG = False
-    render_url = os.environ.get('RENDER_EXTERNAL_URL', '')
-    if render_url and render_url.startswith('https://'):
-        render_host = render_url.replace('https://', '').replace('http://', '')
-        if render_host not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(render_host)
+# Add Render host if we're on Render
+render_external_url = os.environ.get('RENDER_EXTERNAL_URL', '')
+if render_external_url:
+    render_host = render_external_url.replace('https://', '').replace('http://', '')
+    if render_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(render_host)
 
 # Security settings for production
 SECURE_SSL_REDIRECT = not DEBUG
