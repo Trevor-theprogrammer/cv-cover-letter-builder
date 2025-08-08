@@ -64,4 +64,3 @@ logs/
 env/Lib/site-packages/
 
 # Debugging
-debug_*.py
