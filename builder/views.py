@@ -64,19 +64,23 @@ def enhanced_ai_cover_letter(request):
                         return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
 
                     cover_letter = service.generate_tailored_cover_letter(
-                    cv_insights, job_match, job_title, job_description, tone, template_type
-                )
+                        cv_insights, job_match, job_title, job_description, tone, template_type
+                    )
                 
-                # Save to database
-                ai_cover_letter = AICoverLetter.objects.create(
-                    user=request.user,
-                    job_title=job_title,
-                    job_description=job_description,
-                    generated_letter=cover_letter,
-                    cv_analysis=cv_text[:500],
-                    tone=tone,
-                    template_type=template_type
-                )
+                    # Save to database
+                    ai_cover_letter = AICoverLetter.objects.create(
+                        user=request.user,
+                        job_title=job_title,
+                        job_description=job_description,
+                        generated_letter=cover_letter,
+                        cv_analysis=cv_text[:500],
+                        tone=tone,
+                        template_type=template_type
+                    )
+                except Exception as e:
+                    logger.error(f"Error generating cover letter: {str(e)}")
+                    messages.error(request, "An error occurred while generating your cover letter. Please try again.")
+                    return render(request, 'builder/enhanced_ai_cover_letter.html', {'form': form})
                 
                 return render(request, 'builder/enhanced_ai_cover_letter_result.html', {
                     'cover_letter': cover_letter,
