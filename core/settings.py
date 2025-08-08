@@ -16,6 +16,10 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+# Force production mode if running on Render
+if 'RENDER' in os.environ or 'render.com' in os.environ.get('RENDER_EXTERNAL_URL', ''):
+    DEBUG = False
+
 # ALLOWED_HOSTS configuration
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -35,6 +39,15 @@ else:
         for host in additional_hosts:
             if host not in ALLOWED_HOSTS:
                 ALLOWED_HOSTS.append(host)
+
+# Additional fallback for Render deployment
+if any('render' in host.lower() for host in [os.environ.get('RENDER_EXTERNAL_URL', ''), os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')]):
+    DEBUG = False
+    render_url = os.environ.get('RENDER_EXTERNAL_URL', '')
+    if render_url and render_url.startswith('https://'):
+        render_host = render_url.replace('https://', '').replace('http://', '')
+        if render_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(render_host)
 
 # Security settings for production
 SECURE_SSL_REDIRECT = not DEBUG
