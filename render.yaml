@@ -27,5 +27,5 @@ databases:
     databaseName: cv_cover_letter_builder
     user: cv_user
     plan: free
-    region: frankfurt  # or choose your nearest region
+    region: frankfurt # or choose your nearest region
     ipAllowList: [] # only allow internal connections
