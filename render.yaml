@@ -16,7 +16,7 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: 'core.settings'
       - key: OPENAI_API_KEY
-        sync: true  # This will sync from your Render dashboard environment variables
+        sync: true # This will sync from your Render dashboard environment variables
       - key: DATABASE_URL
         fromDatabase:
           name: cv-cover-letter-builder-db
