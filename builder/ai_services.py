@@ -11,11 +11,17 @@ class EnhancedAICoverLetterService:
     
     def __init__(self):
         api_key = os.environ.get('OPENAI_API_KEY')
+        logger.info(f"Initializing OpenAI client. API key present: {bool(api_key)}")
         if not api_key:
             logger.warning("OPENAI_API_KEY not found, falling back to mock responses")
             self.client = None
         else:
-            self.client = OpenAI(api_key=api_key)
+            try:
+                self.client = OpenAI(api_key=api_key)
+                logger.info("OpenAI client initialized successfully")
+            except Exception as e:
+                logger.error(f"Error initializing OpenAI client: {str(e)}")
+                self.client = None
     
     def extract_cv_insights(self, cv_text: str) -> Dict[str, Any]:
         """Extract key insights from CV text using OpenAI"""
@@ -104,6 +110,9 @@ class EnhancedAICoverLetterService:
         """Generate tailored cover letter using OpenAI"""
         try:
             logger.info(f"Starting cover letter generation for job: {job_title}")
+            logger.info(f"OpenAI client status: {'initialized' if self.client else 'not initialized'}")
+            logger.info(f"CV insights available: {bool(cv_insights)}")
+            logger.info(f"Job match data available: {bool(job_match)}")
             
             # Ensure we have valid inputs
             if not job_title or not job_description:
