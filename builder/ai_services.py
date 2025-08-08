@@ -3,7 +3,9 @@ import os
 import logging
 import json
 from typing import Dict, List, Any
+from dotenv import load_dotenv
 
+load_dotenv()  # Load environment variables from .env file
 logger = logging.getLogger(__name__)
 
 class EnhancedAICoverLetterService:
