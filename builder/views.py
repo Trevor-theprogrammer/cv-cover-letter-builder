@@ -71,9 +71,19 @@ def enhanced_ai_cover_letter(request):
                 
             except Exception as e:
                 logger.error(f"Cover letter generation failed: {str(e)}")
+                import traceback
+                logger.error(f"Full traceback: {traceback.format_exc()}")
+                
+                # Provide more specific error message
+                error_message = 'Failed to generate cover letter. Please try again.'
+                if 'Job title and description are required' in str(e):
+                    error_message = 'Please provide both job title and job description.'
+                elif 'OpenAI' in str(e):
+                    error_message = 'AI service temporarily unavailable. Please try again later.'
+                
                 return render(request, 'builder/enhanced_ai_cover_letter.html', {
                     'form': form,
-                    'error': 'Failed to generate cover letter. Please try again.'
+                    'error': error_message
                 })
     else:
         # Check if CV ID is provided in URL
@@ -170,7 +180,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')
+            return redirect('builder:home')
     else:
         form = CustomUserCreationForm()
     

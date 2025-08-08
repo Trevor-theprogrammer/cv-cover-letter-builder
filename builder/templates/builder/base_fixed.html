@@ -1,18 +1,110 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="description"
+      content="Create professional CVs and cover letters with our AI-powered builder. Get expert guidance and professional templates to land your dream job."
+    />
+    <meta
+      name="keywords"
+      content="CV builder, cover letter generator, resume maker, job application, career tools, professional CV"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'builder/images/favicon.ico' %}"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{% static 'builder/images/apple-touch-icon.png' %}"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="{% static 'builder/images/apple-touch-icon-152x152.png' %}"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{% static 'builder/images/apple-touch-icon-180x180.png' %}"
+    />
+    <link
+      rel="mask-icon"
+      href="{% static 'builder/images/safari-pinned-tab.svg' %}"
+      color="#2563eb"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta
+      property="og:title"
+      content="CV & Cover Letter Builder - Build Your Professional Future"
+    />
+    <meta
+      property="og:description"
+      content="Create professional CVs and cover letters with our AI-powered builder."
+    />
+    <meta
+      property="og:image"
+      content="{% static 'builder/images/og-image.jpg' %}"
+    />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="CV & Cover Letter Builder - Build Your Professional Future"
+    />
+    <meta
+      name="twitter:description"
+      content="Create professional CVs and cover letters with our AI-powered builder."
+    />
+    <meta
+      name="twitter:image"
+      content="{% static 'builder/images/og-image.jpg' %}"
+    />
+
+    <!-- Security -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com;"
+    />
+
+    <!-- Mobile & PWA Optimization -->
+    <meta
+      name="theme-color"
+      content="#2563eb"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#1e40af"
+      media="(prefers-color-scheme: dark)"
+    />
+    <!-- Browser-specific optimizations -->
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-navbutton-color" content="#2563eb" />
+    <!-- iOS optimizations -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Color scheme support -->
+    <meta name="color-scheme" content="light dark" />
+    <!-- App manifest -->
+    <link rel="manifest" href="{% static 'builder/manifest.webmanifest' %}" />
+
     <title>CV & Cover Letter Builder - Build Your Professional Future</title>
     <link
       rel="stylesheet"
       href="{% static 'builder/css/cvmaker-style.css' %}"
     />
-    <link
-      rel="stylesheet"
-      href="{% static 'builder/css/responsive.css' %}"
-    />
+    <link rel="stylesheet" href="{% static 'builder/css/responsive.css' %}" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
@@ -20,14 +112,24 @@
     {% block extra_css %}{% endblock %}
   </head>
   <body>
-    <header>
+    <header role="banner">
       <div class="container">
         <div class="header-content">
           <h1>CV Builder Pro</h1>
-          <button class="mobile-nav-toggle" aria-label="Toggle navigation">
-            <i class="fas fa-bars"></i>
+          <button
+            class="mobile-nav-toggle"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="main-nav"
+          >
+            <i class="fas fa-bars" aria-hidden="true"></i>
           </button>
-          <nav class="main-nav">
+          <nav
+            class="main-nav"
+            id="main-nav"
+            role="navigation"
+            aria-label="Main navigation"
+          >
             <a href="{% url 'builder:home' %}">Home</a>
             {% if user.is_authenticated %}
             <a href="{% url 'builder:dashboard' %}">Dashboard</a>
@@ -38,17 +140,13 @@
             <a href="{% url 'builder:cover_letter_templates' %}">Templates</a>
             <a href="{% url 'builder:cv_analyzer' %}">CV Analyzer</a>
             <a href="{% url 'builder:upload_cv' %}">Upload CV</a>
-            <form
-              action="{% url 'logout' %}"
-              method="post"
-              style="display: inline"
-            >
+            <form action="{% url 'logout' %}" method="post" class="inline-form">
               {% csrf_token %}
               <button type="submit" class="btn btn-outline">Logout</button>
             </form>
             {% else %}
             <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
-            <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+            <a href="{% url 'register' %}" class="btn btn-nav">Get Started</a>
             {% endif %}
           </nav>
         </div>
@@ -65,9 +163,13 @@
       {% endif %} {% block content %}{% endblock %}
     </main>
 
-    <footer>
+    <footer role="contentinfo">
       <div class="container">
-        <div class="grid grid-4">
+        <div
+          class="grid grid-4"
+          role="complementary"
+          aria-label="Footer links and information"
+        >
           <div>
             <h3>CV Builder Pro</h3>
             <p>
@@ -103,14 +205,7 @@
             </ul>
           </div>
         </div>
-        <div
-          style="
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #374151;
-          "
-        >
+        <div class="footer-copyright">
           <p>&copy; 2024 CV Builder Pro. All rights reserved.</p>
         </div>
       </div>
@@ -118,5 +213,8 @@
 
     <script src="{% static 'builder/js/scripts.js' %}"></script>
     <script src="{% static 'builder/js/mobile-nav.js' %}"></script>
+    {% if debug %}
+    <script src="{% static 'builder/js/viewport-tester.js' %}"></script>
+    {% endif %}
   </body>
 </html>

@@ -103,25 +103,48 @@ class EnhancedAICoverLetterService:
                                      tone: str = 'professional', template_type: str = 'standard') -> str:
         """Generate tailored cover letter using OpenAI"""
         try:
-            skills_text = ', '.join(cv_insights.get('skills', [])[:5])
-            achievements_text = '\n'.join([f"- {ach}" for ach in cv_insights.get('achievements', [])[:3]])
+            logger.info(f"Starting cover letter generation for job: {job_title}")
+            
+            # Ensure we have valid inputs
+            if not job_title or not job_description:
+                raise ValueError("Job title and description are required")
+            
+            # Prepare data with fallbacks
+            skills_list = cv_insights.get('skills', [])
+            skills_text = ', '.join(skills_list[:5]) if skills_list else 'relevant technical skills'
+            
+            achievements_list = cv_insights.get('achievements', [])
+            achievements_text = '\n'.join([f"- {ach}" for ach in achievements_list[:3]]) if achievements_list else '- Strong problem-solving abilities\n- Excellent communication skills\n- Team collaboration'
+            
+            experience_list = cv_insights.get('experience', [])
+            experience_text = experience_list[0] if experience_list else 'professional experience'
+            
+            education_list = cv_insights.get('education', [])
+            education_text = ', '.join(education_list) if education_list else 'relevant educational background'
+            
+            summary_text = cv_insights.get('summary', 'experienced professional')
             
             # Fallback to template if no OpenAI API key
             if not self.client:
+                logger.info("Using fallback template (no OpenAI API key)")
                 return f"""Dear Hiring Manager,
 
 I am writing to express my strong interest in the {job_title} position. With my experience in {skills_text.split(', ')[0] if skills_text else 'software development'} and proven track record, I believe I would be a valuable addition to your organization.
 
-Throughout my career, I have demonstrated expertise in {skills_text}. My background includes {cv_insights.get('experience', ['relevant experience'])[0] if cv_insights.get('experience') else 'professional experience'}.
+Throughout my career, I have demonstrated expertise in {skills_text}. My background includes {experience_text}, which has prepared me well for this role.
 
 Key achievements that align with your requirements include:
-{achievements_text if achievements_text else '- Strong problem-solving abilities\n- Excellent communication skills\n- Team collaboration'}
+{achievements_text}
 
-I am excited about the opportunity to bring my skills and experience to your team and contribute to your continued success.
+I am excited about the opportunity to bring my skills and experience to your team and contribute to your continued success. I would welcome the chance to discuss how my background and enthusiasm can benefit your organization.
+
+Thank you for considering my application. I look forward to hearing from you.
 
 Sincerely,
 [Your Name]"""
             
+            # Use OpenAI API
+            logger.info("Using OpenAI API for cover letter generation")
             prompt = f"""
             Generate a professional cover letter for the following job application:
             
@@ -130,10 +153,10 @@ Sincerely,
             
             Candidate Background:
             - Skills: {skills_text}
-            - Experience: {', '.join(cv_insights.get('experience', []))}
-            - Education: {', '.join(cv_insights.get('education', []))}
+            - Experience: {experience_text}
+            - Education: {education_text}
             - Achievements: {achievements_text}
-            - Summary: {cv_insights.get('summary', '')}
+            - Summary: {summary_text}
             
             Tone: {tone}
             Template: {template_type}
@@ -144,6 +167,7 @@ Sincerely,
             - Keep to 3-4 paragraphs
             - Include specific achievements when relevant
             - End with strong call to action
+            - Address to "Dear Hiring Manager"
             """
             
             response = self.client.chat.completions.create(
@@ -153,11 +177,23 @@ Sincerely,
                 temperature=0.7
             )
             
-            return response.choices[0].message.content.strip()
+            generated_letter = response.choices[0].message.content.strip()
+            logger.info(f"Cover letter generated successfully: {len(generated_letter)} characters")
+            return generated_letter
             
         except Exception as e:
             logger.error(f"Cover letter generation failed: {str(e)}")
-            return f"Dear Hiring Manager,\n\nI am writing to apply for the {job_title} position...\n\nSincerely,\n[Your Name]"
+            # Return a basic fallback template
+            return f"""Dear Hiring Manager,
+
+I am writing to express my interest in the {job_title} position at your organization. Based on the job description, I believe my skills and experience make me a strong candidate for this role.
+
+My background includes experience in software development and various technical skills that align with your requirements. I am passionate about contributing to innovative projects and working collaboratively with teams to achieve business objectives.
+
+I would welcome the opportunity to discuss how my experience and enthusiasm can contribute to your team's success. Thank you for considering my application.
+
+Sincerely,
+[Your Name]"""
     
     def analyze_cv_comprehensive(self, cv_text: str) -> Dict[str, Any]:
         """Comprehensive CV analysis with scoring and recommendations"""

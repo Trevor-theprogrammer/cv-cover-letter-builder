@@ -1,0 +1,40 @@
+{
+  "name": "CV Builder Pro",
+  "short_name": "CV Builder",
+  "description": "Create professional CVs and cover letters with AI-powered builder",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "any",
+  "categories": ["productivity", "utilities"],
+  "dir": "ltr",
+  "lang": "en",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Create CV",
+      "url": "/create-cv",
+      "description": "Start creating your CV"
+    },
+    {
+      "name": "Generate Cover Letter",
+      "url": "/generate-cover-letter",
+      "description": "Create an AI-powered cover letter"
+    }
+  ]
+}
