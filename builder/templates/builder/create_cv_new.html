@@ -1,0 +1,489 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Create Your
+CV - CV Builder Pro{% endblock %} {% block extra_css %}
+<style>
+  :root {
+    --primary-color: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --secondary-color: #64748b;
+    --background-color: #f8fafc;
+    --card-background: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --border-color: #e2e8f0;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+  }
+
+  /* Main Container */
+  .cv-builder-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    background: var(--background-color);
+  }
+
+  /* Steps Navigation */
+  .steps-container {
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 0 2rem;
+  }
+
+  .steps-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: var(--border-color);
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  .step {
+    position: relative;
+    z-index: 2;
+    background: var(--background-color);
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .step-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    max-width: 120px;
+  }
+
+  .step.active .step-number {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+  }
+
+  .step.active .step-text {
+    color: var(--primary-color);
+  }
+
+  .step.completed .step-number {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+  }
+
+  /* Content Area */
+  .step-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: none;
+  }
+
+  .step-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+  }
+
+  /* Template Selection */
+  .template-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .template-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .template-header p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .highlight {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .template-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .template-preview {
+    aspect-ratio: 1/1.4142;
+    position: relative;
+    overflow: hidden;
+    background: var(--background-color);
+  }
+
+  .template-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .template-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .preview-btn {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+
+  .template-card:hover .template-overlay {
+    opacity: 1;
+  }
+
+  .template-card:hover .preview-btn {
+    transform: translateY(0);
+  }
+
+  .template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .template-info {
+    padding: 1.5rem;
+  }
+
+  .template-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .template-info p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .template-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: white;
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+  }
+
+  .template-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .template-card.selected {
+    box-shadow: 0 0 0 2px var(--primary-color), 0 20px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Navigation Buttons */
+  .step-navigation {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 3rem auto 0;
+    padding: 0 2rem;
+  }
+
+  .nav-btn {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .btn-next {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+  }
+
+  .btn-next:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-back {
+    background: white;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-back:hover {
+    background: var(--background-color);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .steps-container {
+      padding: 0 1rem;
+    }
+
+    .step-text {
+      display: none;
+    }
+
+    .template-grid {
+      grid-template-columns: 1fr;
+      padding: 0.5rem;
+    }
+
+    .template-header h1 {
+      font-size: 2rem;
+    }
+
+    .template-header p {
+      font-size: 1rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="cv-builder-container">
+  <!-- Steps Navigation -->
+  <div class="steps-container">
+    <div class="step active">
+      <div class="step-number">1</div>
+      <div class="step-text">Choose Template</div>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-text">Upload CV</div>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-text">Edit Content</div>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-text">Preview CV</div>
+    </div>
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-text">Download</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Template Selection -->
+  <div id="step-1-content" class="step-content active">
+    <div class="template-header">
+      <h1>Choose Your CV Template</h1>
+      <p>
+        Select from our professionally designed templates to create your
+        standout CV <span class="highlight">in minutes</span>
+      </p>
+    </div>
+
+    <div class="template-grid">
+      {% for template in templates %}
+      <div
+        class="template-card {% if forloop.first %}selected{% endif %}"
+        onclick="selectTemplate('{{ template.id }}')"
+      >
+        <div class="template-preview">
+          <img
+            src="{% static template.preview_image %}"
+            alt="{{ template.name }} Template"
+            loading="lazy"
+          />
+          {% if template.badge %}
+          <span class="template-badge">{{ template.badge }}</span>
+          {% endif %}
+          <div class="template-overlay">
+            <button
+              type="button"
+              class="preview-btn"
+              onclick="previewTemplate(event, '{{ template.id }}')"
+            >
+              Preview Template
+            </button>
+          </div>
+        </div>
+        <div class="template-info">
+          <h3>{{ template.name }}</h3>
+          <p>{{ template.description }}</p>
+        </div>
+        <input
+          type="radio"
+          name="template"
+          value="{{ template.id }}"
+          id="template-{{ template.id }}"
+          class="template-radio"
+          {%
+          if
+          forloop.first
+          %}checked{%
+          endif
+          %}
+          title="Select {{ template.name }} template"
+        />
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="step-navigation">
+      <button type="button" class="nav-btn btn-back" style="visibility: hidden">
+        Back
+      </button>
+      <button type="button" class="nav-btn btn-next" onclick="nextStep()">
+        Continue with Selected Template
+      </button>
+    </div>
+  </div>
+
+  <!-- Additional step content sections will be added here -->
+</div>
+
+<script>
+  // Global variables
+  let currentStep = 1;
+  const totalSteps = 5;
+
+  function updateSteps() {
+    document.querySelectorAll('.step').forEach((step, index) => {
+      const stepNum = index + 1;
+      step.classList.remove('active', 'completed');
+
+      if (stepNum === currentStep) {
+        step.classList.add('active');
+      } else if (stepNum < currentStep) {
+        step.classList.add('completed');
+      }
+    });
+
+    // Update navigation buttons
+    const backBtn = document.querySelector('.btn-back');
+    backBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+  }
+
+  function selectTemplate(templateId) {
+    // Remove selected class from all cards
+    document.querySelectorAll('.template-card').forEach((card) => {
+      card.classList.remove('selected');
+    });
+
+    // Add selected class to clicked card
+    const selectedCard = document
+      .querySelector(`#template-${templateId}`)
+      .closest('.template-card');
+    selectedCard.classList.add('selected');
+
+    // Check the radio button
+    document.querySelector(`#template-${templateId}`).checked = true;
+  }
+
+  function previewTemplate(event, templateId) {
+    event.stopPropagation(); // Prevent template selection
+    window.open(`/templates/${templateId}-preview/`, '_blank');
+  }
+
+  function nextStep() {
+    if (currentStep < totalSteps) {
+      currentStep++;
+      updateSteps();
+      showStepContent(currentStep);
+    }
+  }
+
+  function previousStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      updateSteps();
+      showStepContent(currentStep);
+    }
+  }
+
+  function showStepContent(step) {
+    // Hide all sections
+    document.querySelectorAll('.step-content').forEach((section) => {
+      section.classList.remove('active');
+    });
+
+    // Show current section
+    const currentSection = document.querySelector(`#step-${step}-content`);
+    if (currentSection) {
+      currentSection.classList.add('active');
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    updateSteps();
+  });
+</script>
+{% endblock %}

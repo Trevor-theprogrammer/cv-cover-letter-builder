@@ -1,14 +1,16 @@
 from django.urls import path
 from . import views
+from .views_cv_builder import create_cv
+from .views_template_preview import template_preview
 
 app_name = 'builder'
 
 urlpatterns = [
     path('template-previews/', views.template_previews, name='template_previews'),
-    path('templates/<str:template_name>-preview/', views.template_preview, name='template_preview'),
+    path('templates/<str:template_id>/preview/', template_preview, name='template_preview'),
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('cv/', views.create_cv, name='create_cv'),
+    path('cv/create/', create_cv, name='create_cv'),  # Updated path for new CV builder
     path('cv/<int:pk>/', views.cv_detail, name='cv_detail'),
     path('cv/<int:pk>/add_section/', views.add_cv_section, name='add_cv_section'),
     path('cv/<int:pk>/edit_section/', views.edit_cv_section, name='edit_cv_section'),
