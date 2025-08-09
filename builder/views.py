@@ -2,7 +2,7 @@ import json
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -222,8 +222,15 @@ def dashboard(request):
     })
 
 def template_previews(request):
-    """View for CV template previews"""
+    """View for CV template previews gallery"""
     return render(request, 'builder/template_previews.html')
+
+def template_preview(request, template_name):
+    """View for individual CV template preview"""
+    template_names = ['modern', 'classic', 'minimal', 'creative']
+    if template_name not in template_names:
+        return HttpResponseNotFound('Template not found')
+    return render(request, f'builder/templates/{template_name}_preview.html')
 
 def create_cv(request):
     """Create CV view with form handling"""
