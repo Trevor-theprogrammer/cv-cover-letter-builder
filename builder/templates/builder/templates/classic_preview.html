@@ -1,0 +1,57 @@
+{% extends 'builder/base.html' %}
+{% load static %}
+
+{% block title %}Classic CV Template Preview{% endblock %}
+
+{% block content %}
+<div class="preview-container classic-preview">
+    <div class="header">
+        <h1 class="name">John Anderson</h1>
+        <div class="title">Senior Software Engineer</div>
+        <div class="contact">
+            john@example.com • (555) 123-4567 • San Francisco, CA
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Professional Summary</h2>
+        <p class="summary">
+            Results-driven software engineer with 8+ years of experience in full-stack development. 
+            Specialized in building scalable cloud applications and leading agile development teams.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Professional Experience</h2>
+        <div class="experience-item">
+            <div class="job-title">Senior Software Engineer</div>
+            <div class="company">TechCorp Solutions</div>
+            <div class="duration">2020 - Present • San Francisco, CA</div>
+            <ul class="achievements">
+                <li>Led development of cloud-native microservices architecture</li>
+                <li>Improved system performance by 40% through optimization</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Education</h2>
+        <div class="education-item">
+            <div class="degree">Master of Computer Science</div>
+            <div class="school">Stanford University</div>
+            <div class="duration">2018 • Palo Alto, CA</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Technical Skills</h2>
+        <div class="skills-list">
+            <span class="skill">Python</span>
+            <span class="skill">JavaScript</span>
+            <span class="skill">React</span>
+            <span class="skill">AWS</span>
+            <span class="skill">Docker</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

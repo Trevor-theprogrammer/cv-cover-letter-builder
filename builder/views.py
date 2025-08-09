@@ -223,14 +223,29 @@ def dashboard(request):
 
 def template_previews(request):
     """View for CV template previews gallery"""
-    return render(request, 'builder/template_previews.html')
+    try:
+        logger.info("Accessing template preview gallery")
+        return render(request, 'builder/template_previews.html')
+    except Exception as e:
+        logger.error(f"Error rendering template preview gallery: {str(e)}")
+        messages.error(request, "Unable to load template preview gallery. Please try again later.")
+        return redirect('builder:home')
 
 def template_preview(request, template_name):
     """View for individual CV template preview"""
     template_names = ['modern', 'classic', 'minimal', 'creative']
-    if template_name not in template_names:
-        return HttpResponseNotFound('Template not found')
-    return render(request, f'builder/templates/{template_name}_preview.html')
+    try:
+        if template_name not in template_names:
+            logger.warning(f"Invalid template name requested: {template_name}")
+            messages.warning(request, f"Template '{template_name}' not found.")
+            return HttpResponseNotFound('Template not found')
+        
+        logger.info(f"Accessing preview for template: {template_name}")
+        return render(request, f'builder/templates/{template_name}_preview.html')
+    except Exception as e:
+        logger.error(f"Error rendering template preview for {template_name}: {str(e)}")
+        messages.error(request, f"Unable to load template preview. Please try again later.")
+        return redirect('builder:template_previews')
 
 def create_cv(request):
     """Create CV view with form handling"""
