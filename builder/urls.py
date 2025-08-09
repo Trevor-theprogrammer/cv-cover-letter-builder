@@ -4,6 +4,8 @@ from . import views
 app_name = 'builder'
 
 urlpatterns = [
+    path('template-previews/', views.template_previews, name='template_previews'),
+    path('templates/<str:template_name>-preview/', views.template_preview, name='template_preview'),
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('cv/', views.create_cv, name='create_cv'),

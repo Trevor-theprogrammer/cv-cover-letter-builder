@@ -221,6 +221,10 @@ def dashboard(request):
         'ai_cover_letters': ai_cover_letters
     })
 
+def template_previews(request):
+    """View for CV template previews"""
+    return render(request, 'builder/template_previews.html')
+
 def create_cv(request):
     """Create CV view with form handling"""
     if request.method == 'POST':

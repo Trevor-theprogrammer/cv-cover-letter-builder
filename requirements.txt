@@ -12,3 +12,5 @@ gunicorn==23.0.0
 psycopg2-binary==2.9.9
 dj-database-url==2.1.0
 python-magic==0.4.27
+selenium==4.11.2
+webdriver_manager==4.0.0
