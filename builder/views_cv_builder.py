@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+import logging
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def create_cv(request):
     """View for the CV creation process"""
+    logger.info("Accessing create_cv view")
     templates = [
         {
             'id': 'modern',
