@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CV Template Preview</title>
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --background-light: #f8fafc;
+        --border-color: #e2e8f0;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, sans-serif;
+        background: white;
+      }
+
+      .cv-preview {
+        width: 595px; /* A4 width at 72 DPI */
+        height: 842px; /* A4 height at 72 DPI */
+        margin: 0 auto;
+        padding: 40px;
+        box-sizing: border-box;
+        background: white;
+      }
+
+      /* Modern Template */
+      .modern {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 30px;
+      }
+
+      .modern .sidebar {
+        background: var(--primary-color);
+        color: white;
+        padding: 30px;
+        height: 100%;
+      }
+
+      .modern .main-content {
+        padding: 30px 0;
+      }
+
+      /* Creative Template */
+      .creative {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--primary-color) 30%,
+          white 30%,
+          white 100%
+        );
+        padding: 40px;
+      }
+
+      .creative .header {
+        color: white;
+        margin-bottom: 40px;
+      }
+
+      /* Minimalist Template */
+      .minimalist {
+        padding: 40px;
+        border-top: 5px solid var(--primary-color);
+      }
+
+      .minimalist .section {
+        margin-bottom: 30px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      /* Tech Template */
+      .tech {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 30px;
+      }
+
+      .tech .header {
+        background: var(--primary-color);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      /* Executive Template */
+      .executive {
+        padding: 40px;
+        border-left: 15px solid var(--primary-color);
+      }
+
+      .executive .header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+      }
+
+      /* Academic Template */
+      .academic {
+        padding: 40px;
+      }
+
+      .academic .header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+      }
+
+      /* Common Elements */
+      .section {
+        margin-bottom: 20px;
+      }
+
+      .section-title {
+        color: var(--primary-color);
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .experience-item,
+      .education-item {
+        margin-bottom: 15px;
+      }
+
+      .name {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+      }
+
+      .title {
+        font-size: 1.2em;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+      }
+
+      .contact-info {
+        margin-bottom: 30px;
+      }
+
+      .skills-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .skill-item {
+        background: var(--background-light);
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+
+      /* Placeholder text styling */
+      .placeholder-text {
+        background: var(--background-light);
+        height: 12px;
+        margin: 8px 0;
+        border-radius: 2px;
+      }
+
+      .placeholder-text.w-75 {
+        width: 75%;
+      }
+      .placeholder-text.w-50 {
+        width: 50%;
+      }
+      .placeholder-text.w-25 {
+        width: 25%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- You can switch the template class to: modern, creative, minimalist, tech, executive, or academic -->
+    <div class="cv-preview modern">
+      <div class="sidebar">
+        <div class="section">
+          <div class="name">John Smith</div>
+          <div class="title">Software Engineer</div>
+        </div>
+        <div class="section">
+          <div class="section-title">Contact</div>
+          <div class="contact-info">
+            <div class="placeholder-text w-75"></div>
+            <div class="placeholder-text w-50"></div>
+            <div class="placeholder-text w-75"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Skills</div>
+          <div class="skills-list">
+            <div class="skill-item">Python</div>
+            <div class="skill-item">JavaScript</div>
+            <div class="skill-item">React</div>
+            <div class="skill-item">Node.js</div>
+          </div>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="section">
+          <div class="section-title">Experience</div>
+          <div class="experience-item">
+            <div class="placeholder-text w-75"></div>
+            <div class="placeholder-text w-50"></div>
+            <div class="placeholder-text"></div>
+            <div class="placeholder-text"></div>
+            <div class="placeholder-text w-75"></div>
+          </div>
+          <div class="experience-item">
+            <div class="placeholder-text w-75"></div>
+            <div class="placeholder-text w-50"></div>
+            <div class="placeholder-text"></div>
+            <div class="placeholder-text w-75"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Education</div>
+          <div class="education-item">
+            <div class="placeholder-text w-75"></div>
+            <div class="placeholder-text w-50"></div>
+            <div class="placeholder-text w-75"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
