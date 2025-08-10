@@ -49,9 +49,10 @@
             </form>
             {% else %}
             <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
-            <a href="{% url 'register' %}" class="btn btn-primary"
+            <a href="{% url 'builder:register' %}" class="btn btn-primary"
               >Get Started</a
             >
+
             {% endif %}
           </nav>
         </div>
