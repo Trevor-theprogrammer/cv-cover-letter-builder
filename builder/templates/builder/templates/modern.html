@@ -19,14 +19,18 @@ Professional CV{% endblock %} {% block content %}
   </div>
 
   <div class="cv-main">
-    <div class="section">
+    <div class="section" data-section="summary">
       <h3>Professional Summary</h3>
-      {{cv.summary|default:"Professional summary goes here"}}
+      <div class="editable-content" contenteditable="true">
+        {{cv.summary|default:"Professional summary goes here"}}
+      </div>
     </div>
 
-    <div class="section">
+    <div class="section" data-section="experience">
       <h3>Experience</h3>
-      {{cv.experience|default:"Work experience details"}}
+      <div class="editable-content" contenteditable="true">
+        {{cv.experience|default:"Work experience details"}}
+      </div>
     </div>
 
     <div class="section">

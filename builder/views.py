@@ -2,7 +2,8 @@ import json
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
+from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -16,6 +17,27 @@ from .forms import CVCreationForm
 from django.contrib import messages
 
 logger = logging.getLogger(__name__)
+
+def load_cv_template(request, template_name):
+    """Loads a CV template for editing"""
+    template_path = f'builder/templates/{template_name}.html'
+    try:
+        html = render_to_string(template_path, {'cv': {}})
+        return HttpResponse(html)
+    except:
+        return HttpResponse('Template not found', status=404)
+
+def save_cv_content(request):
+    """Saves CV content from the editor"""
+    if request.method == 'POST':
+        try:
+            data = request.POST
+            # Here you would save the CV data to your database
+            # For now, we'll just return success
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 @login_required
 def enhanced_ai_cover_letter(request):
