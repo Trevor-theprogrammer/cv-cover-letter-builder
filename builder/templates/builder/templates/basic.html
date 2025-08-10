@@ -1,0 +1,130 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+<div class="cv-template basic">
+  <div class="cv-header">
+    <h1 contenteditable="true" class="cv-name">Your Name</h1>
+    <div contenteditable="true" class="cv-contact">
+      Email: your.email@example.com<br />
+      Phone: (123) 456-7890<br />
+      Location: City, Country
+    </div>
+  </div>
+
+  <div class="cv-section">
+    <h2>Professional Summary</h2>
+    <div contenteditable="true" class="cv-content">
+      A brief summary of your professional background and key strengths...
+    </div>
+  </div>
+
+  <div class="cv-section">
+    <h2>Experience</h2>
+    <div contenteditable="true" class="cv-content">
+      <div class="experience-item">
+        <h3>Job Title</h3>
+        <p>Company Name | Location | Dates</p>
+        <ul>
+          <li>Key achievement or responsibility...</li>
+          <li>Another achievement...</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section">
+    <h2>Education</h2>
+    <div contenteditable="true" class="cv-content">
+      <div class="education-item">
+        <h3>Degree Name</h3>
+        <p>Institution | Location | Graduation Date</p>
+        <p>Relevant coursework or achievements...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section">
+    <h2>Skills</h2>
+    <div contenteditable="true" class="cv-content">
+      <ul>
+        <li>Skill 1</li>
+        <li>Skill 2</li>
+        <li>Skill 3</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cv-template.basic {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    font-family: Arial, sans-serif;
+  }
+
+  .cv-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .cv-name {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .cv-contact {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .cv-section {
+    margin-bottom: 25px;
+  }
+
+  .cv-section h2 {
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+  }
+
+  .experience-item,
+  .education-item {
+    margin-bottom: 20px;
+  }
+
+  .experience-item h3,
+  .education-item h3 {
+    margin-bottom: 5px;
+    color: #444;
+  }
+
+  .cv-content ul {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+
+  [contenteditable='true']:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  [contenteditable='true']:focus {
+    outline: 2px solid #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+  }
+</style>
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const editableElements = document.querySelectorAll(
+      '[contenteditable="true"]'
+    );
+
+    editableElements.forEach((element) => {
+      element.addEventListener('blur', function () {
+        // Here you can add logic to save changes
+        console.log('Content changed:', this.innerHTML);
+      });
+    });
+  });
+</script>
+{% endblock %} {% endblock %}

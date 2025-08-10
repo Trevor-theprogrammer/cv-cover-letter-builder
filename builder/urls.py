@@ -26,6 +26,7 @@ urlpatterns = [
     path('upload-cv-enhanced/', views.upload_cv, name='upload_cv_enhanced'),
     path('ai-cover-letter/', views.ai_cover_letter, name='ai_cover_letter'),
     path('templates/', views.templates, name='templates'),
+    path('templates/<str:template_name>/', views.load_cv_template, name='load_template'),
     path('cover-letter-templates/', views.cover_letter_templates, name='cover_letter_templates'),
     path('cv-analyzer/', views.cv_analyzer, name='cv_analyzer'),
     path('cv/template/<str:template_name>/', views.load_cv_template, name='load_cv_template'),

@@ -19,23 +19,45 @@ from django.contrib import messages
 logger = logging.getLogger(__name__)
 
 def load_cv_template(request, template_name):
-    """Loads a CV template for editing"""
-    template_path = f'builder/templates/{template_name}.html'
+    """Loads a CV template for editing or preview"""
+    preview_mode = request.GET.get('preview', False)
+    
     try:
-        html = render_to_string(template_path, {'cv': {}})
+        # First try the templates directory
+        template_path = f'builder/templates/builder/templates/{template_name}.html'
+        context = {
+            'cv': {},
+            'preview_mode': preview_mode
+        }
+        html = render_to_string(template_path, context)
         return HttpResponse(html)
-    except:
+    except Exception as e:
+        logger.error(f"Error loading template {template_name}: {str(e)}")
         return HttpResponse('Template not found', status=404)
+
+def templates(request):
+    """Display available CV templates"""
+    templates = [
+        {
+            'id': 'basic',
+            'name': 'Basic Template',
+            'description': 'A clean and professional CV template suitable for most industries',
+            'preview_image': 'builder/images/templates/basic-preview.png'
+        },
+        # Add more templates as needed
+    ]
+    return render(request, 'builder/templates.html', {'templates': templates})
 
 def save_cv_content(request):
     """Saves CV content from the editor"""
     if request.method == 'POST':
         try:
-            data = request.POST
+            data = json.loads(request.body)
             # Here you would save the CV data to your database
             # For now, we'll just return success
             return JsonResponse({'status': 'success'})
         except Exception as e:
+            logger.error(f"Error saving CV content: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
