@@ -9,7 +9,7 @@ Pro - Create Professional CVs & Cover Letters{% endblock %} {% block content %}
       professionally designed templates.
     </p>
     <div class="cta-buttons">
-      <a href="{% url 'create_cv' %}" class="btn-large btn-white">
+      <a href="{% url 'builder:create_cv' %}" class="btn-large btn-white">
         <i class="fas fa-rocket me-2"></i>Create Your CV
       </a>
       <a href="{% url 'register' %}" class="btn-large btn-outline">
@@ -145,7 +145,7 @@ Pro - Create Professional CVs & Cover Letters{% endblock %} {% block content %}
       Join thousands of professionals who've secured their dream jobs with our
       CV builder.
     </p>
-    <a href="{% url 'create_cv' %}" class="btn-large btn-primary">
+    <a href="{% url 'builder:create_cv' %}" class="btn-large btn-primary">
       <i class="fas fa-rocket me-2"></i>Start Building Your CV
     </a>
   </div>
