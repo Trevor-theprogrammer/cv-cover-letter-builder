@@ -1,304 +1,311 @@
-{% extends 'builder/base.html' %}
-{% load static %}
-
-{% block title %}Edit Your CV{% endblock %}
-
-{% block extra_css %}
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Edit Your
+CV{% endblock %} {% block extra_css %}
 <style>
-    .cv-editor {
-        display: flex;
-        gap: 2rem;
-        padding: 2rem;
-        background: #f8fafc;
-        min-height: 100vh;
-    }
+  .cv-editor {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    background: #f8fafc;
+    min-height: 100vh;
+  }
 
-    .cv-preview {
-        flex: 1;
-        background: white;
-        padding: 3rem;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        border-radius: 8px;
-        min-height: 29.7cm;  /* A4 height */
-        width: 21cm;  /* A4 width */
-        margin: 0 auto;
-    }
+  .cv-preview {
+    flex: 1;
+    background: white;
+    padding: 3rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border-radius: 8px;
+    min-height: 29.7cm; /* A4 height */
+    width: 21cm; /* A4 width */
+    margin: 0 auto;
+  }
 
-    .cv-header {
-        margin-bottom: 2rem;
-    }
+  .cv-header {
+    margin-bottom: 2rem;
+  }
 
-    .cv-name {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.5rem;
-        outline: none;
-    }
+  .cv-name {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    outline: none;
+  }
 
-    .cv-title {
-        font-size: 1.25rem;
-        color: #64748b;
-        margin-bottom: 1rem;
-        outline: none;
-    }
+  .cv-title {
+    font-size: 1.25rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    outline: none;
+  }
 
-    .cv-contact {
-        color: #475569;
-        margin-bottom: 2rem;
-    }
+  .cv-contact {
+    color: #475569;
+    margin-bottom: 2rem;
+  }
 
-    .cv-contact p {
-        margin: 0.25rem 0;
-        outline: none;
-    }
+  .cv-contact p {
+    margin: 0.25rem 0;
+    outline: none;
+  }
 
-    .cv-section {
-        margin-bottom: 2rem;
-    }
+  .cv-section {
+    margin-bottom: 2rem;
+  }
 
-    .cv-section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #2563eb;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e2e8f0;
-        outline: none;
-    }
+  .cv-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    outline: none;
+  }
 
-    .cv-section-content {
-        color: #1e293b;
-    }
+  .cv-section-content {
+    color: #1e293b;
+  }
 
-    /* Make all text elements editable */
-    [contenteditable="true"] {
-        outline: none;
-        padding: 0.25rem;
-        transition: background-color 0.2s;
-    }
+  /* Make all text elements editable */
+  [contenteditable='true'] {
+    outline: none;
+    padding: 0.25rem;
+    transition: background-color 0.2s;
+  }
 
-    [contenteditable="true"]:hover {
-        background-color: #f1f5f9;
-    }
+  [contenteditable='true']:hover {
+    background-color: #f1f5f9;
+  }
 
-    [contenteditable="true"]:focus {
-        background-color: #f8fafc;
-        box-shadow: 0 0 0 2px #bfdbfe;
-    }
+  [contenteditable='true']:focus {
+    background-color: #f8fafc;
+    box-shadow: 0 0 0 2px #bfdbfe;
+  }
 
-    /* Skills styling */
-    .skills-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
+  /* Skills styling */
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
 
-    .skill-item {
-        background: #f1f5f9;
-        padding: 0.5rem 1rem;
-        border-radius: 999px;
-        color: #475569;
-        font-size: 0.875rem;
-    }
+  .skill-item {
+    background: #f1f5f9;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    color: #475569;
+    font-size: 0.875rem;
+  }
 
-    /* Work Experience styling */
-    .experience-item {
-        margin-bottom: 1.5rem;
-    }
+  /* Work Experience styling */
+  .experience-item {
+    margin-bottom: 1.5rem;
+  }
 
-    .experience-title {
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
-        outline: none;
-    }
+  .experience-title {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    outline: none;
+  }
 
-    .experience-company {
-        color: #64748b;
-        margin-bottom: 0.25rem;
-        outline: none;
-    }
+  .experience-company {
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    outline: none;
+  }
 
-    .experience-date {
-        color: #94a3b8;
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-        outline: none;
-    }
+  .experience-date {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    outline: none;
+  }
 
-    .experience-description {
-        color: #475569;
-        outline: none;
-    }
+  .experience-description {
+    color: #475569;
+    outline: none;
+  }
 
-    /* Education styling */
-    .education-item {
-        margin-bottom: 1.5rem;
-    }
+  /* Education styling */
+  .education-item {
+    margin-bottom: 1.5rem;
+  }
 
-    .education-degree {
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
-        outline: none;
-    }
+  .education-degree {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    outline: none;
+  }
 
-    .education-school {
-        color: #64748b;
-        margin-bottom: 0.25rem;
-        outline: none;
-    }
+  .education-school {
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    outline: none;
+  }
 
-    .education-date {
-        color: #94a3b8;
-        font-size: 0.875rem;
-        outline: none;
-    }
+  .education-date {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    outline: none;
+  }
 
-    /* Controls */
-    .cv-controls {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        display: flex;
-        gap: 1rem;
-    }
+  /* Controls */
+  .cv-controls {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    gap: 1rem;
+  }
 
-    .cv-button {
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
+  .cv-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
 
-    .cv-button.primary {
-        background: #2563eb;
-        color: white;
-        border: none;
-    }
+  .cv-button.primary {
+    background: #2563eb;
+    color: white;
+    border: none;
+  }
 
-    .cv-button.primary:hover {
-        background: #1d4ed8;
-    }
+  .cv-button.primary:hover {
+    background: #1d4ed8;
+  }
 
-    .cv-button.secondary {
-        background: white;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-    }
+  .cv-button.secondary {
+    background: white;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+  }
 
-    .cv-button.secondary:hover {
-        background: #f8fafc;
-    }
+  .cv-button.secondary:hover {
+    background: #f8fafc;
+  }
 
-    /* Add Section Button */
-    .add-section {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #2563eb;
-        background: none;
-        border: 2px dashed #bfdbfe;
-        padding: 0.75rem 1rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-        width: 100%;
-        justify-content: center;
-        margin: 1rem 0;
-        transition: all 0.2s;
-    }
+  /* Add Section Button */
+  .add-section {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2563eb;
+    background: none;
+    border: 2px dashed #bfdbfe;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%;
+    justify-content: center;
+    margin: 1rem 0;
+    transition: all 0.2s;
+  }
 
-    .add-section:hover {
-        background: #eff6ff;
-        border-color: #2563eb;
-    }
+  .add-section:hover {
+    background: #eff6ff;
+    border-color: #2563eb;
+  }
 
-    /* Tooltips for editable areas */
-    [contenteditable="true"]::before {
-        content: "Click to edit";
-        position: absolute;
-        background: #1e293b;
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        opacity: 0;
-        transition: opacity 0.2s;
-        pointer-events: none;
-        transform: translateY(-100%);
-    }
+  /* Tooltips for editable areas */
+  [contenteditable='true']::before {
+    content: 'Click to edit';
+    position: absolute;
+    background: #1e293b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    transform: translateY(-100%);
+  }
 
-    [contenteditable="true"]:hover::before {
-        opacity: 1;
-    }
+  [contenteditable='true']:hover::before {
+    opacity: 1;
+  }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="cv-editor">
-    <div class="cv-preview">
-        <div class="cv-header">
-            <h1 class="cv-name" contenteditable="true">Sseruwugge Faswiha</h1>
-            <div class="cv-title" contenteditable="true">Full Stack Developer, Freelance</div>
-            <div class="cv-contact">
-                <p contenteditable="true">📧 faswiha@example.com</p>
-                <p contenteditable="true">📱 +1234 567890</p>
-                <p contenteditable="true">📍 London, England</p>
-            </div>
-        </div>
-
-        <div class="cv-section">
-            <h2 class="cv-section-title" contenteditable="true">SUMMARY</h2>
-            <div class="cv-section-content" contenteditable="true">
-                A versatile Full Stack Developer with proven expertise in frontend and backend technologies, complemented by valuable experience in data analysis and logistics operations. My technical journey began at Amazon where I developed strong problem-solving abilities and gained practical experience in creating efficient solutions. Currently focused on creating new create web-based digital solutions for clients.
-            </div>
-        </div>
-
-        <div class="cv-section">
-            <h2 class="cv-section-title" contenteditable="true">SKILLS</h2>
-            <div class="skills-list">
-                <div class="skill-item">Full Stack Development</div>
-                <div class="skill-item">Data Analysis</div>
-                <div class="skill-item">HTML, CSS, JavaScript</div>
-                <div class="skill-item">Python/Django/Flask</div>
-                <div class="skill-item">SQL</div>
-                <div class="skill-item">Teamwork</div>
-                <div class="skill-item">Problem Solving</div>
-            </div>
-        </div>
-
-        <div class="cv-section">
-            <h2 class="cv-section-title" contenteditable="true">WORK HISTORY</h2>
-            <div class="experience-item">
-                <div class="experience-title" contenteditable="true">Full Stack Developer</div>
-                <div class="experience-company" contenteditable="true">Freelance</div>
-                <div class="experience-date" contenteditable="true">Sep 2022 - Present</div>
-                <div class="experience-description" contenteditable="true">
-                    • Design and develop responsive websites and web applications for clients<br>
-                    • Implement front-end development using HTML, CSS, and JavaScript<br>
-                    • Create and maintain backend functionality using relevant frameworks and databases<br>
-                    • Ensure cross-browser compatibility and optimal performance
-                </div>
-            </div>
-        </div>
-
-        <button class="add-section" onclick="addNewSection()">
-            + Add New Section
-        </button>
+  <div class="cv-preview">
+    <div class="cv-header">
+      <h1 class="cv-name" contenteditable="true">Sseruwugge Faswiha</h1>
+      <div class="cv-title" contenteditable="true">
+        Full Stack Developer, Freelance
+      </div>
+      <div class="cv-contact">
+        <p contenteditable="true">📧 faswiha@example.com</p>
+        <p contenteditable="true">📱 +1234 567890</p>
+        <p contenteditable="true">📍 London, England</p>
+      </div>
     </div>
+
+    <div class="cv-section">
+      <h2 class="cv-section-title" contenteditable="true">SUMMARY</h2>
+      <div class="cv-section-content" contenteditable="true">
+        A versatile Full Stack Developer with proven expertise in frontend and
+        backend technologies, complemented by valuable experience in data
+        analysis and logistics operations. My technical journey began at Amazon
+        where I developed strong problem-solving abilities and gained practical
+        experience in creating efficient solutions. Currently focused on
+        creating new create web-based digital solutions for clients.
+      </div>
+    </div>
+
+    <div class="cv-section">
+      <h2 class="cv-section-title" contenteditable="true">SKILLS</h2>
+      <div class="skills-list">
+        <div class="skill-item">Full Stack Development</div>
+        <div class="skill-item">Data Analysis</div>
+        <div class="skill-item">HTML, CSS, JavaScript</div>
+        <div class="skill-item">Python/Django/Flask</div>
+        <div class="skill-item">SQL</div>
+        <div class="skill-item">Teamwork</div>
+        <div class="skill-item">Problem Solving</div>
+      </div>
+    </div>
+
+    <div class="cv-section">
+      <h2 class="cv-section-title" contenteditable="true">WORK HISTORY</h2>
+      <div class="experience-item">
+        <div class="experience-title" contenteditable="true">
+          Full Stack Developer
+        </div>
+        <div class="experience-company" contenteditable="true">Freelance</div>
+        <div class="experience-date" contenteditable="true">
+          Sep 2022 - Present
+        </div>
+        <div class="experience-description" contenteditable="true">
+          • Design and develop responsive websites and web applications for
+          clients<br />
+          • Implement front-end development using HTML, CSS, and JavaScript<br />
+          • Create and maintain backend functionality using relevant frameworks
+          and databases<br />
+          • Ensure cross-browser compatibility and optimal performance
+        </div>
+      </div>
+    </div>
+
+    <button class="add-section" onclick="addNewSection()">
+      + Add New Section
+    </button>
+  </div>
 </div>
 
 <div class="cv-controls">
-    <button class="cv-button secondary" onclick="saveDraft()">Save Draft</button>
-    <button class="cv-button primary" onclick="downloadCV()">Download CV</button>
+  <button class="cv-button secondary" onclick="saveDraft()">Save Draft</button>
+  <button class="cv-button primary" onclick="downloadCV()">Download CV</button>
 </div>
 
 <script>
-function addNewSection() {
+  function addNewSection() {
     const newSection = document.createElement('div');
     newSection.className = 'cv-section';
     newSection.innerHTML = `
@@ -307,52 +314,52 @@ function addNewSection() {
             Click to add content
         </div>
     `;
-    
+
     const addSectionBtn = document.querySelector('.add-section');
     addSectionBtn.parentNode.insertBefore(newSection, addSectionBtn);
-}
+  }
 
-function saveDraft() {
+  function saveDraft() {
     // Get the CV content
     const cvContent = document.querySelector('.cv-preview').innerHTML;
-    
+
     // Send to server
     fetch('/cv/save-draft/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({ content: cvContent })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({ content: cvContent }),
     })
-    .then(response => response.json())
-    .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
-            alert('CV draft saved successfully!');
+          alert('CV draft saved successfully!');
         } else {
-            alert('Error saving CV draft. Please try again.');
+          alert('Error saving CV draft. Please try again.');
         }
-    });
-}
+      });
+  }
 
-function downloadCV() {
+  function downloadCV() {
     // Implementation for PDF download will be added
     alert('Download feature coming soon!');
-}
+  }
 
-function getCookie(name) {
+  function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + '=') {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
         }
+      }
     }
     return cookieValue;
-}
+  }
 </script>
 {% endblock %}
