@@ -1,0 +1,106 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Creative
+Designer CV{% endblock %} {% block content %}
+<div class="cv-container creative-template">
+  <div class="cv-header">
+    <h1>{{cv.name|default:"John Smith"}}</h1>
+    <h2>{{cv.title|default:"Creative Professional"}}</h2>
+  </div>
+
+  <div class="cv-content">
+    <div class="left-column">
+      <div class="section">
+        <h3>About Me</h3>
+        {{cv.summary|default:"Creative professional summary goes here"}}
+      </div>
+
+      <div class="section">
+        <h3>Experience</h3>
+        {{cv.experience|default:"Work experience details"}}
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="section">
+        <h3>Skills</h3>
+        {{cv.skills|default:"Creative skills"}}
+      </div>
+
+      <div class="section">
+        <h3>Education</h3>
+        {{cv.education|default:"Education details"}}
+      </div>
+
+      <div class="section">
+        <h3>Contact</h3>
+        {{cv.contact_info|default:"Contact information"}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .creative-template {
+    max-width: 21cm;
+    margin: 0 auto;
+    padding: 2cm;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .creative-template::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: #3b82f6;
+    transform: skewY(-5deg);
+    transform-origin: bottom left;
+  }
+
+  .cv-header {
+    position: relative;
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+  }
+
+  .cv-header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+  }
+
+  .cv-header h2 {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin: 0.5rem 0 0;
+  }
+
+  .cv-content {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+  }
+
+  .section h3 {
+    color: #3b82f6;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .right-column {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 1rem;
+  }
+</style>
+{% endblock %}

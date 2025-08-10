@@ -42,7 +42,7 @@ def template_preview(request, template_id):
         ]
     }
     
-    # In a real application, we would have different template files for each template_id
+    # Each template has its own file in the templates/builder/templates directory
     template_path = f'builder/templates/{template_id}.html'
     
     try:

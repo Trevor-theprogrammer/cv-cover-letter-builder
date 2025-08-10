@@ -8,7 +8,7 @@ app_name = 'builder'
 
 urlpatterns = [
     path('template-previews/', views.template_previews, name='template_previews'),
-    path('templates/<str:template_id>/preview/', template_preview, name='template_preview'),
+    path('templates/<str:template_id>/', template_preview, name='template_preview'),
     path('cv/<str:template_id>/edit/', edit_cv_template, name='edit_cv'),
     path('cv/save-draft/', save_cv_draft, name='save_cv_draft'),
     path('', views.home, name='home'),

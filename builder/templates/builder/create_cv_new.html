@@ -353,7 +353,7 @@ CV - CV Builder Pro{% endblock %} {% block extra_css %}
       {% for template in templates %}
       <div
         class="template-card {% if forloop.first %}selected{% endif %}"
-        onclick="selectTemplate('{{ template.id }}')"
+        data-template-id="{{ template.id }}"
       >
         <div class="template-preview">
           <img
@@ -368,7 +368,7 @@ CV - CV Builder Pro{% endblock %} {% block extra_css %}
             <button
               type="button"
               class="preview-btn"
-              onclick="previewTemplate(event, '{{ template.id }}')"
+              data-template-id="{{ template.id }}"
             >
               Preview Template
             </button>
@@ -400,7 +400,7 @@ CV - CV Builder Pro{% endblock %} {% block extra_css %}
       <button type="button" class="nav-btn btn-back" style="visibility: hidden">
         Back
       </button>
-      <button type="button" class="nav-btn btn-next" onclick="nextStep()">
+      <button type="button" class="nav-btn btn-next">
         Continue with Selected Template
       </button>
     </div>
@@ -431,25 +431,35 @@ CV - CV Builder Pro{% endblock %} {% block extra_css %}
     backBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
   }
 
-  function selectTemplate(templateId) {
-    // Remove selected class from all cards
-    document.querySelectorAll('.template-card').forEach((card) => {
-      card.classList.remove('selected');
+  document.addEventListener('DOMContentLoaded', function() {
+    const templateGrid = document.querySelector('.template-grid');
+
+    templateGrid.addEventListener('click', function(e) {
+        const templateCard = e.target.closest('.template-card');
+        const previewBtn = e.target.closest('.preview-btn');
+
+        if (previewBtn) {
+            e.stopPropagation();
+            const templateId = previewBtn.dataset.templateId;
+            window.location.href = `/cv/${templateId}/edit/`;
+            return;
+        }
+
+        if (templateCard) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            templateCard.classList.add('selected');
+
+            // Update hidden input if exists
+            const templateId = templateCard.dataset.templateId;
+            const input = document.querySelector('input[name="selected_template"]');
+            if (input) input.value = templateId;
+        }
     });
-
-    // Add selected class to clicked card
-    const selectedCard = document
-      .querySelector(`#template-${templateId}`)
-      .closest('.template-card');
-    selectedCard.classList.add('selected');
-
-    // Check the radio button
-    document.querySelector(`#template-${templateId}`).checked = true;
-  }
-
-  function previewTemplate(event, templateId) {
-    event.stopPropagation(); // Prevent template selection
-    window.open(`/templates/${templateId}-preview/`, '_blank');
   }
 
   function nextStep() {

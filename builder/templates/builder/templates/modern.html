@@ -1,0 +1,86 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Modern
+Professional CV{% endblock %} {% block content %}
+<div class="cv-container modern-template">
+  <div class="cv-header">
+    <h1>{{cv.name|default:"John Smith"}}</h1>
+    <h2>{{cv.title|default:"Professional Title"}}</h2>
+  </div>
+
+  <div class="cv-sidebar">
+    <div class="section">
+      <h3>Contact</h3>
+      {{cv.contact_info|default:"Email, Phone, Location"}}
+    </div>
+
+    <div class="section">
+      <h3>Skills</h3>
+      {{cv.skills|default:"Professional Skills"}}
+    </div>
+  </div>
+
+  <div class="cv-main">
+    <div class="section">
+      <h3>Professional Summary</h3>
+      {{cv.summary|default:"Professional summary goes here"}}
+    </div>
+
+    <div class="section">
+      <h3>Experience</h3>
+      {{cv.experience|default:"Work experience details"}}
+    </div>
+
+    <div class="section">
+      <h3>Education</h3>
+      {{cv.education|default:"Education details"}}
+    </div>
+  </div>
+</div>
+
+<style>
+  .modern-template {
+    max-width: 21cm;
+    margin: 0 auto;
+    padding: 2cm;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+  }
+
+  .cv-header {
+    grid-column: 1 / -1;
+    border-bottom: 2px solid #2563eb;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .cv-header h1 {
+    font-size: 2.5rem;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .cv-header h2 {
+    font-size: 1.5rem;
+    color: #64748b;
+    margin: 0.5rem 0 0;
+  }
+
+  .cv-sidebar {
+    padding-right: 2rem;
+    border-right: 1px solid #e2e8f0;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+  }
+
+  .section h3 {
+    color: #2563eb;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}

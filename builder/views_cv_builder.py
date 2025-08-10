@@ -45,9 +45,7 @@ def create_cv(request):
         }
     ]
     
-    # Print templates for debugging
-    print("Templates being passed to template:", templates)
-    
     return render(request, 'builder/create_cv_new.html', {
-        'templates': templates
+        'templates': templates,
+        'selected_template': request.GET.get('template', 'modern')
     })
