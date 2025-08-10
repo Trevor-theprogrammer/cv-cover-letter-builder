@@ -22,8 +22,7 @@ from builder import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/register/', views.register, name='register'),
+    path('accounts/login/', include('django.contrib.auth.urls')),
     path('', include('builder.urls')),
 ]
 
