@@ -1,304 +1,57 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Create Your CV{%
-endblock %} {% block extra_css %}
-<style>
-  .template-preview {
-    max-width: 150px;
-    border: 1px solid #ddd;
-    margin: 5px;
-    cursor: pointer;
-    transition: border-color 0.3s;
-  }
-  .template-preview.selected {
-    border: 2px solid #007bff;
-  }
-  .character-count {
-    color: #6c757d;
-    font-size: 0.875rem;
-    float: right;
-  }
-  .section-card {
-    margin-bottom: 1.5rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  }
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  .loading {
-    opacity: 0.7;
-    pointer-events: none;
-  }
-</style>
-{% endblock %} {% block content %}
-<div class="container py-4">
-  <h1 class="mb-4">Create Your CV</h1>
+{% extends 'base.html' %} {% load static %} {% block title %}Create CV{%
+endblock %} {% block content %}
+<div class="container">
+  <h1>Create Your CV</h1>
 
-  {% if messages %}
-  <div class="messages mb-4">
-    {% for message in messages %}
-    <div
-      class="alert alert-{{ message.tags }} alert-dismissible fade show"
-      role="alert"
-    >
-      {{ message }}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %} {% if templates %}
-  <form
-    method="POST"
-    action="{% url 'builder:create_cv' %}"
-    id="cvForm"
-    class="needs-validation"
-    novalidate
-  >
+  {% if templates %}
+  <form method="POST" action="{% url 'create_cv' %}">
     {% csrf_token %}
 
-    <!-- Personal Information Section -->
-    <div class="card section-card">
-      <div class="card-header bg-light">
-        <h2 class="h5 mb-0">Personal Information</h2>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="full_name" class="form-label">Full Name:</label>
-              <input
-                type="text"
-                name="full_name"
-                id="full_name"
-                class="form-control"
-                value="{{ user_data.full_name|default:'' }}"
-                required
-                aria-describedby="fullNameHelp"
-              />
-              <div class="invalid-feedback">Please enter your full name</div>
-              <small id="fullNameHelp" class="form-text text-muted"
-                >Enter your name as it should appear on your CV</small
-              >
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="email" class="form-label">Email Address:</label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                class="form-control"
-                value="{{ user_data.email|default:'' }}"
-                required
-                aria-describedby="emailHelp"
-              />
-              <div class="invalid-feedback">
-                Please enter a valid email address
-              </div>
-              <small id="emailHelp" class="form-text text-muted"
-                >Your primary contact email</small
-              >
-            </div>
-          </div>
-        </div>
-
-        <div class="row mt-3">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="phone" class="form-label">Phone Number:</label>
-              <input
-                type="tel"
-                name="phone"
-                id="phone"
-                class="form-control"
-                value="{{ user_data.phone|default:'' }}"
-                pattern="[0-9+\-\s()]*"
-                aria-describedby="phoneHelp"
-              />
-              <div class="invalid-feedback">
-                Please enter a valid phone number
-              </div>
-              <small id="phoneHelp" class="form-text text-muted"
-                >Include country code if applicable</small
-              >
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="location" class="form-label">Location:</label>
-              <input
-                type="text"
-                name="location"
-                id="location"
-                class="form-control"
-                value="{{ user_data.location|default:'' }}"
-                placeholder="City, Country"
-                aria-describedby="locationHelp"
-              />
-              <small id="locationHelp" class="form-text text-muted"
-                >Your current location</small
-              >
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="form-group">
+      <label for="full_name">Full Name:</label>
+      <input
+        type="text"
+        name="full_name"
+        id="full_name"
+        class="form-control"
+        required
+      />
     </div>
 
-    <!-- Professional Summary Section -->
-    <div class="card section-card mt-4">
-      <div class="card-header bg-light">
-        <h2 class="h5 mb-0">Professional Summary</h2>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label for="summary" class="form-label">Professional Summary:</label>
-          <textarea
-            name="summary"
-            id="summary"
-            class="form-control"
-            rows="4"
-            placeholder="Write a brief summary of your professional background, key skills, and career objectives..."
-            aria-describedby="summaryHelp"
-          >
-{{ user_data.summary|default:'' }}</textarea
-          >
-          <div class="d-flex justify-content-between align-items-center mt-1">
-            <small id="summaryHelp" class="form-text text-muted"
-              >Highlight your key achievements and skills</small
-            >
-            <small class="character-count">0/500 characters</small>
-          </div>
-        </div>
-      </div>
+    <div class="form-group">
+      <label for="email">Email Address:</label>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        class="form-control"
+        required
+      />
     </div>
 
-    <!-- Template Selection Section -->
-    <div class="card section-card mt-4">
-      <div class="card-header bg-light">
-        <h2 class="h5 mb-0">Choose Template</h2>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <div class="row mb-3">
-            {% for template in templates %}
-            <div class="col-md-4 col-sm-6 mb-3">
-              <div class="template-option" data-template-id="{{ template.id }}">
-                {% if template.preview_image %}
-                <img
-                  src="{{ template.preview_image.url }}"
-                  alt="{{ template.name }}"
-                  class="template-preview img-fluid"
-                />
-                {% endif %}
-                <div class="form-check mt-2">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    name="template_id"
-                    id="template_{{ template.id }}"
-                    value="{{ template.id }}"
-                    required
-                    {%
-                    if
-                    forloop.first
-                    %}checked{%
-                    endif
-                    %}
-                  />
-                  <label
-                    class="form-check-label"
-                    for="template_{{ template.id }}"
-                  >
-                    {{ template.name }}
-                  </label>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
+    <div class="form-group">
+      <label for="summary">Professional Summary:</label>
+      <textarea
+        name="summary"
+        id="summary"
+        class="form-control"
+        rows="4"
+      ></textarea>
     </div>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-      <button type="submit" class="btn btn-primary" id="submitBtn">
-        <span
-          class="spinner-border spinner-border-sm d-none"
-          role="status"
-          aria-hidden="true"
-        ></span>
-        Generate CV
-      </button>
+    <div class="form-group">
+      <label for="template">Choose a Template:</label>
+      <select name="template_id" id="template" class="form-control" required>
+        {% for template in templates %}
+        <option value="{{ template.id }}">{{ template.name }}</option>
+        {% endfor %}
+      </select>
     </div>
+
+    <button type="submit" class="btn btn-primary">Generate CV</button>
   </form>
   {% else %}
-
-  <div class="alert alert-warning">
-    <strong>No templates available.</strong> Please check back later or contact
-    support.
-  </div>
+  <p>No templates available.</p>
   {% endif %}
 </div>
-
-{% endblock %} {% block extra_js %}
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Form validation
-    const form = document.getElementById('cvForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const spinner = submitBtn.querySelector('.spinner-border');
-
-    form.addEventListener('submit', function (event) {
-      if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-      } else {
-        submitBtn.disabled = true;
-        spinner.classList.remove('d-none');
-      }
-      form.classList.add('was-validated');
-    });
-
-    // Character counter for summary
-    const summaryTextarea = document.getElementById('summary');
-    const charCount = document.querySelector('.character-count');
-    const maxLength = 500;
-
-    function updateCharCount() {
-      const currentLength = summaryTextarea.value.length;
-      charCount.textContent = `${currentLength}/${maxLength} characters`;
-      if (currentLength > maxLength) {
-        charCount.classList.add('text-danger');
-      } else {
-        charCount.classList.remove('text-danger');
-      }
-    }
-
-    summaryTextarea.addEventListener('input', updateCharCount);
-    updateCharCount(); // Initial count
-
-    // Template selection
-    const templateOptions = document.querySelectorAll('.template-option');
-    templateOptions.forEach((option) => {
-      option.addEventListener('click', function () {
-        const templateId = this.dataset.templateId;
-        const radio = document.getElementById(`template_${templateId}`);
-        radio.checked = true;
-
-        // Update preview styling
-        document.querySelectorAll('.template-preview').forEach((preview) => {
-          preview.classList.remove('selected');
-        });
-        const preview = this.querySelector('.template-preview');
-        if (preview) {
-          preview.classList.add('selected');
-        }
-      });
-    });
-  });
-</script>
 {% endblock %}
