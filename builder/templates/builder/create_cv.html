@@ -1,10 +1,10 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Create CV{%
-endblock %} {% block content %}
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Create Your
+CV{% endblock %} {% block content %}
 <div class="container">
   <h1>Create Your CV</h1>
 
   {% if templates %}
-  <form method="POST" action="{% url 'create_cv' %}">
+  <form method="POST" action="{% url 'builder:create_cv' %}">
     {% csrf_token %}
 
     <div class="form-group">
@@ -14,6 +14,7 @@ endblock %} {% block content %}
         name="full_name"
         id="full_name"
         class="form-control"
+        value="{{ user_data.full_name|default:'' }}"
         required
       />
     </div>
@@ -25,6 +26,7 @@ endblock %} {% block content %}
         name="email"
         id="email"
         class="form-control"
+        value="{{ user_data.email|default:'' }}"
         required
       />
     </div>
@@ -36,7 +38,34 @@ endblock %} {% block content %}
         id="summary"
         class="form-control"
         rows="4"
-      ></textarea>
+        placeholder="Write a brief summary..."
+      >
+{{ user_data.summary|default:'' }}</textarea
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone Number:</label>
+      <input
+        type="tel"
+        name="phone"
+        id="phone"
+        class="form-control"
+        value="{{ user_data.phone|default:'' }}"
+        pattern="[0-9+\-\s()]*"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="location">Location:</label>
+      <input
+        type="text"
+        name="location"
+        id="location"
+        class="form-control"
+        value="{{ user_data.location|default:'' }}"
+        placeholder="City, Country"
+      />
     </div>
 
     <div class="form-group">
@@ -51,7 +80,10 @@ endblock %} {% block content %}
     <button type="submit" class="btn btn-primary">Generate CV</button>
   </form>
   {% else %}
-  <p>No templates available.</p>
+  <div class="alert alert-warning">
+    <strong>No templates available.</strong> Please check back later or contact
+    support.
+  </div>
   {% endif %}
 </div>
 {% endblock %}
