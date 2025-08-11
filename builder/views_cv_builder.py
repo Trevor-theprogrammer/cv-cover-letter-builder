@@ -11,41 +11,30 @@ def create_cv(request):
     templates = [
         {
             'id': 'modern',
-            'name': 'Modern Professional',
+            'name': 'modern',
             'description': 'Clean and contemporary design perfect for most industries',
-            'preview_image': 'builder/images/templates/modern-preview.png',
             'badge': 'Popular'
         },
         {
             'id': 'creative',
-            'name': 'Creative Designer',
+            'name': 'creative',
             'description': 'Stand out with this bold and innovative layout',
-            'preview_image': 'builder/images/templates/creative-preview.png',
             'badge': 'New'
         },
         {
-            'id': 'minimalist',
-            'name': 'Minimalist',
-            'description': 'Simple and elegant design that lets your content shine',
-            'preview_image': 'builder/images/templates/minimal-preview.png'
+            'id': 'minimal',
+            'name': 'minimal',
+            'description': 'Simple and elegant design that lets your content shine'
         },
         {
-            'id': 'tech',
-            'name': 'Tech Specialist',
-            'description': 'Perfect for IT and tech industry professionals',
-            'preview_image': 'builder/images/templates/tech-preview.png'
+            'id': 'classic',
+            'name': 'classic',
+            'description': 'Timeless professional design for traditional industries'
         },
         {
-            'id': 'executive',
-            'name': 'Executive Suite',
-            'description': 'Sophisticated design for senior professionals',
-            'preview_image': 'builder/images/templates/executive-preview.png'
-        },
-        {
-            'id': 'academic',
-            'name': 'Academic CV',
-            'description': 'Ideal for researchers and educators',
-            'preview_image': 'builder/images/templates/academic-preview.png'
+            'id': 'basic',
+            'name': 'basic',
+            'description': 'Clean and simple design suitable for any industry'
         }
     ]
     
