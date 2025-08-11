@@ -52,7 +52,7 @@ endblock %} {% block extra_css %}
   {% endif %} {% if templates %}
   <form
     method="POST"
-    action="{% url 'cv:generate_cv' %}"
+    action="{% url 'builder:create_cv' %}"
     id="cvForm"
     class="needs-validation"
     novalidate
