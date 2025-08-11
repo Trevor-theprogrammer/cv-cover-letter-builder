@@ -1,0 +1,586 @@
+{% extends 'builder/base.html' %}
+{% load static %}
+{% block title %}Create Your CV{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Create Your CV</h1>
+
+  {% if templates %}
+  <form method="POST" action="{% url 'builder:create_cv' %}">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label for="full_name">Full Name:</label>
+      <input
+        type="text"
+        name="full_name"
+        id="full_name"
+        class="form-control"
+        value="{{ user_data.full_name|default:'' }}"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email Address:</label>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        class="form-control"
+        value="{{ user_data.email|default:'' }}"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="summary">Professional Summary:</label>
+      <textarea
+        name="summary"
+        id="summary"
+        class="form-control"
+        rows="4"
+        placeholder="Write a brief summary...">{{ user_data.summary|default:'' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone Number:</label>
+      <input
+        type="tel"
+        name="phone"
+        id="phone"
+        class="form-control"
+        value="{{ user_data.phone|default:'' }}"
+        pattern="[0-9+\-\s()]*"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="location">Location:</label>
+      <input
+        type="text"
+        name="location"
+        id="location"
+        class="form-control"
+        value="{{ user_data.location|default:'' }}"
+        placeholder="City, Country"
+      />
+    </div>
+
+    <!-- Work Experience Section -->
+    <div class="form-group">
+      <h3>Work Experience</h3>
+      <div id="experience-container">
+        <div class="experience-entry">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="exp-job-0">Job Title:</label>
+              <input
+                type="text"
+                name="experience[0][job_title]"
+                id="exp-job-0"
+                class="form-control"
+                placeholder="e.g. Software Engineer"
+                title="Job title"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="exp-company-0">Company:</label>
+              <input
+                type="text"
+                name="experience[0][company]"
+                id="exp-company-0"
+                class="form-control"
+                placeholder="Company Name"
+                title="Company name"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="exp-start-0">Start Date:</label>
+              <input
+                type="month"
+                name="experience[0][start_date]"
+                id="exp-start-0"
+                class="form-control"
+                title="Start date"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="exp-end-0">End Date:</label>
+              <input
+                type="month"
+                name="experience[0][end_date]"
+                id="exp-end-0"
+                class="form-control"
+                title="End date"
+              />
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="current-0"
+                  onchange="toggleCurrent(this, 0)"
+                  title="Current position"
+                />
+                <label class="form-check-label" for="current-0">Current</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exp-desc-0">Description:</label>
+            <textarea
+              name="experience[0][description]"
+              id="exp-desc-0"
+              class="form-control"
+              rows="3"
+              placeholder="Describe your responsibilities and achievements..."
+              title="Job description"></textarea>
+          </div>
+          <hr />
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary" onclick="addExperience()">
+        Add Another Experience
+      </button>
+    </div>
+
+    <!-- Education Section -->
+    <div class="form-group">
+      <h3>Education</h3>
+      <div id="education-container">
+        <div class="education-entry">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="edu-degree-0">Degree:</label>
+              <input
+                type="text"
+                name="education[0][degree]"
+                id="edu-degree-0"
+                class="form-control"
+                placeholder="e.g. Bachelor of Science"
+                title="Degree"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="edu-field-0">Field of Study:</label>
+              <input
+                type="text"
+                name="education[0][field]"
+                id="edu-field-0"
+                class="form-control"
+                placeholder="e.g. Computer Science"
+                title="Field of study"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="edu-school-0">School/University:</label>
+              <input
+                type="text"
+                name="education[0][school]"
+                id="edu-school-0"
+                class="form-control"
+                placeholder="Institution Name"
+                title="School or university"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="edu-year-0">Graduation Year:</label>
+              <input
+                type="number"
+                name="education[0][graduation_year]"
+                id="edu-year-0"
+                class="form-control"
+                min="1900"
+                max="2030"
+                title="Graduation year"
+              />
+            </div>
+          </div>
+          <hr />
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary" onclick="addEducation()">
+        Add Another Education
+      </button>
+    </div>
+
+    <!-- Skills Section -->
+    <div class="form-group">
+      <h3>Skills</h3>
+      <div id="skills-container">
+        <div class="skill-entry">
+          <div class="row">
+            <div class="col-md-8">
+              <label for="skill-name-0">Skill:</label>
+              <input
+                type="text"
+                name="skills[0][name]"
+                id="skill-name-0"
+                class="form-control"
+                placeholder="e.g. Python"
+                title="Skill name"
+              />
+            </div>
+            <div class="col-md-4">
+              <label for="skill-level-0">Level:</label>
+              <select
+                name="skills[0][level]"
+                id="skill-level-0"
+                class="form-control"
+                title="Skill level"
+              >
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Expert">Expert</option>
+              </select>
+            </div>
+          </div>
+          <hr />
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary" onclick="addSkill()">
+        Add Another Skill
+      </button>
+    </div>
+
+    <!-- Languages Section -->
+    <div class="form-group">
+      <h3>Languages</h3>
+      <div id="languages-container">
+        <div class="language-entry">
+          <div class="row">
+            <div class="col-md-8">
+              <label for="lang-name-0">Language:</label>
+              <input
+                type="text"
+                name="languages[0][name]"
+                id="lang-name-0"
+                class="form-control"
+                placeholder="e.g. English"
+                title="Language name"
+              />
+            </div>
+            <div class="col-md-4">
+              <label for="lang-prof-0">Proficiency:</label>
+              <select
+                name="languages[0][proficiency]"
+                id="lang-prof-0"
+                class="form-control"
+                title="Language proficiency"
+              >
+                <option value="Native">Native</option>
+                <option value="Fluent">Fluent</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Basic">Basic</option>
+              </select>
+            </div>
+          </div>
+          <hr />
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary" onclick="addLanguage()">
+        Add Another Language
+      </button>
+    </div>
+
+    <!-- Certifications Section -->
+    <div class="form-group">
+      <h3>Certifications</h3>
+      <div id="certifications-container">
+        <div class="certification-entry">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="cert-name-0">Certification Name:</label>
+              <input
+                type="text"
+                name="certifications[0][name]"
+                id="cert-name-0"
+                class="form-control"
+                placeholder="e.g. AWS Certified Developer"
+                title="Certification name"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="cert-issuer-0">Issuing Organization:</label>
+              <input
+                type="text"
+                name="certifications[0][issuer]"
+                id="cert-issuer-0"
+                class="form-control"
+                placeholder="e.g. Amazon Web Services"
+                title="Issuing organization"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="cert-issue-0">Issue Date:</label>
+              <input
+                type="month"
+                name="certifications[0][issue_date]"
+                id="cert-issue-0"
+                class="form-control"
+                title="Issue date"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="cert-expiry-0">Expiration Date (Optional):</label>
+              <input
+                type="month"
+                name="certifications[0][expiry_date]"
+                id="cert-expiry-0"
+                class="form-control"
+                title="Expiration date"
+              />
+            </div>
+          </div>
+          <hr />
+        </div>
+      </div>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="addCertification()"
+      >
+        Add Another Certification
+      </button>
+    </div>
+
+    <div class="form-group">
+      <label for="template">Choose a Template:</label>
+      <select name="template_id" id="template" class="form-control" required>
+        {% for template in templates %}
+        <option value="{{ template.id }}">{{ template.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generate CV</button>
+  </form>
+  {% else %}
+  <div class="alert alert-warning">
+    <strong>No templates available.</strong> Please check back later or contact
+    support.
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  let experienceCount = 1;
+  let educationCount = 1;
+  let skillCount = 1;
+  let languageCount = 1;
+  let certificationCount = 1;
+
+  function addExperience() {
+    const container = document.getElementById('experience-container');
+    const entry = document.createElement('div');
+    entry.className = 'experience-entry';
+    entry.innerHTML = `
+    <div class="row">
+      <div class="col-md-6">
+        <label for="exp-job-${experienceCount}">Job Title:</label>
+        <input type="text" name="experience[${experienceCount}][job_title]" id="exp-job-${experienceCount}" class="form-control" placeholder="e.g. Software Engineer" title="Job title" />
+      </div>
+      <div class="col-md-6">
+        <label for="exp-company-${experienceCount}">Company:</label>
+        <input type="text" name="experience[${experienceCount}][company]" id="exp-company-${experienceCount}" class="form-control" placeholder="Company Name" title="Company name" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="exp-start-${experienceCount}">Start Date:</label>
+        <input type="month" name="experience[${experienceCount}][start_date]" id="exp-start-${experienceCount}" class="form-control" title="Start date" />
+      </div>
+      <div class="col-md-6">
+        <label for="exp-end-${experienceCount}">End Date:</label>
+        <input type="month" name="experience[${experienceCount}][end_date]" id="exp-end-${experienceCount}" class="form-control" title="End date" />
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="current-${experienceCount}" onchange="toggleCurrent(this, ${experienceCount})" title="Current position">
+          <label class="form-check-label" for="current-${experienceCount}">Current</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="exp-desc-${experienceCount}">Description:</label>
+      <textarea name="experience[${experienceCount}][description]" id="exp-desc-${experienceCount}" class="form-control" rows="3" placeholder="Describe your responsibilities and achievements..." title="Job description"></textarea>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeEntry(this)">Remove</button>
+    <hr>
+    `;
+    container.appendChild(entry);
+    experienceCount++;
+  }
+
+  function addEducation() {
+    const container = document.getElementById('education-container');
+    const entry = document.createElement('div');
+    entry.className = 'education-entry';
+    entry.innerHTML = `
+    <div class="row">
+      <div class="col-md-6">
+        <label for="edu-degree-${educationCount}">Degree:</label>
+        <input type="text" name="education[${educationCount}][degree]" id="edu-degree-${educationCount}" class="form-control" placeholder="e.g. Bachelor of Science" title="Degree" />
+      </div>
+      <div class="col-md-6">
+        <label for="edu-field-${educationCount}">Field of Study:</label>
+        <input type="text" name="education[${educationCount}][field]" id="edu-field-${educationCount}" class="form-control" placeholder="e.g. Computer Science" title="Field of study" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="edu-school-${educationCount}">School/University:</label>
+        <input type="text" name="education[${educationCount}][school]" id="edu-school-${educationCount}" class="form-control" placeholder="Institution Name" title="School or university" />
+      </div>
+      <div class="col-md-6">
+        <label for="edu-year-${educationCount}">Graduation Year:</label>
+        <input type="number" name="education[${educationCount}][graduation_year]" id="edu-year-${educationCount}" class="form-control" min="1900" max="2030" title="Graduation year" />
+      </div>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeEntry(this)">Remove</button>
+    <hr>
+    `;
+    container.appendChild(entry);
+    educationCount++;
+  }
+
+  function addSkill() {
+    const container = document.getElementById('skills-container');
+    const entry = document.createElement('div');
+    entry.className = 'skill-entry';
+    entry.innerHTML = `
+    <div class="row">
+      <div class="col-md-8">
+        <label for="skill-name-${skillCount}">Skill:</label>
+        <input type="text" name="skills[${skillCount}][name]" id="skill-name-${skillCount}" class="form-control" placeholder="e.g. Python" title="Skill name" />
+      </div>
+      <div class="col-md-4">
+        <label for="skill-level-${skillCount}">Level:</label>
+        <select name="skills[${skillCount}][level]" id="skill-level-${skillCount}" class="form-control" title="Skill level">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Expert">Expert</option>
+        </select>
+      </div>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeEntry(this)">Remove</button>
+    <hr>
+    `;
+    container.appendChild(entry);
+    skillCount++;
+  }
+
+  function addLanguage() {
+    const container = document.getElementById('languages-container');
+    const entry = document.createElement('div');
+    entry.className = 'language-entry';
+    entry.innerHTML = `
+    <div class="row">
+      <div class="col-md-8">
+        <label for="lang-name-${languageCount}">Language:</label>
+        <input type="text" name="languages[${languageCount}][name]" id="lang-name-${languageCount}" class="form-control" placeholder="e.g. English" title="Language name" />
+      </div>
+      <div class="col-md-4">
+        <label for="lang-prof-${languageCount}">Proficiency:</label>
+        <select name="languages[${languageCount}][proficiency]" id="lang-prof-${languageCount}" class="form-control" title="Language proficiency">
+          <option value="Native">Native</option>
+          <option value="Fluent">Fluent</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Basic">Basic</option>
+        </select>
+      </div>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeEntry(this)">Remove</button>
+    <hr>
+    `;
+    container.appendChild(entry);
+    languageCount++;
+  }
+
+  function addCertification() {
+    const container = document.getElementById('certifications-container');
+    const entry = document.createElement('div');
+    entry.className = 'certification-entry';
+    entry.innerHTML = `
+    <div class="row">
+      <div class="col-md-6">
+        <label for="cert-name-${certificationCount}">Certification Name:</label>
+        <input type="text" name="certifications[${certificationCount}][name]" id="cert-name-${certificationCount}" class="form-control" placeholder="e.g. AWS Certified Developer" title="Certification name" />
+      </div>
+      <div class="col-md-6">
+        <label for="cert-issuer-${certificationCount}">Issuing Organization:</label>
+        <input type="text" name="certifications[${certificationCount}][issuer]" id="cert-issuer-${certificationCount}" class="form-control" placeholder="e.g. Amazon Web Services" title="Issuing organization" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="cert-issue-${certificationCount}">Issue Date:</label>
+        <input type="month" name="certifications[${certificationCount}][issue_date]" id="cert-issue-${certificationCount}" class="form-control" title="Issue date" />
+      </div>
+      <div class="col-md-6">
+        <label for="cert-expiry-${certificationCount}">Expiration Date (Optional):</label>
+        <input type="month" name="certifications[${certificationCount}][expiry_date]" id="cert-expiry-${certificationCount}" class="form-control" title="Expiration date" />
+      </div>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeEntry(this)">Remove</button>
+    <hr>
+    `;
+    container.appendChild(entry);
+    certificationCount++;
+  }
+
+  function removeEntry(button) {
+    button.parentElement.remove();
+  }
+
+  function toggleCurrent(checkbox, index) {
+    const endDateInput = checkbox.parentElement.parentElement.querySelector(
+      'input[type="month"]'
+    );
+    if (checkbox.checked) {
+      endDateInput.disabled = true;
+      endDateInput.value = '';
+    } else {
+      endDateInput.disabled = false;
+    }
+  }
+</script>
+
+<style>
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .experience-entry,
+  .education-entry,
+  .skill-entry,
+  .language-entry,
+  .certification-entry {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    background-color: #f9f9f9;
+  }
+
+  .btn-danger {
+    margin-top: 0.5rem;
+  }
+
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  hr {
+    margin: 1rem 0;
+  }
+</style>
+{% endblock %}
