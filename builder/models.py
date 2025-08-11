@@ -84,6 +84,31 @@ class Template(models.Model):
     template_content = models.TextField()
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    preview_image = models.ImageField(
+        upload_to='template_previews/',
+        null=True,
+        blank=True,
+        help_text='Preview image for the template'
+    )
+    type = models.CharField(
+        max_length=20,
+        choices=[
+            ('cv', 'CV Template'),
+            ('cover_letter', 'Cover Letter Template')
+        ],
+        default='cv'
+    )
+    style = models.CharField(
+        max_length=20,
+        choices=[
+            ('modern', 'Modern'),
+            ('classic', 'Classic'),
+            ('creative', 'Creative'),
+            ('minimal', 'Minimal'),
+            ('basic', 'Basic')
+        ],
+        default='modern'
+    )
+
     def __str__(self):
         return self.name
