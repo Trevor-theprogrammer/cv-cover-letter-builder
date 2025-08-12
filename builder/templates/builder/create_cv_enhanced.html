@@ -1,0 +1,73 @@
+{% extends 'builder/base.html' %}
+{% load static %}
+{% block title %}Create Professional CV{% endblock %}
+{% block content %}
+
+<div class="cv-builder-container">
+    <!-- Progress Indicator -->
+    <div class="progress-container mb-4">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%" id="progressBar"></div>
+        </div>
+        <div class="progress-steps">
+            <span class="step active" data-step="1">Personal Info</span>
+            <span class="step" data-step="2">Experience</span>
+            <span class="step" data-step="3">Education</span>
+            <span class="step" data-step="4">Skills</span>
+            <span class="step" data-step="5">Finalize</span>
+        </div>
+    </div>
+
+    <form method="POST" action="{% url 'builder:create_cv' %}" id="cvForm" novalidate>
+        {% csrf_token %}
+        
+        <!-- Section 1: Personal Information -->
+        <div class="form-section" id="section-1">
+            <h2><i class="fas fa-user"></i> Personal Information</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="full_name">Full Name *</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" 
+                               value="{{ user_data.full_name|default:'' }}" required>
+                        <div class="invalid-feedback">Please enter your full name.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ user_data.email|default:'' }}" required>
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                               value="{{ user_data.phone|default:'' }}" 
+                               pattern="[\+]?[0-9\s\-\(\)]{10,}">
+                        <div class="invalid-feedback">Please enter a valid phone number.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               value="{{ user_data.location|default:'' }}" 
+                               placeholder="City, Country">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="linkedin">LinkedIn Profile</label>
+                <input type="url" class="form-control" id="linkedin" name="linkedin" 
+                       placeholder="https://linkedin.com/in/yourprofile">
+            </div>
+
+            <div class="form-group">
