@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Advanced CV Editor{% endblock %}
+
+{% block content %}
+<div class="cv-editor-container">
+    <div class="editor-header">
+        <h1>Advanced CV Editor</h1>
+        <div class="editor-controls">
+            <button class="btn btn-primary" id="save-cv">Save CV</button>
+            <button class="btn btn-secondary" id="preview-cv">Preview</button>
+            <button class="btn btn-success" id="export-pdf">Export PDF</button>
+        </div>
+    </div>
+
+    <div class="editor-layout">
+        <!-- Left Panel: Editor -->
+        <div class="editor-panel">
+            <div class="template-selector">
+                <h3>Choose Template</h3>
+                <div class="template-gallery">
+                    {% for template in templates %}
+                    <div class="template-card {% if template.id == selected_template.id %}active{% endif %}" 
+                         data-template-id="{{ template.id }}">
+                        <img src="{{ template.preview_image.url }}" alt="{{ template.name }}">
+                        <h4>{{ template.name }}</h4>
+                        <p>{{ template.description|truncatewords:10 }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="cv-sections">
+                <h3>CV Sections</h3>
+                <div class="section-list" id="section-list">
+                    <!-- Sections will be populated dynamically -->
+                </div>
+                <button class="btn btn-outline-primary" id="add-section">+ Add Section</button>
+            </div>
+
+            <div class="section-editor" id="section-editor">
+                <h3>Edit Section</h3>
+                <form id="section-form">
+                    <div class="form-group">
+                        <label>Section Title</label>
+                        <input type="text" class="form-control" id="section-title" placeholder="e.g., Work Experience">
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <div id="rich-editor" class="rich-editor"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>AI Suggestions</label>
+                        <div id="ai-suggestions" class="ai-suggestions"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Panel: Live Preview -->
+        <div class="preview-panel">
+            <h3>Live Preview</h3>
+            <div class="preview-controls">
+                <button class="btn btn-sm btn-outline-secondary" id="desktop-view">Desktop</button>
+                <button class="btn btn-sm btn-outline-secondary" id="mobile-view">Mobile</button>
+            </div>
+            <div class="cv-preview" id="cv-preview">
+                <!-- CV preview will be rendered here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Templates -->
+<script type="text/template" id="section-template">
+    <div class="cv-section" data-section-id="{{ id }}">
+        <div class="section-header">
+            <h3>{{ title }}</h3>
+            <div class="section-controls">
+                <button class="btn btn-sm btn-outline-primary edit-section">Edit</button>
+                <button class="btn btn-sm btn-outline-danger delete-section">Delete</button>
+                <button class="btn btn-sm btn-outline-secondary move-section">Move</button>
+            </div>
+        </div>
+        <div class="section-content">{{ content|safe }}</div>
+    </div>
+</script>
+
+<!-- AI Suggestion Template -->
+<script type="text/template" id="ai-suggestion-template">
+    <div class="suggestion-item">
+        <div class="suggestion-content">{{ suggestion }}</div>
+        <button class="btn btn-sm btn-outline-primary apply-suggestion">Apply</button>
+    </div>
+</script>
+
+<style>
+.cv-editor-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    height: calc(100vh - 200px);
+}
+
+.editor-panel {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.preview-panel {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.template-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.template-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.template-card:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.template-card.active {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.template-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.section-list {
+    margin-bottom: 20px;
+}
+
+.cv-section {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.section-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.rich-editor {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-height: 200px;
+    padding: 10px;
+}
+
+.ai-suggestions {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.cv-preview {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: white;
+    min-height: 400px;
+    transform-origin: top left;
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .editor-panel, .preview-panel {
+        height: 50vh;
+    }
+}
+</style>
+
+<script src="{% static 'builder/js/cv-editor.js' %}"></script>
+{% endblock %}

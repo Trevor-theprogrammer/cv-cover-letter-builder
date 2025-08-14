@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views_cv_builder import create_cv
+
 from .views_template_preview import template_preview
 from .views_cv_editor import edit_cv_template, save_cv_draft
 
@@ -13,8 +13,9 @@ urlpatterns = [
     path('cv/save-draft/', save_cv_draft, name='save_cv_draft'),
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('cv/create/', create_cv, name='create_cv'),  # Updated path for new CV builder
+    path('cv/create/', views.create_cv, name='create_cv'),  # Updated path for new CV builder
     path('cv/<int:pk>/', views.cv_detail, name='cv_detail'),
+
     path('cv/<int:pk>/add_section/', views.add_cv_section, name='add_cv_section'),
     path('cv/<int:pk>/edit_section/', views.edit_cv_section, name='edit_cv_section'),
     path('cv/<int:pk>/delete_cv_section/', views.delete_cv_section, name='delete_cv_section'),

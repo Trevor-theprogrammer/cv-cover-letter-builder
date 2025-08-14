@@ -1,0 +1,53 @@
+<!-- Projects Section -->
+<div class="form-group">
+  <h3>Projects</h3>
+  <div id="projects-container">
+    <div class="project-entry">
+      <div class="row">
+        <div class="col-md-6">
+          <label for="proj-name-0">Project Name:</label>
+          <input type="text" name="projects[0][name]" id="proj-name-0" class="form-control" placeholder="e.g., Awesome Project">
+        </div>
+        <div class="col-md-6">
+          <label for="proj-tech-0">Technologies Used:</label>
+          <input type="text" name="projects[0][technologies]" id="proj-tech-0" class="form-control" placeholder="e.g., Python, Django, React">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="proj-desc-0">Description:</label>
+        <textarea name="projects[0][description]" id="proj-desc-0" class="form-control" rows="3" placeholder="Describe your project..."></textarea>
+      </div>
+      <hr>
+    </div>
+  </div>
+  <button type="button" class="btn btn-secondary" onclick="addProject()">Add Another Project</button>
+</div>
+
+<script>
+let projectCount = 1;
+function addProject() {
+  const container = document.getElementById('projects-container');
+  const entry = document.createElement('div');
+  entry.className = 'project-entry';
+  entry.innerHTML = `
+    <div class="row">
+      <div class="col-md-6">
+        <label for="proj-name-${projectCount}">Project Name:</label>
+        <input type="text" name="projects[${projectCount}][name]" id="proj-name-${projectCount}" class="form-control" placeholder="e.g., Awesome Project">
+      </div>
+      <div class="col-md-6">
+        <label for="proj-tech-${projectCount}">Technologies Used:</label>
+        <input type="text" name="projects[${projectCount}][technologies]" id="proj-tech-${projectCount}" class="form-control" placeholder="e.g., Python, Django, React">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="proj-desc-${projectCount}">Description:</label>
+      <textarea name="projects[${projectCount}][description]" id="proj-desc-${projectCount}" class="form-control" rows="3" placeholder="Describe your project..."></textarea>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeEntry(this)">Remove</button>
+    <hr>
+  `;
+  container.appendChild(entry);
+  projectCount++;
+}
+</script>

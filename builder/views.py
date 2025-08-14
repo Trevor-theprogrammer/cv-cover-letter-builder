@@ -11,7 +11,8 @@ from django.contrib.auth import login
 from .ai_services import EnhancedAICoverLetterService
 from .views_upload_cv_optimized import upload_cv_optimized
 from .views_upload_cv_analyzer import upload_cv_analyzer
-from .models import AICoverLetter, CVAnalysis, CV, CVSection, UploadedCV
+from .models import AICoverLetter, CVAnalysis, CV, CVSection, UploadedCV, Template
+
 from .enhanced_forms import EnhancedAICoverLetterForm
 from .forms import CVCreationForm
 from django.contrib import messages
@@ -351,8 +352,35 @@ def create_cv(request):
                         cv=cv,
                         content=education_content
                     )
+
+                # Projects Section
+                projects_data = []
+                i = 0
+                while f'projects[{i}][name]' in request.POST:
+                    name = request.POST.get(f'projects[{i}][name]')
+                    if name:
+                        projects_data.append({
+                            'name': name,
+                            'technologies': request.POST.get(f'projects[{i}][technologies]', ''),
+                            'description': request.POST.get(f'projects[{i}][description]', ''),
+                        })
+                    i += 1
+                
+                if projects_data:
+                    projects_content = "Projects:\n"
+                    for project in projects_data:
+                        projects_content += f"""
+                        - {project['name']}
+                          Technologies: {project['technologies']}
+                          {project['description']}
+                        """
+                    CVSection.objects.create(
+                        cv=cv,
+                        content=projects_content.strip()
+                    )
                 
                 # Skills Section
+
                 if form.cleaned_data['skills']:
                     CVSection.objects.create(
                         cv=cv,
@@ -368,8 +396,16 @@ def create_cv(request):
                 
     else:
         form = CVCreationForm()
-    
-    return render(request, 'builder/create_cv.html', {'form': form})
+
+    templates = Template.objects.filter(type='cv')
+    user_data = {} # if you want to pre-populate from user profile
+
+    return render(request, 'builder/create_cv_enhanced.html', {
+        'form': form, 
+        'templates': templates,
+        'user_data': user_data
+    })
+
 
 def cv_detail(request, pk):
     """CV detail view"""
@@ -716,3 +752,74 @@ def delete_uploaded_cv(request, pk):
     
     # For GET requests, redirect to dashboard since confirmation is handled by JS
     return redirect('dashboard')
+
+
+def cv_detail(request, pk):
+    """CV detail view"""
+    cv = get_object_or_404(CV, pk=pk, user=request.user)
+    sections = CVSection.objects.filter(cv=cv)
+    
+    # Parse sections into structured data
+    cv_data = {
+        'personal_info': {},
+        'summary': '',
+        'experience': [],
+        'education': [],
+        'skills': [],
+        'projects': []
+    }
+    
+    for section in sections:
+        content = section.content.strip()
+        if content.startswith('Professional Summary:'):
+            cv_data['summary'] = content.replace('Professional Summary:', '').strip()
+        elif content.startswith('Skills:'):
+            skills_text = content.replace('Skills:', '').strip()
+            cv_data['skills'] = [skill.strip() for skill in skills_text.split(',') if skill.strip()]
+        elif content.startswith('Projects:'):
+            projects_content = content.replace('Projects:', '').strip()
+            # Simple parsing, assuming projects are separated by a blank line
+            cv_data['projects'] = [p.strip() for p in projects_content.split('\n\n') if p.strip()]
+        elif content.startswith('Work Experience:'):
+            # This is a simplified parser, a more robust one would be needed
+            cv_data['experience'].append(content.replace('Work Experience:', '').strip())
+        elif content.startswith('Education:'):
+            cv_data['education'].append(content.replace('Education:', '').strip())
+        else:
+            # Assuming the first section without a known header is personal info
+            if not cv_data['personal_info']:
+                cv_data['personal_info']['content'] = content
+
+    return render(request, 'builder/cv_detail.html', {
+        'cv': cv,
+        'cv_data': cv_data
+    })
+
+
+def create_template(request):
+    """Create template view"""
+    from .forms import TemplateForm
+    if request.method == 'POST':
+        form = TemplateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Template created successfully!')
+            return redirect('builder:templates')
+    else:
+        form = TemplateForm()
+    return render(request, 'builder/create_template.html', {'form': form})
+
+
+def edit_template(request, pk):
+    """Edit template view"""
+    from .forms import TemplateForm
+    template = get_object_or_404(Template, pk=pk)
+    if request.method == 'POST':
+        form = TemplateForm(request.POST, request.FILES, instance=template)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Template updated successfully!')
+            return redirect('builder:templates')
+    else:
+        form = TemplateForm(instance=template)
+    return render(request, 'builder/edit_template.html', {'form': form})
