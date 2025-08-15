@@ -1,62 +1,1070 @@
-{% extends 'builder/base.html' %} {% load static %} {% block title %}Create Your
-CV - Enhanced{% endblock %} {% block content %}
-<div class="container-fluid">
-  <div class="row">
-    <!-- Progress Sidebar -->
-    <div class="col-md-3 d-none d-md-block">
-      <div class="sticky-top pt-3">
-        <h5>CV Progress</h5>
-        <div class="progress mb-3">
-          <div
-            class="progress-bar"
-            role="progressbar"
-            style="width: 0%"
-            id="progress-bar"
-          >
-            0%
+{% extends 'builder/base.html' %} {% load static %} {% block title %}GlowUp CV - Your AI CV Makeover Tool{% endblock %} 
+
+{% block extra_css %}
+<style>
+/* Glow-Up CV Specific Styles */
+.glow-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 3rem 0;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.glow-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.glow-title .sparkle {
+  color: #10b981;
+  margin-right: 0.5rem;
+}
+
+.glow-subtitle {
+  font-size: 1.2rem;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.process-flow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin: 3rem 0;
+  flex-wrap: wrap;
+}
+
+.process-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.step-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #10b981;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.step-circle.inactive {
+  background: #e2e8f0;
+  color: #64748b;
+  box-shadow: none;
+}
+
+.step-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  max-width: 120px;
+}
+
+.step-arrow {
+  color: #10b981;
+  font-size: 1.5rem;
+  margin: 0 1rem;
+}
+
+.glow-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.glow-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.glow-card.active {
+  border-color: #10b981;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.template-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.template-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.template-card.selected {
+  border-color: #10b981;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.template-preview {
+  height: 200px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.template-info {
+  padding: 1rem;
+  text-align: center;
+}
+
+.template-name {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.template-description {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.form-section {
+  display: none;
+}
+
+.form-section.active {
+  display: block;
+}
+
+.glow-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.glow-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.glow-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .glow-title {
+    font-size: 2rem;
+  }
+  
+  .process-flow {
+    gap: 1rem;
+  }
+  
+  .step-circle {
+    width: 50px;
+    height: 50px;
+    font-size: 1rem;
+  }
+  
+  .step-arrow {
+    display: none;
+  }
+  
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Glow-Up Header -->
+<div class="glow-header">
+  <div class="glow-container">
+    <h1 class="glow-title">
+      <span class="sparkle">✨</span>GlowUp CV – Your AI CV Makeover Tool
+    </h1>
+    <p class="glow-subtitle">
+      Whether you're applying for your first job or looking to advance your career, we've got you covered. Select from clean, creative, and modern templates that are compatible with applicant tracking systems (ATS).
+    </p>
+    
+    <!-- 5-Step Process Flow -->
+    <div class="process-flow">
+      <div class="process-step">
+        <div class="step-circle" id="step-1">1</div>
+        <div class="step-label">Choose your favorite template</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="process-step">
+        <div class="step-circle inactive" id="step-2">2</div>
+        <div class="step-label">Upload your CV</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="process-step">
+        <div class="step-circle inactive" id="step-3">3</div>
+        <div class="step-label">Verify your content</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="process-step">
+        <div class="step-circle inactive" id="step-4">4</div>
+        <div class="step-label">Preview your polished CV</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="process-step">
+        <div class="step-circle inactive" id="step-5">5</div>
+        <div class="step-label">Download instantly</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="glow-container">
+  {% if templates %}
+  <form method="POST" action="{% url 'builder:create_cv' %}" id="cv-form" novalidate>
+    {% csrf_token %}
+
+    <!-- Step 1: Template Selection -->
+    <div class="glow-card active" id="step-1-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 1:</span> Choose Your Favorite Template
+      </h2>
+      
+      <div class="template-grid">
+        {% for template in templates %}
+        <div class="template-card" data-template-id="{{ template.id }}">
+          <div class="template-preview">
+            <img src="{{ template.preview_image.url }}" alt="{{ template.name }}" />
+          </div>
+          <div class="template-info">
+            <div class="template-name">{{ template.name }}</div>
+            <div class="template-description">{{ template.description }}</div>
           </div>
         </div>
-        <ul class="nav nav-pills flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" href="#personal-info">Personal Info</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#experience">Experience</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#education">Education</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#skills">Skills</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#languages">Languages</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#certifications">Certifications</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#template">Template</a>
-          </li>
-        </ul>
+        {% endfor %}
+      </div>
+      
+      <input type="hidden" name="template_id" id="template_id" />
+      
+      <div class="step-navigation">
+        <div></div>
+        <button type="button" class="glow-btn" id="next-step-1" disabled>
+          Continue to Upload CV
+        </button>
       </div>
     </div>
 
-    <div class="col-md-9">
-      <h1>Create Your Professional CV</h1>
-      <p class="text-muted">Fill in your details to create a stunning CV</p>
+    <!-- Step 2: Upload CV (Placeholder for now - we'll use form data instead) -->
+    <div class="glow-card form-section" id="step-2-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 2:</span> Fill in Your Details
+      </h2>
+      
+      <!-- Personal Information Section -->
+      <div class="mb-4" id="personal-info">
+        <h3 style="color: #374151; margin-bottom: 1rem;">Personal Information</h3>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="full_name" class="form-label">Full Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="full_name"
+              name="full_name"
+              value="{{ user_data.full_name|default:'' }}"
+              required
+              pattern="^[a-zA-Z\s\-']{2,50}$"
+              data-bs-toggle="tooltip"
+              title="Enter your full legal name"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid name (2-50 characters, letters only)
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Email Address *</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              value="{{ user_data.email|default:'' }}"
+              required
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid email address
+            </div>
+          </div>
+        </div>
 
-      {% if templates %}
-      <form
-        method="POST"
-        action="{% url 'builder:create_cv' %}"
-        id="cv-form"
-        novalidate
-      >
-        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Phone Number *</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              name="phone"
+              value="{{ user_data.phone|default:'' }}"
+              required
+              pattern="^\+?[\d\s\-\(\)]{10,20}$"
+              placeholder="+1 (555) 123-4567"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid phone number
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="location" class="form-label">Location *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="location"
+              name="location"
+              value="{{ user_data.location|default:'' }}"
+              required
+              placeholder="City, State, Country"
+            />
+            <div class="invalid-feedback">Please enter your location</div>
+          </div>
+        </div>
 
-        <!-- Personal Information Section -->
-        <div class="card mb-4" id="personal-info">
+        <div class="mb-3">
+          <label for="summary" class="form-label">Professional Summary *</label>
+          <textarea
+            class="form-control"
+            id="summary"
+            name="summary"
+            rows="4"
+            placeholder="Write a compelling summary of your professional background..."
+            maxlength="500"
+            required
+          >{{ user_data.summary|default:'' }}</textarea>
+          <div class="form-text">
+            <span id="summary-count">0</span>/500 characters
+          </div>
+          <div class="invalid-feedback">
+            Please provide a professional summary (max 500 characters)
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="linkedin" class="form-label">LinkedIn Profile (Optional)</label>
+          <input
+            type="url"
+            class="form-control"
+            id="linkedin"
+            name="linkedin"
+            placeholder="https://linkedin.com/in/yourprofile"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="portfolio" class="form-label">Portfolio/Website (Optional)</label>
+          <input
+            type="url"
+            class="form-control"
+            id="portfolio"
+            name="portfolio"
+            placeholder="https://yourportfolio.com"
+          />
+        </div>
+      </div>
+      
+      <div class="step-navigation">
+        <button type="button" class="glow-btn" id="prev-step-2" style="background: #6b7280;">
+          Back to Templates
+        </button>
+        <button type="button" class="glow-btn" id="next-step-2">
+          Continue to Experience
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Verify Content (Experience, Education, etc.) -->
+    <div class="glow-card form-section" id="step-3-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 3:</span> Add Your Experience & Skills
+      </h2>
+
+      <!-- Work Experience Section -->
+      <div class="mb-4" id="experience">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Work Experience</h3>
+          <span class="badge bg-secondary" id="experience-count">0 entries</span>
+        </div>
+        <div id="experience-container">
+          <!-- Dynamic experience entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addExperience()"
+        >
+          <i class="fas fa-plus"></i> Add Experience
+        </button>
+      </div>
+
+      <!-- Education Section -->
+      <div class="mb-4" id="education">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Education</h3>
+          <span class="badge bg-secondary" id="education-count">0 entries</span>
+        </div>
+        <div id="education-container">
+          <!-- Dynamic education entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addEducation()"
+        >
+          <i class="fas fa-plus"></i> Add Education
+        </button>
+      </div>
+
+      <!-- Skills Section -->
+      <div class="mb-4" id="skills">
+        <h3 style="color: #374151; margin-bottom: 1rem;">Skills</h3>
+        <div class="mb-3">
+          <label for="skills-input" class="form-label">Add your skills (comma-separated)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="skills-input"
+            placeholder="e.g., Python, JavaScript, Project Management"
+          />
+        </div>
+        <div id="skills-container" class="d-flex flex-wrap gap-2">
+          <!-- Dynamic skill tags will be added here -->
+        </div>
+      </div>
+
+      <!-- Languages Section -->
+      <div class="mb-4" id="languages">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Languages</h3>
+          <span class="badge bg-secondary" id="language-count">0 entries</span>
+        </div>
+        <div id="language-container">
+          <!-- Dynamic language entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addLanguage()"
+        >
+          <i class="fas fa-plus"></i> Add Language
+        </button>
+      </div>
+
+      <!-- Certifications Section -->
+      <div class="mb-4" id="certifications">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Certifications</h3>
+          <span class="badge bg-secondary" id="certification-count">0 entries</span>
+        </div>
+        <div id="certification-container">
+          <!-- Dynamic certification entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addCertification()"
+        >
+          <i class="fas fa-plus"></i> Add Certification
+        </button>
+      </div>
+      
+      <div class="step-navigation">
+        <button type="button" class="glow-btn" id="prev-step-3" style="background: #6b7280;">
+          Back to Personal Info
+        </button>
+        <button type="button" class="glow-btn" id="next-step-3">
+          Preview CV
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4: Preview -->
+    <div class="glow-card form-section" id="step-4-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 4:</span> Preview Your Polished CV
+      </h2>
+      
+      <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px; margin-bottom: 2rem;">
+        <i class="fas fa-file-alt" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+        <p style="color: #64748b; margin-bottom: 0;">Your CV preview will appear here once generated</p>
+      </div>
+      
+      <div class="step-navigation">
+        <button type="button" class="glow-btn" id="prev-step-4" style="background: #6b7280;">
+          Back to Edit Content
+        </button>
+        <button type="submit" class="glow-btn" id="generate-cv">
+          Generate & Download CV
+        </button>
+      </div>
+    </div>
+
+  </form>
+  {% else %}
+  <div class="glow-card">
+    <div class="alert alert-warning">
+      <strong>No templates available.</strong> Please check back later or contact support.
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Template Preview Modal -->
+<div class="modal fade" id="template-preview-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Template Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="preview-image" src="" alt="Template Preview" style="max-width: 100%; height: auto;" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for editing sections -->
+<div
+  class="modal fade"
+  id="section-modal"
+  tabindex="-1"
+  aria-labelledby="section-modal-label"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="section-modal-label">Edit Section</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Form fields for sections will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" id="save-section-btn">
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Glow-Up CV Step Navigation
+document.addEventListener('DOMContentLoaded', function() {
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  // Template selection functionality
+  const templateCards = document.querySelectorAll('.template-card');
+  const templateIdInput = document.getElementById('template_id');
+  const nextStep1Btn = document.getElementById('next-step-1');
+
+  templateCards.forEach(card => {
+    card.addEventListener('click', function() {
+      // Remove selected class from all cards
+      templateCards.forEach(c => c.classList.remove('selected'));
+      // Add selected class to clicked card
+      this.classList.add('selected');
+      // Set template ID
+      templateIdInput.value = this.dataset.templateId;
+      // Enable next button
+      nextStep1Btn.disabled = false;
+    });
+  });
+
+  // Step navigation functions
+  function showStep(stepNumber) {
+    // Hide all steps
+    document.querySelectorAll('.glow-card, .form-section').forEach(section => {
+      section.classList.remove('active');
+    });
+    
+    // Show current step
+    document.getElementById(`step-${stepNumber}-content`).classList.add('active');
+    
+    // Update step circles
+    for (let i = 1; i <= totalSteps + 1; i++) {
+      const circle = document.getElementById(`step-${i}`);
+      if (circle) {
+        if (i <= stepNumber) {
+          circle.classList.remove('inactive');
+        } else {
+          circle.classList.add('inactive');
+        }
+      }
+    }
+    
+    currentStep = stepNumber;
+  }
+
+  // Next/Previous button handlers
+  document.getElementById('next-step-1')?.addEventListener('click', () => showStep(2));
+  document.getElementById('next-step-2')?.addEventListener('click', () => showStep(3));
+  document.getElementById('next-step-3')?.addEventListener('click', () => showStep(4));
+  
+  document.getElementById('prev-step-2')?.addEventListener('click', () => showStep(1));
+  document.getElementById('prev-step-3')?.addEventListener('click', () => showStep(2));
+  document.getElementById('prev-step-4')?.addEventListener('click', () => showStep(3));
+
+  // Character counter for summary
+  const summaryTextarea = document.getElementById('summary');
+  const summaryCount = document.getElementById('summary-count');
+  
+  if (summaryTextarea && summaryCount) {
+    summaryTextarea.addEventListener('input', function() {
+      summaryCount.textContent = this.value.length;
+    });
+    // Initialize count
+    summaryCount.textContent = summaryTextarea.value.length;
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'builder/js/create_cv_enhanced.js' %}"></script>
+{% endblock %}
+=======
+<div class="glow-container">
+  {% if templates %}
+  <form method="POST" action="{% url 'builder:create_cv' %}" id="cv-form" novalidate>
+    {% csrf_token %}
+
+    <!-- Step 1: Template Selection -->
+    <div class="glow-card active" id="step-1-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 1:</span> Choose Your Favorite Template
+      </h2>
+      
+      <div class="template-grid">
+        {% for template in templates %}
+        <div class="template-card" data-template-id="{{ template.id }}">
+          <div class="template-preview">
+            <img src="{{ template.preview_image.url }}" alt="{{ template.name }}" />
+          </div>
+          <div class="template-info">
+            <div class="template-name">{{ template.name }}</div>
+            <div class="template-description">{{ template.description }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <input type="hidden" name="template_id" id="template_id" />
+      
+      <div class="step-navigation">
+        <div></div>
+        <button type="button" class="glow-btn" id="next-step-1" disabled>
+          Continue to Upload CV
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload CV (Placeholder for now - we'll use form data instead) -->
+    <div class="glow-card form-section" id="step-2-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 2:</span> Fill in Your Details
+      </h2>
+      
+      <!-- Personal Information Section -->
+      <div class="mb-4" id="personal-info">
+        <h3 style="color: #374151; margin-bottom: 1rem;">Personal Information</h3>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="full_name" class="form-label">Full Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="full_name"
+              name="full_name"
+              value="{{ user_data.full_name|default:'' }}"
+              required
+              pattern="^[a-zA-Z\s\-']{2,50}$"
+              data-bs-toggle="tooltip"
+              title="Enter your full legal name"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid name (2-50 characters, letters only)
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Email Address *</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              value="{{ user_data.email|default:'' }}"
+              required
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid email address
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Phone Number *</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              name="phone"
+              value="{{ user_data.phone|default:'' }}"
+              required
+              pattern="^\+?[\d\s\-\(\)]{10,20}$"
+              placeholder="+1 (555) 123-4567"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid phone number
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="location" class="form-label">Location *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="location"
+              name="location"
+              value="{{ user_data.location|default:'' }}"
+              required
+              placeholder="City, State, Country"
+            />
+            <div class="invalid-feedback">Please enter your location</div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="summary" class="form-label">Professional Summary *</label>
+          <textarea
+            class="form-control"
+            id="summary"
+            name="summary"
+            rows="4"
+            placeholder="Write a compelling summary of your professional background..."
+            maxlength="500"
+            required
+          >{{ user_data.summary|default:'' }}</textarea>
+          <div class="form-text">
+            <span id="summary-count">0</span>/500 characters
+          </div>
+          <div class="invalid-feedback">
+            Please provide a professional summary (max 500 characters)
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="linkedin" class="form-label">LinkedIn Profile (Optional)</label>
+          <input
+            type="url"
+            class="form-control"
+            id="linkedin"
+            name="linkedin"
+            placeholder="https://linkedin.com/in/yourprofile"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="portfolio" class="form-label">Portfolio/Website (Optional)</label>
+          <input
+            type="url"
+            class="form-control"
+            id="portfolio"
+            name="portfolio"
+            placeholder="https://yourportfolio.com"
+          />
+        </div>
+      </div>
+      
+      <div class="step-navigation">
+        <button type="button" class="glow-btn" id="prev-step-2" style="background: #6b7280;">
+          Back to Templates
+        </button>
+        <button type="button" class="glow-btn" id="next-step-2">
+          Continue to Experience
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Verify Content (Experience, Education, etc.) -->
+    <div class="glow-card form-section" id="step-3-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 3:</span> Add Your Experience & Skills
+      </h2>
+
+      <!-- Work Experience Section -->
+      <div class="mb-4" id="experience">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Work Experience</h3>
+          <span class="badge bg-secondary" id="experience-count">0 entries</span>
+        </div>
+        <div id="experience-container">
+          <!-- Dynamic experience entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addExperience()"
+        >
+          <i class="fas fa-plus"></i> Add Experience
+        </button>
+      </div>
+
+      <!-- Education Section -->
+      <div class="mb-4" id="education">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Education</h3>
+          <span class="badge bg-secondary" id="education-count">0 entries</span>
+        </div>
+        <div id="education-container">
+          <!-- Dynamic education entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addEducation()"
+        >
+          <i class="fas fa-plus"></i> Add Education
+        </button>
+      </div>
+
+      <!-- Skills Section -->
+      <div class="mb-4" id="skills">
+        <h3 style="color: #374151; margin-bottom: 1rem;">Skills</h3>
+        <div class="mb-3">
+          <label for="skills-input" class="form-label">Add your skills (comma-separated)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="skills-input"
+            placeholder="e.g., Python, JavaScript, Project Management"
+          />
+        </div>
+        <div id="skills-container" class="d-flex flex-wrap gap-2">
+          <!-- Dynamic skill tags will be added here -->
+        </div>
+      </div>
+
+      <!-- Languages Section -->
+      <div class="mb-4" id="languages">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Languages</h3>
+          <span class="badge bg-secondary" id="language-count">0 entries</span>
+        </div>
+        <div id="language-container">
+          <!-- Dynamic language entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addLanguage()"
+        >
+          <i class="fas fa-plus"></i> Add Language
+        </button>
+      </div>
+
+      <!-- Certifications Section -->
+      <div class="mb-4" id="certifications">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 style="color: #374151;">Certifications</h3>
+          <span class="badge bg-secondary" id="certification-count">0 entries</span>
+        </div>
+        <div id="certification-container">
+          <!-- Dynamic certification entries will be added here -->
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="addCertification()"
+        >
+          <i class="fas fa-plus"></i> Add Certification
+        </button>
+      </div>
+      
+      <div class="step-navigation">
+        <button type="button" class="glow-btn" id="prev-step-3" style="background: #6b7280;">
+          Back to Personal Info
+        </button>
+        <button type="button" class="glow-btn" id="next-step-3">
+          Preview CV
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4: Preview -->
+    <div class="glow-card form-section" id="step-4-content">
+      <h2 style="color: #1e293b; margin-bottom: 1.5rem; text-align: center;">
+        <span style="color: #10b981;">Step 4:</span> Preview Your Polished CV
+      </h2>
+      
+      <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px; margin-bottom: 2rem;">
+        <i class="fas fa-file-alt" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+        <p style="color: #64748b; margin-bottom: 0;">Your CV preview will appear here once generated</p>
+      </div>
+      
+      <div class="step-navigation">
+        <button type="button" class="glow-btn" id="prev-step-4" style="background: #6b7280;">
+          Back to Edit Content
+        </button>
+        <button type="submit" class="glow-btn" id="generate-cv">
+          Generate & Download CV
+        </button>
+      </div>
+    </div>
+
+  </form>
+  {% else %}
+  <div class="glow-card">
+    <div class="alert alert-warning">
+      <strong>No templates available.</strong> Please check back later or contact support.
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Template Preview Modal -->
+<div class="modal fade" id="template-preview-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Template Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="preview-image" src="" alt="Template Preview" style="max-width: 100%; height: auto;" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for editing sections -->
+<div
+  class="modal fade"
+  id="section-modal"
+  tabindex="-1"
+  aria-labelledby="section-modal-label"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="section-modal-label">Edit Section</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Form fields for sections will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" id="save-section-btn">
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Glow-Up CV Step Navigation
+document.addEventListener('DOMContentLoaded', function() {
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  // Template selection functionality
+  const templateCards = document.querySelectorAll('.template-card');
+  const templateIdInput = document.getElementById('template_id');
+  const nextStep1Btn = document.getElementById('next-step-1');
+
+  templateCards.forEach(card => {
+    card.addEventListener('click', function() {
+      // Remove selected class from all cards
+      templateCards.forEach(c => c.classList.remove('selected'));
+      // Add selected class to clicked card
+      this.classList.add('selected');
+      // Set template ID
+      templateIdInput.value = this.dataset.templateId;
+      // Enable next button
+      nextStep1Btn.disabled = false;
+    });
+  });
+
+  // Step navigation functions
+  function showStep(stepNumber) {
           <div class="card-header">
             <h3>Personal Information</h3>
           </div>
