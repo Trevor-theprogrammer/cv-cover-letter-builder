@@ -1,0 +1,525 @@
+{% extends 'builder/base.html' %} {% load static %} {% block title %}Create Your
+CV - Modern Builder{% endblock %} {% block extra_css %}
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- DaisyUI -->
+<link
+  href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+  rel="stylesheet"
+  type="text/css"
+/>
+<!-- Custom Fonts -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<!-- Custom Styles -->
+<link rel="stylesheet" href="{% static 'builder/css/cv-modern.css' %}" />
+{% endblock %} {% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur-sm shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">CV Builder</h1>
+          <p class="text-sm text-gray-600">
+            Create your professional resume in minutes
+          </p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button id="save-draft-btn" class="btn btn-ghost btn-sm">
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+              ></path>
+            </svg>
+            Save Draft
+          </button>
+          <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost btn-sm">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                ></path>
+              </svg>
+            </label>
+            <ul
+              tabindex="0"
+              class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li><a href="#" id="import-data-btn">Import Data</a></li>
+              <li><a href="#" id="export-data-btn">Export Data</a></li>
+              <li><a href="#" id="reset-form-btn">Reset Form</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="bg-white/60 backdrop-blur-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-medium text-gray-700">Progress</span>
+        <span class="text-sm text-gray-600" id="progress-text"
+          >0% Complete</span
+        >
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+        <div
+          class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+          id="progress-bar"
+          style="width: 0%"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Form Section -->
+      <div class="lg:col-span-2">
+        <form
+          id="cv-form"
+          method="POST"
+          action="{% url 'builder:create_cv' %}"
+          class="space-y-6"
+        >
+          {% csrf_token %}
+
+          <!-- Personal Information -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">
+                Personal Information
+              </h2>
+              <div class="badge badge-primary">Required</div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium">Full Name</span>
+                </label>
+                <input
+                  type="text"
+                  name="full_name"
+                  id="full_name"
+                  class="input input-bordered w-full"
+                  value="{{ user_data.full_name|default:'' }}"
+                  required
+                />
+                <div class="mt-1 hidden" id="full_name-suggestion"></div>
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium">Email Address</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  class="input input-bordered w-full"
+                  value="{{ user_data.email|default:'' }}"
+                  required
+                />
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium">Phone Number</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  id="phone"
+                  class="input input-bordered w-full"
+                  value="{{ user_data.phone|default:'' }}"
+                  pattern="[0-9+\-\s()]*"
+                />
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium">Location</span>
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  id="location"
+                  class="input input-bordered w-full"
+                  value="{{ user_data.location|default:'' }}"
+                  placeholder="City, Country"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Professional Summary -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">
+                Professional Summary
+              </h2>
+              <span class="text-sm text-gray-500" id="summary-count"
+                >0/500</span
+              >
+            </div>
+            <div class="form-control">
+              <textarea
+                name="summary"
+                id="summary"
+                class="textarea textarea-bordered h-32"
+                placeholder="Write a compelling summary that highlights your key achievements and career goals..."
+                maxlength="500"
+              >
+{{ user_data.summary|default:'' }}</textarea
+              >
+              <div class="mt-2">
+                <button
+                  type="button"
+                  id="ai-suggest-summary"
+                  class="btn btn-sm btn-ghost text-primary"
+                >
+                  <svg
+                    class="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    ></path>
+                  </svg>
+                  AI Suggest
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Section -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">Skills</h2>
+              <button
+                type="button"
+                id="ai-suggest-skills"
+                class="btn btn-sm btn-ghost text-primary"
+              >
+                <svg
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  ></path>
+                </svg>
+                AI Suggest
+              </button>
+            </div>
+            <div class="form-control">
+              <input
+                type="text"
+                id="skills-input"
+                class="input input-bordered w-full"
+                placeholder="Type a skill and press Enter or comma"
+              />
+              <div class="mt-2 flex flex-wrap gap-2" id="skills-container">
+                <!-- Skills tags will be added here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Experience Section -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">
+                Work Experience
+              </h2>
+              <button
+                type="button"
+                onclick="addExperience()"
+                class="btn btn-sm btn-primary"
+              >
+                <svg
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
+                </svg>
+                Add Experience
+              </button>
+            </div>
+            <div id="experience-container" class="space-y-4">
+              <!-- Experience entries will be added here -->
+            </div>
+          </div>
+
+          <!-- Education Section -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">Education</h2>
+              <button
+                type="button"
+                onclick="addEducation()"
+                class="btn btn-sm btn-primary"
+              >
+                <svg
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
+                </svg>
+                Add Education
+              </button>
+            </div>
+            <div id="education-container" class="space-y-4">
+              <!-- Education entries will be added here -->
+            </div>
+          </div>
+
+          <!-- Projects Section -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">Projects</h2>
+              <button
+                type="button"
+                onclick="addProject()"
+                class="btn btn-sm btn-primary"
+              >
+                <svg
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
+                </svg>
+                Add Project
+              </button>
+            </div>
+            <div id="projects-container" class="space-y-4">
+              <!-- Project entries will be added here -->
+            </div>
+          </div>
+
+          <!-- Template Selection -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+              Choose Template
+            </h2>
+            <div
+              class="grid grid-cols-2 md:grid-cols-3 gap-4"
+              id="template-grid"
+            >
+              {% for template in templates %}
+              <div
+                class="template-card cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all"
+                data-template-id="{{ template.id }}"
+              >
+                <img
+                  src="{{ template.preview_image.url }}"
+                  alt="{{ template.name }}"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-3 bg-gray-50">
+                  <h3 class="text-sm font-medium text-center">
+                    {{ template.name }}
+                  </h3>
+                </div>
+              </div>
+              {% empty %}
+              <div class="col-span-full text-center py-8">
+                <div class="alert alert-warning">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                  <span>No templates available. Please check back later.</span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <input type="hidden" name="template_id" id="template_id" required />
+          </div>
+
+          <!-- Submit Section -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-medium text-gray-900">
+                  Ready to generate your CV?
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Review your information before proceeding
+                </p>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <svg
+                  class="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+                Generate CV
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Preview Section -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-4">
+          <div class="bg-white rounded-xl shadow-lg p-6 border">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">Live Preview</h3>
+              <button
+                type="button"
+                id="refresh-preview"
+                class="btn btn-ghost btn-xs"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div
+              id="cv-preview"
+              class="border rounded-lg p-4 min-h-96 bg-gray-50"
+            >
+              <div class="text-center text-gray-500 py-8">
+                <svg
+                  class="w-12 h-12 mx-auto mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+                <p>Your CV preview will appear here</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Suggestions Panel -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border mt-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              AI Suggestions
+            </h3>
+            <div id="ai-suggestions" class="space-y-3">
+              <div class="text-sm text-gray-500">
+                AI suggestions will appear here based on your input
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div
+  id="loading-overlay"
+  class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden"
+>
+  <div class="flex items-center justify-center h-full">
+    <div class="loading loading-spinner loading-lg text-primary"></div>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<!-- Modern JavaScript -->
+<script type="module" src="{% static 'builder/js/cv-builder.js' %}"></script>
+<script
+  type="module"
+  src="{% static 'builder/js/components/experience-section.js' %}"
+></script>
+<script
+  type="module"
+  src="{% static 'builder/js/components/education-section.js' %}"
+></script>
+<script
+  type="module"
+  src="{% static 'builder/js/components/skills-input.js' %}"
+></script>
+<script
+  type="module"
+  src="{% static 'builder/js/components/template-preview.js' %}"
+></script>
+{% endblock %}

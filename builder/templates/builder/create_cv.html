@@ -141,6 +141,23 @@ CV{% endblock %} {% block content %}
   .template-card.selected {
     border-color: #007bff;
   }
+  /* Additional styles to match GlowUp CV */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+  }
+  h1,
+  h3 {
+    color: #333;
+  }
+  .btn-primary {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
 </style>
 
 <script>
@@ -169,10 +186,10 @@ CV{% endblock %} {% block content %}
       entry.innerHTML = `
             <h5>Experience #${experienceCount + 1}</h5>
             <div class="row">
-                <div class="col-md-6"><input type="text" name="experience[${experienceCount}][job_title]" class="form-control mb-2" placeholder="Job Title"></div>
-                <div class="col-md-6"><input type="text" name="experience[${experienceCount}][company]" class="form-control mb-2" placeholder="Company"></div>
+                <div class="col-md-6"><input type="text" name="experience[${experienceCount}][job_title]" class="form-control mb-2" placeholder="Job Title" required></div>
+                <div class="col-md-6"><input type="text" name="experience[${experienceCount}][company]" class="form-control mb-2" placeholder="Company" required></div>
             </div>
-            <textarea name="experience[${experienceCount}][description]" class="form-control" rows="3" placeholder="Description..."></textarea>
+            <textarea name="experience[${experienceCount}][description]" class="form-control" rows="3" placeholder="Description..." required></textarea>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="this.parentElement.remove()">Remove</button>
         `;
       container.appendChild(entry);
@@ -187,10 +204,10 @@ CV{% endblock %} {% block content %}
       entry.innerHTML = `
             <h5>Education #${educationCount + 1}</h5>
             <div class="row">
-                <div class="col-md-6"><input type="text" name="education[${educationCount}][degree]" class="form-control mb-2" placeholder="Degree"></div>
-                <div class="col-md-6"><input type="text" name="education[${educationCount}][school]" class="form-control mb-2" placeholder="School"></div>
+                <div class="col-md-6"><input type="text" name="education[${educationCount}][degree]" class="form-control mb-2" placeholder="Degree" required></div>
+                <div class="col-md-6"><input type="text" name="education[${educationCount}][school]" class="form-control mb-2" placeholder="School" required></div>
             </div>
-            <input type="text" name="education[${educationCount}][year]" class="form-control" placeholder="Year">
+            <input type="text" name="education[${educationCount}][year]" class="form-control" placeholder="Year" required>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="this.parentElement.remove()">Remove</button>
         `;
       container.appendChild(entry);
@@ -205,15 +222,24 @@ CV{% endblock %} {% block content %}
       entry.innerHTML = `
             <h5>Project #${projectCount + 1}</h5>
             <div class="row">
-                <div class="col-md-6"><input type="text" name="projects[${projectCount}][name]" class="form-control mb-2" placeholder="Project Name"></div>
-                <div class="col-md-6"><input type="text" name="projects[${projectCount}][technologies]" class="form-control mb-2" placeholder="Technologies Used"></div>
+                <div class="col-md-6"><input type="text" name="projects[${projectCount}][name]" class="form-control mb-2" placeholder="Project Name" required></div>
+                <div class="col-md-6"><input type="text" name="projects[${projectCount}][technologies]" class="form-control mb-2" placeholder="Technologies Used" required></div>
             </div>
-            <textarea name="projects[${projectCount}][description]" class="form-control" rows="3" placeholder="Description..."></textarea>
+            <textarea name="projects[${projectCount}][description]" class="form-control" rows="3" placeholder="Description..." required></textarea>
             <button type="button" class="btn btn-danger btn-sm mt-2" onclick="this.parentElement.remove()">Remove</button>
         `;
       container.appendChild(entry);
       projectCount++;
     };
+
+    // Form validation
+    document.getElementById('cv-form').addEventListener('submit', function (e) {
+      const templateId = document.getElementById('template_id').value;
+      if (!templateId) {
+        e.preventDefault();
+        alert('Please select a template before submitting.');
+      }
+    });
   });
 </script>
 {% endblock %}
