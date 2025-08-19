@@ -332,8 +332,234 @@ Sincerely,
             'education_level': 'Not specified'
         }
 
-# CVAnalyzerService removed as part of CV analyzer functionality removal
-# CV analysis is now handled directly in upload_cv view
+class CVAnalysisService:
+    """Enhanced service for comprehensive CV analysis and optimization"""
+    
+    def __init__(self):
+        self.ai_service = EnhancedAICoverLetterService()
+    
+    def analyze_cv_comprehensive(self, cv_text: str, job_title: str = None, job_description: str = None) -> Dict[str, Any]:
+        """Comprehensive CV analysis with job matching capabilities"""
+        if not cv_text or not isinstance(cv_text, str):
+            return self._get_default_analysis()
+        
+        try:
+            # Extract CV insights using existing AI service
+            cv_insights = self.ai_service.extract_cv_insights(cv_text)
+            
+            # Calculate comprehensive scores
+            analysis = {
+                'overall_score': self._calculate_overall_score(cv_insights),
+                'ats_score': self._calculate_ats_score(cv_text),
+                'keyword_score': self._calculate_keyword_score(cv_text, job_description),
+                'skills': cv_insights.get('skills', []),
+                'experience': cv_insights.get('experience', []),
+                'education': cv_insights.get('education', []),
+                'achievements': cv_insights.get('achievements', []),
+                'summary': cv_insights.get('summary', ''),
+                'strengths': self._identify_strengths(cv_insights),
+                'weaknesses': self._identify_weaknesses(cv_text, cv_insights),
+                'recommendations': self._generate_recommendations(cv_insights, job_description),
+                'experience_level': self._determine_experience_level(cv_insights),
+                'industry': self._determine_industry(cv_insights),
+                'education_level': self._determine_education_level(cv_insights)
+            }
+            
+            # Add job matching if job details provided
+            if job_title and job_description:
+                analysis['job_match'] = self.ai_service.match_cv_to_job(cv_insights, job_title, job_description)
+            
+            return analysis
+            
+        except Exception as e:
+            logger.error(f"CV analysis failed: {str(e)}")
+            return self._get_default_analysis()
+    
+    def _calculate_overall_score(self, cv_insights: Dict) -> int:
+        """Calculate overall CV quality score"""
+        score = 50  # Base score
+        
+        # Add points for content quality
+        if cv_insights.get('skills'):
+            score += min(20, len(cv_insights['skills']) * 2)
+        if cv_insights.get('achievements'):
+            score += min(15, len(cv_insights['achievements']) * 3)
+        if cv_insights.get('experience'):
+            score += min(15, len(cv_insights['experience']) * 2)
+        
+        return min(100, score)
+    
+    def _calculate_ats_score(self, cv_text: str) -> int:
+        """Calculate ATS compatibility score"""
+        score = 60  # Base score
+        
+        # Check for ATS-friendly elements
+        text_lower = cv_text.lower()
+        
+        # Keywords that improve ATS score
+        ats_keywords = ['experience', 'skills', 'education', 'achievements', 'projects', 'certifications']
+        keyword_matches = sum(1 for keyword in ats_keywords if keyword in text_lower)
+        score += keyword_matches * 5
+        
+        # Check for quantifiable achievements (numbers)
+        import re
+        numbers = re.findall(r'\d+%|\d+\s*years?|\d+\s*months?', text_lower)
+        score += min(20, len(numbers) * 3)
+        
+        return min(100, score)
+    
+    def _calculate_keyword_score(self, cv_text: str, job_description: str = None) -> int:
+        """Calculate keyword optimization score"""
+        if not job_description:
+            return 75  # Default score without job context
+        
+        # Simple keyword matching
+        cv_words = set(cv_text.lower().split())
+        job_words = set(job_description.lower().split())
+        
+        # Filter out common words
+        common_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'a', 'an'}
+        job_keywords = job_words - common_words
+        
+        if not job_keywords:
+            return 75
+        
+        matches = len(cv_words.intersection(job_keywords))
+        score = int((matches / len(job_keywords)) * 100)
+        
+        return min(100, score)
+    
+    def _identify_strengths(self, cv_insights: Dict) -> List[str]:
+        """Identify key strengths from CV analysis"""
+        strengths = []
+        
+        if len(cv_insights.get('skills', [])) > 5:
+            strengths.append("Strong technical skill set")
+        
+        if cv_insights.get('achievements'):
+            strengths.append("Quantifiable achievements included")
+        
+        if cv_insights.get('experience'):
+            strengths.append("Relevant work experience")
+        
+        strengths.extend([
+            "Professional formatting",
+            "Clear career progression",
+            "Industry-relevant content"
+        ])
+        
+        return strengths[:6]  # Limit to top 6
+    
+    def _identify_weaknesses(self, cv_text: str, cv_insights: Dict) -> List[str]:
+        """Identify areas for improvement"""
+        weaknesses = []
+        
+        if len(cv_insights.get('skills', [])) < 3:
+            weaknesses.append("Limited technical skills listed")
+        
+        if not cv_insights.get('achievements'):
+            weaknesses.append("Missing quantifiable achievements")
+        
+        if len(cv_text.split()) < 200:
+            weaknesses.append("Content may be too brief")
+        
+        weaknesses.extend([
+            "Could benefit from more specific metrics",
+            "Consider adding relevant certifications",
+            "May need industry-specific keywords"
+        ])
+        
+        return weaknesses[:6]  # Limit to top 6
+    
+    def _generate_recommendations(self, cv_insights: Dict, job_description: str = None) -> List[str]:
+        """Generate specific improvement recommendations"""
+        recommendations = [
+            "Add more quantifiable achievements with specific metrics",
+            "Include relevant industry keywords",
+            "Ensure consistent formatting throughout",
+            "Add a strong professional summary"
+        ]
+        
+        if job_description:
+            recommendations.append("Customize content for specific job requirements")
+        
+        return recommendations
+    
+    def _determine_experience_level(self, cv_insights: Dict) -> str:
+        """Determine candidate experience level"""
+        experience = cv_insights.get('experience', [])
+        if not experience:
+            return "Entry Level"
+        
+        # Simple heuristic based on experience descriptions
+        exp_text = ' '.join(experience).lower()
+        if 'senior' in exp_text or 'lead' in exp_text or 'manager' in exp_text:
+            return "Senior Level"
+        elif any(year in exp_text for year in ['5 years', '6 years', '7 years', '8 years']):
+            return "Mid-Senior Level"
+        elif any(year in exp_text for year in ['2 years', '3 years', '4 years']):
+            return "Mid Level"
+        else:
+            return "Entry-Mid Level"
+    
+    def _determine_industry(self, cv_insights: Dict) -> str:
+        """Determine primary industry focus"""
+        skills = ' '.join(cv_insights.get('skills', [])).lower()
+        experience = ' '.join(cv_insights.get('experience', [])).lower()
+        
+        combined_text = skills + ' ' + experience
+        
+        industry_keywords = {
+            'Technology': ['python', 'javascript', 'software', 'developer', 'programming'],
+            'Finance': ['finance', 'accounting', 'banking', 'investment', 'financial'],
+            'Healthcare': ['medical', 'health', 'patient', 'clinical', 'healthcare'],
+            'Marketing': ['marketing', 'digital', 'campaign', 'brand', 'social media'],
+            'Engineering': ['engineer', 'mechanical', 'electrical', 'civil', 'design']
+        }
+        
+        for industry, keywords in industry_keywords.items():
+            if any(keyword in combined_text for keyword in keywords):
+                return industry
+        
+        return "General Business"
+    
+    def _determine_education_level(self, cv_insights: Dict) -> str:
+        """Determine education level"""
+        education = cv_insights.get('education', [])
+        if not education:
+            return "Not specified"
+        
+        education_text = ' '.join(education).lower()
+        
+        if any(level in education_text for level in ['phd', 'doctorate', 'doctoral']):
+            return "Doctorate"
+        elif any(level in education_text for level in ['master', 'mba', 'msc']):
+            return "Master's Degree"
+        elif any(level in education_text for level in ['bachelor', 'bs', 'ba', 'bsc']):
+            return "Bachelor's Degree"
+        elif any(level in education_text for level in ['associate', 'diploma']):
+            return "Associate Degree"
+        else:
+            return "High School or Equivalent"
+    
+    def _get_default_analysis(self) -> Dict[str, Any]:
+        """Return default analysis for invalid input"""
+        return {
+            'overall_score': 0,
+            'ats_score': 0,
+            'keyword_score': 0,
+            'skills': [],
+            'experience': [],
+            'education': [],
+            'achievements': [],
+            'summary': 'Analysis not available',
+            'strengths': [],
+            'weaknesses': ['Invalid or empty CV provided'],
+            'recommendations': ['Please provide a valid CV for analysis'],
+            'experience_level': 'Not specified',
+            'industry': 'Not specified',
+            'education_level': 'Not specified'
+        }
 
 class CVTemplateService:
     """Service for CV template management"""
