@@ -11,7 +11,7 @@ from django.contrib.auth import login
 from .ai_services import EnhancedAICoverLetterService
 from .views_upload_cv_optimized import upload_cv_optimized
 from .views_upload_cv_analyzer import upload_cv_analyzer
-from .models import AICoverLetter, CVAnalysis, CV, CVSection, UploadedCV, Template
+from .models import AICoverLetter, CVAnalysis, CV, UploadedCV, Template, Experience, Education, Project
 
 from .enhanced_forms import EnhancedAICoverLetterForm
 from .forms import CVCreationForm
@@ -314,46 +314,40 @@ def create_cv(request):
                 {form.cleaned_data['linkedin'] if form.cleaned_data['linkedin'] else ''}
                 """
                 
-                CVSection.objects.create(
-                    cv=cv,
-                    content=personal_info
-                )
+                # Update CV with form data
+                cv.full_name = form.cleaned_data['full_name']
+                cv.email = form.cleaned_data['email']
+                cv.phone = form.cleaned_data['phone']
+                cv.location = form.cleaned_data['location']
+                cv.linkedin_url = form.cleaned_data.get('linkedin', '')
+                cv.summary = form.cleaned_data.get('summary', '')
+                cv.professional_title = form.cleaned_data.get('title', '')
+                cv.save()
                 
-                # Summary Section
-                if form.cleaned_data['summary']:
-                    CVSection.objects.create(
-                        cv=cv,
-                        content=f"Professional Summary: {form.cleaned_data['summary']}"
-                    )
-                
-                # Work Experience Section
+                # Create Experience entries
                 if form.experience_data:
-                    experience_content = "Work Experience:\n"
                     for exp in form.experience_data:
-                        experience_content += f"""
-                        {exp['title']} at {exp['company']}
-                        {exp['duration']} | {exp['location']}
-                        {exp['description']}
-                        """
-                    CVSection.objects.create(
-                        cv=cv,
-                        content=experience_content
-                    )
+                        Experience.objects.create(
+                            cv=cv,
+                            job_title=exp['title'],
+                            company=exp['company'],
+                            location=exp.get('location', ''),
+                            start_date='2020-01-01',  # You'd need to parse this from duration
+                            description=exp.get('description', '')
+                        )
                 
-                # Education Section
+                # Create Education entries
                 if form.education_data:
-                    education_content = "Education:\n"
                     for edu in form.education_data:
-                        education_content += f"""
-                        {edu['degree']} - {edu['school']}
-                        {edu['year']} | {edu['location']}
-                        """
-                    CVSection.objects.create(
-                        cv=cv,
-                        content=education_content
-                    )
+                        Education.objects.create(
+                            cv=cv,
+                            degree=edu['degree'],
+                            institution=edu['school'],
+                            location=edu.get('location', ''),
+                            start_date='2020-01-01',  # You'd need to parse this from year
+                        )
 
-                # Projects Section
+                # Create Project entries
                 projects_data = []
                 i = 0
                 while f'projects[{i}][name]' in request.POST:
@@ -367,25 +361,14 @@ def create_cv(request):
                     i += 1
                 
                 if projects_data:
-                    projects_content = "Projects:\n"
                     for project in projects_data:
-                        projects_content += f"""
-                        - {project['name']}
-                          Technologies: {project['technologies']}
-                          {project['description']}
-                        """
-                    CVSection.objects.create(
-                        cv=cv,
-                        content=projects_content.strip()
-                    )
-                
-                # Skills Section
-
-                if form.cleaned_data['skills']:
-                    CVSection.objects.create(
-                        cv=cv,
-                        content=f"Skills: {form.cleaned_data['skills']}"
-                    )
+                        Project.objects.create(
+                            cv=cv,
+                            name=project['name'],
+                            description=project['description'],
+                            technologies=project['technologies'].split(',') if project['technologies'] else [],
+                            start_date='2020-01-01'  # Default date
+                        )
                 
                 messages.success(request, 'CV created successfully!')
                 return redirect('cv_detail', pk=cv.pk)

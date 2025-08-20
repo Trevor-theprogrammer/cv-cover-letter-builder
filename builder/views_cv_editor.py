@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import json
-from .models import CV, CVSection
+from .models import CV
 
 @login_required
 def edit_cv_template(request, template_id):
