@@ -14,3 +14,4 @@ dj-database-url==2.1.0
 python-magic==0.4.27
 selenium==4.11.2
 webdriver_manager==4.0.0
+djangorestframework==3.14.0
