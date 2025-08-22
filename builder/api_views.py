@@ -190,12 +190,6 @@ class UploadedCVViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'])
-    def analyze(self, request, pk=None):
-        """Analyze uploaded CV - placeholder implementation"""
-        return Response(
-            {'error': 'CV analysis not yet implemented'},
-            status=status.HTTP_501_NOT_IMPLEMENTED
-        )
 
 class TemplateViewSet(viewsets.ModelViewSet):
     serializer_class = TemplateSerializer
