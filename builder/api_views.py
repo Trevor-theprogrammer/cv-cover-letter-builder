@@ -190,6 +190,9 @@ class UploadedCVViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'])
+    def placeholder_action(self, request, pk=None):
+        """Placeholder action to fix indentation error."""
+        pass
 
 class TemplateViewSet(viewsets.ModelViewSet):
     serializer_class = TemplateSerializer
