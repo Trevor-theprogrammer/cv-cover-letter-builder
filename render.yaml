@@ -2,7 +2,7 @@ services:
   - type: web
     name: cv-cover-letter-builder
     env: python
-    buildCommand: 'pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput'
+    buildCommand: 'pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput --clear'
     startCommand: 'gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 60 --log-level debug --error-logfile -'
     envVars:
       - key: PYTHON_VERSION
